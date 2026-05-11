@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="UTF-8">
+  <title>Plant Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+
+
+  /* ===== BASE PAGE STYLES ===== */
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', Arial, sans-serif;
+      overflow: hidden;
+      background: #111;
+    }
+
+    strong {
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+    }
+
+    h2,
+      .status-pill,
+      .close-button,
+      .legend {
+        font-family: 'Nunito', Arial, sans-serif;
+    }
+
+
+  /* ===== BUTTON STYLES ===== */
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+    }
+
+    .close-button,
+    .watered-button,
+    .fertilized-button,
+    .delay-button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 750;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .close-button {
+      background: #323232;
+    }
+
+    .watered-button,
+    .fertilized-button,
+    .delay-button {
+      background: #b7b4b0;
+    }
+
+    .watered-button.undo-watered {
+      background: #77b5b8;
+    }
+
+    .fertilized-button.undo-fertilized {
+      background: #8e847b;
+    }
+
+    .delay-button.delay-active {
+      background: #dab668;
+    }
+
+    .delay-back-button {
+      background: #bf9a65;
+    }
+
+    .watered-button:hover,
+    .fertilized-button:hover,
+    .delay-button:hover,
+    .delay-back-button:hover,
+    .close-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
+
+
+  /* ===== CALENDAR BUTTON + PANELS ===== */
+
+    .calendar-button {
+      position: fixed;
+      top: 90px;
+      right: 70px;
+      left: auto;
+      z-index: 20;
+      transform-origin: top right;
+      padding: 7px 18px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(215, 211, 202, 0.694);
+      color: #333;
+      cursor: pointer;
+      font-size: 18px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      transition: filter 0.15s ease, transform 0.15s ease;
+      width: fit-content;
+      white-space: nowrap;
+    }
+
+    .calendar-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.14);
+    }
+
+    .calendar-wrapper {
+      display: none;
+      position: fixed;
+      top: 150px;
+      right: 70px;
+      left: auto;
+      z-index: 19;
+      transform-origin: top right;
+    }
+
+    .calendar-wrapper.open {
+      display: block;
+    }
+
+    .calendar-panel {
+      width: 390px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(255, 252, 247, 0.671);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(12px);
+    }
+
+    .calendar-main {
+      padding: 14px;
+    }
+
+    .calendar-header {
+      background: rgba(85, 85, 85, 0.198);
+      border-radius: 16px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-header h3 {
+      margin: 0;
+      text-align: center;
+      font-family: 'Nunito', Arial, sans-serif;
+      color: #34302ce6;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .calendar-weekdays div {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .calendar-weekdays {
+      margin-bottom: 10px;
+    }
+
+    .calendar-day {
+      min-height: 38px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.813);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: default;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .calendar-day.selected-day {
+      background: rgba(203, 203, 203, 0.408);
+      box-shadow: 0 0 0 2px rgba(178, 178, 177, 0.483);
+    }
+
+    .calendar-day.has-due {
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      filter: brightness(1.05);
+    }
+
+    .calendar-day.empty {
+      background: transparent;
+    }
+
+    .calendar-day.today {
+      background: rgba(152, 248, 155, 0.28);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.35);
+    }
+
+    .calendar-dot-row {
+      display: flex;
+      gap: 1px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f07e97;
+    }
+
+    .calendar-watered-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #5db6c4;
+    }
+
+    .fertilizer-calendar-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #a29888;
+    }
+
+
+  /* ===== UPCOMING CHECKS PANEL ===== */
+
+    .upcoming-panel {
+      padding: 14px 18px 16px;
+      background: rgba(50, 50, 50, 0.72);
+      color: white;
+    }
+
+    .upcoming-panel h3 {
+      margin: 0 0 10px 0;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+
+    .upcoming-item {
+      font-size: 13px;
+      line-height: 1.35;
+      margin: 6px 0;
+    }
+
+    .clickable-upcoming {
+      cursor: pointer;
+      padding: 5px 6px;
+      border-radius: 8px;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .clickable-upcoming:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: scale(1.02);
+    }
+
+
+  /* ===== PLANTS DUE / WATERED PANEL ===== */
+
+    .due-panel {
+      display: none;
+      position: absolute;
+      right: calc(100% + 14px);
+      top: 0;
+      flex-direction: column;
+      width: 300px;
+      max-height: 470px;
+      overflow-y: auto;
+      border-radius: 22px;
+      padding: 16px 16px 4px 16px;
+      background: rgba(255, 250, 242, 0.68);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-sizing: border-box;
+    }
+
+    .due-panel {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* older Microsoft browsers */
+    }
+
+    .due-panel::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Edge */
+    }
+
+    .due-panel.watered-only {
+      width: 290px;
+      background: rgba(245, 251, 250, 0.68);
+    }
+
+    .due-panel.today-with-fertilizer {
+      width: 400px;
+    }
+
+    .due-panel.today-no-fertilizer {
+      width: 330px;
+    }
+
+    .due-panel.open {
+      display: flex;
+    }
+
+    .due-panel-header {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 6px;
+      background: rgba(50, 50, 50, 0.16);
+      border-radius: 16px;
+      padding: 10px 38px 10px 12px;
+    }
+
+    .due-panel-header h3 {
+      margin: 0;
+      font-size: 17px;
+      color: #333;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+
+    .due-close-button {
+      position: absolute;
+      right: 8px;
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      background: rgba(34, 34, 34, 0.25);
+      color: #1d1d1d;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .due-close-button:hover {
+      filter: brightness(1.18);
+      transform: scale(1.14);
+    }
+
+    #duePlantList {
+      display: block;
+      margin-top: 2px;
+    }
+
+    .due-plant-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+      min-height: 78px;
+      height: auto;
+      border-bottom: 1px solid rgba(50, 50, 50, 0.12);
+    }
+
+    .due-panel.watered-only .due-plant-item {
+      padding: 4px 0;
+      gap: 4px;
+      min-height: 44px;
+    }
+
+    .due-plant-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .due-plant-item:last-child {
+      border-bottom: none;
+    }
+
+    .due-plant-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .due-panel.watered-only .due-plant-photo {
+      width: 42px;
+      height: 42px;
+    }
+
+    .due-plant-name {
+      font-size: 15px;
+      color: #333;
+      line-height: 1.50;
+    }
+
+    .due-plant-name-button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .due-plant-name-button:hover {
+      text-decoration: none;
+      color: #5a7147;
+      font-weight: 750;
+    }
+
+    .due-plant-fertilizer-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #a29888;
+      flex-shrink: 0;
+      align-self: center;
+      margin-left: 2;
+    }
+
+    .due-plant-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 7px;
+      flex: 1;
+    }
+
+    .due-plant-actions {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-left: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .due-mini-button {
+      width: auto;
+      min-width: 60px;
+      padding: 5px 9px;
+      border: none;
+      border-radius: 7px;
+      background: #8c8981;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .due-mini-button:hover {
+      filter: brightness(1.18);
+      transform: scale(1.04);
+    }
+
+    .due-mini-button.watered-active {
+      background: #77b5b8;
+    }
+
+    .due-mini-button.fertilized-active {
+      background: #a29888;
+    }
+
+    .due-mini-button.delayed-active {
+      background: #e4b164;
+    }
+
+    .due-mini-button.earlier-active {
+      background: #e4b164;
+    }
+
+    .due-mini-button.delay-back-button {
+      background: #8c8981;
+    }
+
+    .due-mini-button.delay-back-button.earlier-active {
+      background: #e4b164;
+    }
+
+
+  /* ===== ROOM IMAGE + PLANT DOTS ===== */
+
+    .room-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .room-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .plant-marker {
+      position: absolute;
+      width: 19px;
+      height: 19px;
+      border-radius: 100%;
+      border: 2px solid rgb(53, 53, 53);
+      box-shadow: 0 0 8px rgba(41, 70, 47, 0.65);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .plant-marker.fertilizer-ring {
+      border: 2px solid #a29888;
+      box-shadow:
+      0 0 0 2px rgba(53, 53, 53, 0.85),
+      0 0 10px rgba(194, 173, 139, 0.9);
+    }
+
+    .plant-marker:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
+    }
+
+    .blue {
+      background: #5dd1e0;
+    }
+
+    .green {
+      background: #49b158;
+    }
+
+    .yellow {
+      background: #8ed264;
+    }
+
+    .orange {
+      background: #efb029;
+    }
+
+    .red {
+      background: #f05c7c;
+    }
+
+    .darkred {
+      background: #af0505;
+    }
+
+
+  /* ===== PLANT CARD MODAL ===== */
+
+    .modal-background {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(49, 41, 36, 0.58);
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .modal-card {
+      width: min(900px, 92vw);
+      max-height: 88vh;
+      background: rgb(236, 233, 231);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.454);
+      display: grid;
+      grid-template-columns: 1fr 0.80fr;
+    }
+
+    .detail-group {
+      margin: 14px 0;
+    }
+
+    .water-group {
+      background: rgba(145, 181, 189, 0.452);
+      border: 1px solid rgba(97, 158, 183, 0.068);
+      border-radius: 16px;
+      padding: 8px 16px;
+      margin: 10px 0;
+    }
+
+    .fertilizer-group {
+      background: rgba(158, 151, 142, 0.545);
+      border: 1px solid rgba(138, 132, 121, 0.062);
+      border-radius: 16px;
+      padding: 8px 16px;
+      margin: 10px 0;
+    }
+
+    .size-group,
+    .notes-group {
+      background: rgba(174, 168, 166, 0.296);
+      border: 1px solid rgba(150, 149, 148, 0.094);
+      border-radius: 16px;
+      padding: 8px 17px;
+      margin: 10px 0;
+    }
+
+    .detail-group .detail-line {
+      margin: 0px 0;
+    }
+
+    .size-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      width: 100%;
+      padding-right: 12px;
+    }
+
+    .last-repot-value {
+      margin-left: 4px;
+    }
+
+    .detail-group:first-of-type {
+      margin-top: 14px;
+    }
+
+    .detail-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .detail-line {
+      margin: 14px 0;
+      line-height: 1.55;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .notes-line {
+      display: block;
+      text-align: left;
+      line-height: 1.25;
+    }
+
+    .notes-line strong {
+      margin-right: 3px;
+    }
+
+    .size-label {
+      color: #423e3b;
+    }
+
+    .size-group .size-label {
+      color: #423e3b !important;
+    }
+
+    .size-divider {
+      margin: 0 6px;
+    }
+
+    .notes-label {
+      color: #423e3b;
+    }
+
+    .water-label {
+      color: #2a4b51;
+    }
+
+    .fertilizer-label {
+      color: #3f392f;
+    }
+
+    .zoom-view {
+      min-height: 420px;
+      background-image: url("livingroom.jpg");
+      background-repeat: no-repeat;
+      background-size: 300%;
+      background-position: center;
+    }
+
+    .plant-details {
+      padding: 28px;
+      overflow-y: auto;
+      font-size: 19px;
+    }
+
+    .plant-details h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 30px;
+      line-height: 1.08;
+    }
+
+    .status-pill {
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 18px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .status-blue {
+      background: #77b5b8;
+    }
+
+    .status-green {
+      background: #66b664;
+    }
+
+    .status-yellow {
+      background: #98cb76;
+    }
+
+    .status-orange {
+      background: #ddb254;
+    }
+
+    .status-red {
+      background: #d87a8e;
+    }
+
+    .status-darkred {
+      background: #af4949;
+    }
+
+
+  /* ===== LEGEND ===== */
+
+    .legend {
+      position: absolute;
+      background: rgba(224, 221, 215, 0.694);
+      padding: 9px 13px;
+      border-radius: 18px;
+      font-size: 14px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transform-origin: left top;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      margin: 6px 0;
+      gap: 12px;
+    }
+
+    .legend-dot {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      border: 2px solid rgb(53, 53, 53);
+      box-shadow: 0 0 8px rgba(41, 70, 47, 0.65);
+      display: inline-block;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .legend-dot.fertilizer-ring-legend {
+      width: 15px;
+      height: 15px;
+      margin-left: 2px;
+      margin-right: 2px;
+      background: transparent !important;
+      border: 3px solid #796e5d;
+      box-sizing: border-box;
+      box-shadow:
+        0 0 0 2px rgba(53, 53, 53, 0.85),
+        0 0 8px rgba(41, 70, 47, 0.554),
+        0 0 10px rgba(187, 172, 152, 0.9);
+    }
+
+
+  /* ===== MOBILE / SMALL SCREEN STYLES ===== */
+
+    @media (max-width: 700px) {
+      .modal-card {
+        grid-template-columns: 1fr;
+      }
+
+      .zoom-view {
+        min-height: 260px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+
+  <!-- ===== CALENDAR BUTTON ===== -->
+
+    <button class="calendar-button" onclick="toggleCalendar()">Calendar</button>
+
+
+  <!-- ===== CALENDAR + PANELS ===== -->
+
+    <div class="calendar-wrapper" id="calendarWrapper">
+
+        <!-- Plants due/watered side panel -->
+
+        <div class="due-panel" id="duePanel">
+          <div class="due-panel-header">
+            <h3 id="duePanelTitle">Plants Due</h3>
+            <button class="due-close-button" onclick="closeDuePanel()">×</button>
+          </div>
+          <div id="duePlantList"></div>
+        </div>
+
+        <!-- Main calendar panel -->
+
+        <div class="calendar-panel" id="calendarPanel">
+          <div class="calendar-main">
+            <div class="calendar-header">
+              <h3 id="calendarMonthTitle">Calendar</h3>
+            </div>
+
+          <div class="calendar-weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <!-- Upcoming checks section -->
+
+            <div class="upcoming-panel">
+              <h3>Upcoming Checks</h3>
+              <div id="upcomingList"></div>
+            </div>
+          </div>
+        </div>
+
+  
+  <!-- ===== ROOM IMAGE + LEGEND ===== -->
+
+    <div class="room-container" id="roomContainer">
+      <img src="livingroom.jpg" class="room-image" id="roomImage">
+
+        <!-- Color legend -->
+
+        <div class="legend">
+          <div class="legend-row"><span class="legend-dot blue"></span> Watered today</div>
+          <div class="legend-row"><span class="legend-dot green"></span> Not due yet</div>
+          <div class="legend-row"><span class="legend-dot yellow"></span> Due in 2 days</div>
+          <div class="legend-row"><span class="legend-dot orange"></span> Due tomorrow</div>
+          <div class="legend-row"><span class="legend-dot red"></span> Due today</div>
+          <div class="legend-row"><span class="legend-dot darkred"></span> Overdue</div>
+          <div class="legend-row"><span class="legend-dot fertilizer-ring-legend"></span> Fertilizer due</div>
+      </div>
+    </div>
+
+
+  <!-- ===== PLANT CARD MODAL ===== -->
+
+    <div class="modal-background" id="plantModal">
+      <div class="modal-card">
+        <div class="zoom-view" id="zoomView"></div>
+
+        <!-- Plant details text and buttons -->
+
+        <div class="plant-details">
+          <h2 id="plantName"></h2>
+          <div id="plantStatus" class="status-pill"></div>
+
+        <div class="detail-group size-group">
+          <div class="detail-line">
+            <strong class="size-label">Size:</strong> 
+            <span id="plantSize"></span>
+            <span class="size-divider">/</span>
+            <strong class="size-label">Last repot:</strong>
+            <span id="lastRepot"></span>
+          </div>
+        </div>
+
+        <div class="detail-group water-group">
+          <div class="detail-line"><strong class="water-label">Last watered:</strong> <span id="lastWatered"></span></div>
+          <div class="detail-line"><strong class="water-label">Watering interval:</strong> <span id="intervalDays"></span></div>
+          <div class="detail-line"><strong class="water-label">Next check:</strong> <span id="nextCheck"></span></div>
+        </div>
+
+        <div class="detail-group fertilizer-group" id="fertilizerGroup">
+          <div class="detail-line"><strong class="fertilizer-label">Last fertilized:</strong> <span id="lastFertilized"></span></div>
+          <div class="detail-line"><strong class="fertilizer-label">Fertilizer status:</strong> <span id="fertilizerStatus"></span></div>
+        </div>
+
+        <div class="detail-group notes-group">
+          <div class="detail-line notes-line"><strong class="notes-label">Notes:</strong> <span id="plantNotes"></span></div>
+        </div>
+
+          <div class="button-row">
+            <button class="close-button" onclick="closeModal()">Close</button>
+            <button class="fertilized-button" onclick="markFertilizedToday()">Fertilized!</button>
+            <button class="delay-button" onclick="delayActivePlantOneDay()">+1 Day</button>
+            <button class="watered-button" onclick="markWateredToday()">Watered!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+
+  // ===== PLANT DATA =====
+
+        const plants = [
+          {
+            name: "Monstera Thai Constellation",
+            size: "10 inch pot",
+            x: 45.3,
+            y: 35.3,
+            image: "plant-photos/thai-con.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 11,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-14",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Thai Constellation",
+            size: "6 inch pot",
+            x: 40.5,
+            y: 35.3,
+            image: "plant-photos/baby-thai-con.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-14",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Deliciosa",
+            size: "8 inch pot",
+            x: 33.8,
+            y: 38.7,
+            image: "plant-photos/top-monstera.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 10,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-14",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Warscewiczii",
+            size: "3 inch pot",
+            x: 29.6,
+            y: 42.7,
+            image: "plant-photos/philo-wars.jpeg",
+            lastWatered: "2026-05-05",
+            intervalDays: 5,
+            lastFertilized: "2026-05-01",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Ring of Fire",
+            size: "3 inch pot",
+            x: 27.2,
+            y: 42.7,
+            image: "plant-photos/ring-of-fire.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-01-26",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Mint",
+            size: "3 inch pot",
+            x: 25.0,
+            y: 42.7,
+            image: "plant-photos/mint.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2025-12-11",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Prince of Orange",
+            size: "3 inch pot",
+            x: 22.9,
+            y: 42.7,
+            image: "plant-photos/orange-prince2.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2025-12-18",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Prince of Orange",
+            size: "3 inch pot",
+            x: 20.3,
+            y: 42.7,
+            image: "plant-photos/orange-prince1.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2025-12-18",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Caramel Marble",
+            size: "3 inch pot",
+            x: 17.9,
+            y: 42.7,
+            image: "plant-photos/caramel-marble.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Deliciosa",
+            size: "8 inch pot",
+            x: 28.5,
+            y: 60.0,
+            image: "plant-photos/right-monstera.jpeg",
+            lastWatered: "2026-05-06",
+            intervalDays: 9,
+            lastFertilized: "2026-04-26",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-01-26",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Ficus Shivereana",
+            size: "4 inch pot",
+            x: 25.4,
+            y: 60.7,
+            image: "plant-photos/ficus.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2025-12-11",
+            notes: "Allow top 1-2 inches of soil to dry before watering!."
+          },
+          {
+            name: "Philodendron Silver Sword",
+            size: "4 inch pot",
+            x: 23.0,
+            y: 60.7,
+            image: "plant-photos/silver-sword.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-01-26",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          }, 
+          {
+            name: "Monstera Deliciosa",
+            size: "8 inch pot",
+            x: 19.8,
+            y: 60.0,
+            image: "plant-photos/left-monstera.jpeg",
+            lastWatered: "2026-05-06",
+            intervalDays: 9,
+            lastFertilized: "2026-04-26",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Albo Prop",
+            size: null,
+            x: 28.9,
+            y: 27.6,
+            image: "plant-photos/albo-prop1.jpeg",
+            lastWatered: null,
+            intervalDays: null,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Roots should be 4 inches long before planting in soil. The roots should have roots!"
+          },
+          {
+            name: "Monstera Albo Prop",
+            size: "null",
+            x: 25.9,
+            y: 28.1,
+            image: "plant-photos/albo-prop2.jpeg",
+            lastWatered: null,
+            intervalDays: null,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Roots should be 4 inches long before planting in soil. The roots should have roots!"
+          },
+          {
+            name: "Philodendron Micans Propagation",
+            size: null,
+            x: 23.2,
+            y: 28.0,
+            image: "plant-photos/micans-prop.jpeg",
+            lastWatered: null,
+            intervalDays: null,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Roots should be 4 inches long before planting in soil. The roots should have roots!"
+          },
+          {
+            name: "Alocasia Polly",
+            size: "4 inch pot",
+            x: 34.6,
+            y: 55.3,
+            image: "plant-photos/polly.jpeg",
+            lastWatered: "2026-05-06",
+            intervalDays: 6,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-12",
+            notes: "Soil should be consistently moist, but not waterlogged!"
+          },
+          {
+            name: "Alocasia Frydek",
+            size: "4 inch pot",
+            x: 31.7,
+            y: 55.2,
+            image: "plant-photos/frydek.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 6,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-12",
+            notes: "Soil should be consistently moist, but not waterlogged!"
+          },
+          {
+            name: "Cathlea Zebrina",
+            size: "3 inch pot",
+            x: 34.7,
+            y: 68.1,
+            image: "plant-photos/cathlea.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-12",
+            notes: "Soil should be consistently moist, but not waterlogged!"
+          },
+          {
+            name: "Philodendron Pink Princess",
+            size: "6 inch pot",
+            x: 46.8,
+            y: 58.4,
+            image: "plant-photos/pp1.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Pink Princess",
+            size: "4 inch pot",
+            x: 45.9,
+            y: 65.0,
+            image: "plant-photos/pp2.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Aglaonema Siam Aurora",
+            size: "4 inch pot",
+            x: 47.5,
+            y: 45.3,
+            image: "plant-photos/siam-aurora.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Rhaphidophora Tetrasperma",
+            size: "4 inch pot",
+            x: 44.7,
+            y: 44.0,
+            image: "plant-photos/mini-monstera.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Begonia Polka Dot",
+            size: "4 inch pot",
+            x: 53.9,
+            y: 60.6,
+            image: "plant-photos/begonia.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 6,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-02-24",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Albo Cutting",
+            size: "4 inch pot",
+            x: 59.7,
+            y: 60.6,
+            image: "plant-photos/albo-cutting.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Pothos Marble Queen & Philodendron Heartleaf",
+            size: "6 inch pot",
+            x: 65.7,
+            y: 60.7,
+            image: "plant-photos/philo-pothos.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Venus Fly Trap",
+            size: "8 inch pot",
+            x: 71.1,
+            y: 61.6,
+            image: "plant-photos/venus.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 7,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Keep soil consistently moist. Use distilled water!"
+          },
+          {
+            name: "Philodendron Micans",
+            size: "4 inch pot",
+            x: 72.0,
+            y: 52.7,
+            image: "plant-photos/micans.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Lemon Lime",
+            size: "4 inch pot",
+            x: 66.0,
+            y: 37.5,
+            image: "plant-photos/lemon-lime.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 8,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Pothos Marble Queen",
+            size: "4 inch pot",
+            x: 69.7,
+            y: 37.5,
+            image: "plant-photos/marble-queen.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 6,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Pothos Silver Satin",
+            size: "6 inch pot",
+            x: 72.9,
+            y: 37.5,
+            image: "plant-photos/satin.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-04-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Moms Mixed Pothos & Philodendron",
+            size: "6 inch pot",
+            x: 78.3,
+            y: 60.7,
+            image: "plant-photos/moms-plant.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-02-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron Brasil",
+            size: "6 inch pot",
+            x: 85.5,
+            y: 38.2,
+            image: "plant-photos/brasil.jpeg",
+            lastWatered: "2026-04-30",
+            intervalDays: 9,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-03-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Deliciosa",
+            size: "12 inch pot",
+            x: 89.0,
+            y: 76.8,
+            image: "plant-photos/large-monstera.jpeg",
+            lastWatered: "2026-04-25",
+            intervalDays: 14,
+            lastFertilized: "2026-04-25",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2025-12-12",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Grace's Philodendron Micans",
+            size: "6 inch pot",
+            x: 88.9,
+            y: 87.2,
+            image: "plant-photos/graces-plant.jpeg",
+            lastWatered: "2026-04-25",
+            intervalDays: 11,
+            lastFertilized: "2026-04-25",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-05-02",
+            notes: "Allow top 1–2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Monstera Deliciosa Propagation",
+            size: null,
+            x: 84.4,
+            y: 60.1,
+            image: "plant-photos/monstera-prop.jpeg",
+            lastWatered: null,
+            intervalDays: null,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Roots should be 4 inches long before planting in soil."
+          },
+          {
+            name: "Tillandsia Harrisii",
+            size: null,
+            x: 16.8,
+            y: 27.5,
+            image: "plant-photos/air-plant.jpeg",
+            lastWatered: "2026-05-02",
+            intervalDays: 7,
+            lastFertilized: null,
+            fertilizerIntervalDays: null,
+            fertilizerBufferDays: null,
+            lastRepot: null,
+            notes: "Soak for 20-30 minutes every 1-2 weeks. Dry before placing back in pot!"
+          },
+          {
+            name: "Monstera Yellow Marilyn",
+            size: "4 inch pot",
+            x: 37.8,
+            y: 36.0,
+            image: "plant-photos/yellow-marilyn.jpeg",
+            lastWatered: null,
+            intervalDays: 7,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: null,
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Philodendron White Knight",
+            size: "3 inch pot",
+            x: 45.6,
+            y: 69.1,
+            image: "plant-photos/white-knight.jpeg",
+            lastWatered: "2026-05-10",
+            intervalDays: 5,
+            lastFertilized: "2026-04-30",
+            fertilizerIntervalDays: 20,
+            fertilizerBufferDays: 3,
+            lastRepot: "2026-05-10",
+            notes: "Allow top 1-2 inches of soil to dry before watering!"
+          }
+          ];
+
+
+  // ===== GLOBAL VARIABLES =====
+
+      const roomContainer = document.getElementById("roomContainer");
+
+      let activePlantIndex = null;
+      let reopenCalendarDate = null;
+      let selectedDueDate = null;
+      let selectedDuePlants = [];
+      let selectedCalendarDate = null;
+
+
+  // ===== DATE + FORMAT HELPERS =====
+
+    function formatDate(dateString) {
+        const date = new Date(dateString + "T00:00:00");
+
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+      });
+    }
+
+    function formatPotSize(size) {
+        if (!size || size === "null") {
+          return "N/A";
+        }
+
+        return size
+          .replace(" inch pot", '"')
+          .replace(" inches pot", '"')
+          .replace(" inch", '"')
+          .replace(" inches", '"');
+    }
+
+    function formatShortDate(dateString) {
+        const date = new Date(dateString + "T00:00:00");
+
+        return date.toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric"
+        });
+    }
+
+    function getTodayString() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function dateToString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function getNextWaterDate(plant) {
+        return getEffectiveNextWaterDate(plant);
+    }
+
+    function getEffectiveIntervalDays(plant) {
+        if (!plant.lastWatered || !plant.intervalDays) {
+          return null;
+        }
+
+        const wateredDate = new Date(plant.lastWatered + "T00:00:00");
+        wateredDate.setHours(0, 0, 0, 0);
+
+        const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+        if (!nextWaterDate) {
+          return plant.intervalDays;
+        }
+
+        const msPerDay = 1000 * 60 * 60 * 24;
+        return Math.round((nextWaterDate - wateredDate) / msPerDay);
+    }
+
+    function getBaseNextWaterDate(plant) {
+        if (!plant.lastWatered || !plant.intervalDays) {
+          return null;
+        }
+
+        const wateredDate = new Date(plant.lastWatered + "T00:00:00");
+        const nextWaterDate = new Date(wateredDate);
+
+        nextWaterDate.setDate(wateredDate.getDate() + plant.intervalDays);
+        nextWaterDate.setHours(0, 0, 0, 0);
+
+        return nextWaterDate;
+    }
+
+    function getEffectiveNextWaterDate(plant) {
+        const baseNextWaterDate = getBaseNextWaterDate(plant);
+
+        if (!baseNextWaterDate) {
+          return null;
+        }
+
+        if (plant.delayUntil) {
+          const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
+          adjustedDate.setHours(0, 0, 0, 0);
+          return adjustedDate;
+        }
+
+        return baseNextWaterDate;
+    }
+
+    function getPlantsDueOnDate(dateString) {
+        const targetDate = new Date(dateString + "T00:00:00");
+        targetDate.setHours(0, 0, 0, 0);
+
+        return plants.filter(plant => {
+          if (!plant.lastWatered || !plant.intervalDays) {
+            return false;
+          }
+
+          let predictedDate = getEffectiveNextWaterDate(plant);
+
+          while (predictedDate <= targetDate) {
+            if (dateToString(predictedDate) === dateString) {
+              return true;
+            }
+
+            predictedDate.setDate(predictedDate.getDate() + plant.intervalDays);
+          }
+
+          return false;
+        });
+    }
+
+    function getPlantsWateredOnDate(dateString) {
+        return plants.filter(plant => plant.lastWatered === dateString);
+    }
+
+    function getOrdinalSuffix(day) {
+        if (day >= 11 && day <= 13) {
+          return "th";
+        }
+
+        const lastDigit = day % 10;
+
+        if (lastDigit === 1) return "st";
+        if (lastDigit === 2) return "nd";
+        if (lastDigit === 3) return "rd";
+
+        return "th";
+    }
+
+    function formatDuePanelTitle(dateString) {
+        if (dateString === getTodayString()) {
+          return "Plants Due Today";
+        }
+
+        const date = new Date(dateString + "T00:00:00");
+        const month = date.toLocaleDateString("en-US", { month: "long" });
+        const day = date.getDate();
+        const suffix = getOrdinalSuffix(day);
+
+        return `Plants Due ${month} ${day}${suffix}`;
+    }
+
+    function formatWateredPanelTitle(dateString) {
+        if (dateString === getTodayString()) {
+          return "Plants Watered Today";
+        }
+
+        const date = new Date(dateString + "T00:00:00");
+        const month = date.toLocaleDateString("en-US", { month: "long" });
+        const day = date.getDate();
+        const suffix = getOrdinalSuffix(day);
+
+        return `Plants Watered ${month} ${day}${suffix}`;
+    }
+
+
+  // ===== WATERING + FERTILIZER STORAGE =====
+
+    function plantStorageKey(plant) {
+        return `lastWatered-${plant.name}-${plant.x}-${plant.y}`;
+    }
+
+    function fertilizerStorageKey(plant) {
+        return `lastFertilized-${plant.name}-${plant.x}-${plant.y}`;
+    }
+
+    function delayStorageKey(plant) {
+        return `delayUntil-${plant.name}-${plant.x}-${plant.y}`;
+    }
+
+    function loadSavedWateringDates() {
+        plants.forEach(plant => {
+          plant.originalLastWatered = plant.lastWatered;
+          plant.originalLastFertilized = plant.lastFertilized;
+
+          const savedWateredDate = localStorage.getItem(plantStorageKey(plant));
+          const savedFertilizedDate = localStorage.getItem(fertilizerStorageKey(plant));
+          const savedDelayDate = localStorage.getItem(delayStorageKey(plant));
+
+          if (savedWateredDate) {
+            plant.lastWatered = savedWateredDate;
+          }
+
+          if (savedFertilizedDate) {
+            plant.lastFertilized = savedFertilizedDate;
+          }
+
+          if (savedDelayDate) {
+            plant.delayUntil = savedDelayDate;
+          }
+        });
+    }
+
+
+  // ===== WATERING STATUS LOGIC =====
+
+    function getPlantStatus(plant) {
+        if (!plant.lastWatered || !plant.intervalDays) {
+          return {
+            color: "blue",
+            label: "No watering schedule",
+            nextCheck: "N/A"
+          };
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const wateredDate = new Date(plant.lastWatered + "T00:00:00");
+        wateredDate.setHours(0, 0, 0, 0);
+
+        const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const daysUntilWater = Math.round((nextWaterDate - today) / msPerDay);
+
+        const wateredToday = wateredDate.getTime() === today.getTime();
+
+        if (wateredToday) {
+          return {
+            color: "blue",
+            label: "Watered today",
+            nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilWater > 2) {
+          return {
+            color: "green",
+            label: `${daysUntilWater} days until next check`,
+            nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilWater === 2) {
+          return {
+            color: "yellow",
+            label: "Due in 2 days",
+            nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilWater === 1) {
+          return {
+            color: "orange",
+            label: "Due tomorrow",
+            nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilWater === 0) {
+          return {
+            color: "red",
+            label: "Due today",
+            nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+          };
+        }
+
+        return {
+          color: "darkred",
+          label: `${Math.abs(daysUntilWater)} day(s) overdue`,
+          nextCheck: formatShortDate(nextWaterDate.toISOString().split("T")[0])
+        };
+    }
+
+
+  // ===== FERTILIZER STATUS LOGIC =====
+
+    function hasFertilizerSchedule(plant) {
+        return plant.lastFertilized && plant.fertilizerIntervalDays;
+    }
+
+    function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBufferDays = 0) {
+        if (!lastFertilized || !fertilizerIntervalDays) {
+          return {
+            due: false,
+            readySoon: false,
+            label: "No fertilizer schedule",
+            nextFertilizer: "N/A"
+          };
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const fertilizedDate = new Date(lastFertilized + "T00:00:00");
+        const nextFertilizerDate = new Date(fertilizedDate);
+
+        nextFertilizerDate.setDate(fertilizedDate.getDate() + fertilizerIntervalDays);
+
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const daysUntilFertilizer = Math.round((nextFertilizerDate - today) / msPerDay);
+
+        if (daysUntilFertilizer > fertilizerBufferDays) {
+          return {
+            due: false,
+            readySoon: false,
+            label: `${daysUntilFertilizer} days left`,
+            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilFertilizer > 0) {
+          return {
+            due: false,
+            readySoon: true,
+            label: `Ready to line up with watering (${daysUntilFertilizer} day(s) early)`,
+            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+          };
+        }
+
+        if (daysUntilFertilizer === 0) {
+          return {
+            due: true,
+            readySoon: true,
+            label: "Fertilizer due today",
+            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+          };
+        }
+
+        return {
+          due: true,
+          readySoon: true,
+          label: `${Math.abs(daysUntilFertilizer)} day(s) overdue for fertilizer`,
+          nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+        };
+    }
+
+    function shouldShowFertilizerRing(plant) {
+        const waterStatus = getPlantStatus(plant);
+        const fertilizerStatus = getFertilizerStatus(
+          plant.lastFertilized,
+          plant.fertilizerIntervalDays,
+          plant.fertilizerBufferDays
+        );
+
+        const wateringWindow = ["orange", "red", "darkred", "blue"].includes(waterStatus.color);
+
+        return wateringWindow && fertilizerStatus.readySoon;
+    }
+
+    function shouldShowCalendarFertilizerRing(plant, dateString) {
+        if (!plant.lastFertilized || !plant.fertilizerIntervalDays) {
+          return false;
+        }
+
+        const targetDate = new Date(dateString + "T00:00:00");
+        targetDate.setHours(0, 0, 0, 0);
+
+        const fertilizedDate = new Date(plant.lastFertilized + "T00:00:00");
+        fertilizedDate.setHours(0, 0, 0, 0);
+
+        const idealFertilizerDate = new Date(fertilizedDate);
+        idealFertilizerDate.setDate(fertilizedDate.getDate() + plant.fertilizerIntervalDays);
+        idealFertilizerDate.setHours(0, 0, 0, 0);
+
+        const bufferDays = plant.fertilizerBufferDays || 0;
+
+        const bufferStartDate = new Date(idealFertilizerDate);
+        bufferStartDate.setDate(idealFertilizerDate.getDate() - bufferDays);
+
+        return targetDate >= bufferStartDate;
+    }
+
+
+  // ===== ROOM CLICK + COORDINATE FINDER =====
+
+    document.getElementById("roomContainer").addEventListener("click", function(event) {
+        if (event.target.classList.contains("plant-marker")) {
+          return;
+        }
+
+        const calendarWrapper = document.getElementById("calendarWrapper");
+
+        if (calendarWrapper.classList.contains("open")) {
+          calendarWrapper.classList.remove("open");
+          closeDuePanel();
+          return;
+        }
+
+        const metrics = getImageMetrics();
+
+        const clickX = event.clientX - metrics.containerRect.left;
+        const clickY = event.clientY - metrics.containerRect.top;
+
+        const x = ((clickX - metrics.offsetX) / metrics.displayedWidth) * 100;
+        const y = ((clickY - metrics.offsetY) / metrics.displayedHeight) * 100;
+
+        alert(`x: ${x.toFixed(1)}, y: ${y.toFixed(1)}`);
+    });
+
+
+  // ===== PLANT DOT / MARKER FUNCTIONS =====
+
+        const markers = [];
+
+    function createMarkers() {
+        plants.forEach((plant, index) => {
+        const status = getPlantStatus(plant);
+
+        const marker = document.createElement("button");
+        marker.className = `plant-marker ${status.color}`;
+
+        if (shouldShowFertilizerRing(plant)) {
+        marker.classList.add("fertilizer-ring");
+        }
+
+        marker.title = plant.name;
+
+        marker.addEventListener("click", () => openPlantDetails(index));
+
+        roomContainer.appendChild(marker);
+
+        markers.push({
+          marker,
+          plant
+        });
+      });
+
+        positionMarkers();
+    }
+
+
+  // ===== IMAGE POSITIONING FUNCTIONS =====
+
+    function getImageMetrics() {
+        const roomImage = document.getElementById("roomImage");
+        const containerRect = roomContainer.getBoundingClientRect();
+
+        const imageWidth = roomImage.naturalWidth;
+        const imageHeight = roomImage.naturalHeight;
+
+        const containerWidth = containerRect.width;
+        const containerHeight = containerRect.height;
+
+        const scale = Math.max(
+          containerWidth / imageWidth,
+          containerHeight / imageHeight
+        );
+
+        const displayedWidth = imageWidth * scale;
+        const displayedHeight = imageHeight * scale;
+
+        const offsetX = (containerWidth - displayedWidth) / 2;
+        const offsetY = (containerHeight - displayedHeight) / 2;
+
+        return {
+          containerRect,
+          displayedWidth,
+          displayedHeight,
+          offsetX,
+          offsetY
+        };
+    }
+
+    function positionMarkers() {
+        const metrics = getImageMetrics();
+
+        markers.forEach(({ marker, plant }) => {
+          const x = metrics.offsetX + (plant.x / 100) * metrics.displayedWidth;
+          const y = metrics.offsetY + (plant.y / 100) * metrics.displayedHeight;
+
+          marker.style.left = x + "px";
+          marker.style.top = y + "px";
+        });
+
+        positionLegend();
+        positionCalendar();
+    }
+
+    function positionLegend() {
+        const legend = document.querySelector(".legend");
+        const metrics = getImageMetrics();
+
+        const x = metrics.offsetX + 5 / 100 * metrics.displayedWidth;
+        const y = metrics.offsetY + 62 / 100 * metrics.displayedHeight;
+
+        const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
+
+        legend.style.left = x + "px";
+        legend.style.top = y + "px";
+        legend.style.transform = `scale(${scale})`;
+    }
+
+    function positionCalendar() {
+        const calendarButton = document.querySelector(".calendar-button");
+        const calendarWrapper = document.getElementById("calendarWrapper");
+        const metrics = getImageMetrics();
+
+        const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
+
+        calendarButton.style.left = "auto";
+        calendarButton.style.right = "70px";
+        calendarButton.style.top = "30px";
+        calendarButton.style.transform = `scale(${scale})`;
+
+        calendarWrapper.style.left = "auto";
+        calendarWrapper.style.right = "70px";
+        calendarWrapper.style.top = "90px";
+        calendarWrapper.style.transform = `scale(${scale})`;
+    }
+
+    function updateMarkerColors() {
+        markers.forEach(({ marker, plant }) => {
+          const status = getPlantStatus(plant);
+
+          marker.classList.remove("blue", "green", "yellow", "orange", "red", "darkred", "fertilizer-ring");
+          marker.classList.add(status.color);
+
+          if (shouldShowFertilizerRing(plant)) {
+            marker.classList.add("fertilizer-ring");
+          }
+        });
+    }
+
+
+  // ===== PLANT CARD FUNCTIONS =====
+
+    function hideDashboardOverlays() {
+        document.querySelector(".calendar-button").style.display = "none";
+        document.querySelector(".legend").style.display = "none";
+        document.getElementById("calendarWrapper").classList.remove("open");
+        closeDuePanel();
+    }
+
+    function showDashboardOverlays() {
+        document.querySelector(".calendar-button").style.display = "block";
+        document.querySelector(".legend").style.display = "block";
+    }
+
+    function openPlantDetails(index) {
+        activePlantIndex = index;
+        hideDashboardOverlays();
+
+        const plant = plants[index];
+        const status = getPlantStatus(plant);
+
+        document.getElementById("plantName").textContent = plant.name;
+        document.getElementById("plantSize").textContent = formatPotSize(plant.size);
+        document.getElementById("lastRepot").textContent = plant.lastRepot ? formatShortDate(plant.lastRepot) : "N/A";
+        document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+
+        const effectiveIntervalDays = getEffectiveIntervalDays(plant);
+
+        document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
+        document.getElementById("nextCheck").textContent = status.nextCheck;
+
+        const fertilizerStatus = getFertilizerStatus(
+          plant.lastFertilized,
+          plant.fertilizerIntervalDays,
+          plant.fertilizerBufferDays
+        );
+
+        const fertilizerGroup = document.getElementById("fertilizerGroup");
+
+        if (hasFertilizerSchedule(plant)) {
+          document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
+          document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
+          fertilizerGroup.style.display = "block";
+        } else {
+          fertilizerGroup.style.display = "none";
+        } 
+
+        document.getElementById("plantNotes").textContent = plant.notes;
+
+        const plantStatus = document.getElementById("plantStatus");
+          plantStatus.textContent = status.label;
+          plantStatus.className = `status-pill status-${status.color}`;
+
+        const zoomView = document.getElementById("zoomView");
+
+        if (plant.image) {
+          zoomView.style.backgroundImage = `url("${plant.image}")`;
+          zoomView.style.backgroundSize = "cover";
+          zoomView.style.backgroundPosition = "center";
+        } else {
+          zoomView.style.backgroundImage = `url("livingroom.jpg")`;
+          zoomView.style.backgroundSize = "300%";
+          zoomView.style.backgroundPosition = `${plant.x}% ${plant.y}%`;
+        }
+
+        const wateredButton = document.querySelector(".watered-button");
+
+        if (plant.lastWatered === getTodayString()) {
+          wateredButton.textContent = "Watered!";
+          wateredButton.classList.add("undo-watered");
+        } else {
+          wateredButton.textContent = "Water";
+          wateredButton.classList.remove("undo-watered");
+        }
+        const delayButton = document.querySelector(".delay-button");
+
+        if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === getTodayString()) {
+          delayButton.style.display = "none";
+          delayButton.textContent = "+1 Day";
+          delayButton.classList.remove("delay-active");
+        } else {
+
+          delayButton.style.display = "inline-block";
+
+          if (plant.delayUntil) {
+            delayButton.textContent = "Delayed!";
+            delayButton.classList.add("delay-active")
+          } else {
+            delayButton.textContent = "+1 Day";
+            delayButton.classList.remove("delay-active");
+          }
+        }
+        const fertilizedButton = document.querySelector(".fertilized-button");
+
+        if (hasFertilizerSchedule(plant)) {
+          fertilizedButton.style.display = "inline-block";
+
+          if (plant.lastFertilized === getTodayString()) {
+            fertilizedButton.textContent = "Fertilized!";
+            fertilizedButton.classList.add("undo-fertilized");
+          } else {
+            fertilizedButton.textContent = "Fertilize";
+            fertilizedButton.classList.remove("undo-fertilized");
+          }
+        } else {
+          fertilizedButton.style.display = "none";
+        }
+
+        document.getElementById("plantModal").style.display = "flex";
+    }
+
+
+  // ===== WATER + FERTILIZER BUTTON LOGIC =====
+
+    function delayActivePlantOneDay() {
+        if (activePlantIndex === null) {
+          return;
+        }
+
+        const plant = plants[activePlantIndex];
+
+        if (plant.lastWatered === getTodayString()) {
+          return;
+        }
+
+        const delayKey = delayStorageKey(plant);
+        const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+        if (!nextWaterDate) {
+          return;
+        }
+
+        const delayedDate = new Date(nextWaterDate);
+        delayedDate.setDate(nextWaterDate.getDate() + 1);
+
+        const delayedDateString = dateToString(delayedDate);
+
+        if (plant.delayUntil === delayedDateString) {
+          localStorage.removeItem(delayKey);
+          plant.delayUntil = null;
+        } else {
+          plant.delayUntil = delayedDateString;
+          localStorage.setItem(delayKey, delayedDateString);
+        }
+
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+        openPlantDetails(activePlantIndex);
+    }
+
+    function toggleDelayWateringOneDayForPlant(plant, dateString) {
+        const delayKey = delayStorageKey(plant);
+
+        const clickedDate = new Date(dateString + "T00:00:00");
+        clickedDate.setHours(0, 0, 0, 0);
+
+        const delayedDate = new Date(clickedDate);
+        delayedDate.setDate(clickedDate.getDate() + 1);
+
+        const delayedDateString = dateToString(delayedDate);
+
+        if (plant.delayUntil === delayedDateString) {
+          localStorage.removeItem(delayKey);
+          plant.delayUntil = null;
+          return;
+        }
+
+        plant.delayUntil = delayedDateString;
+        localStorage.setItem(delayKey, delayedDateString);
+    }
+
+    function moveWateringBackOneDayForPlant(plant, dateString) {
+        const delayKey = delayStorageKey(plant);
+
+        const clickedDate = new Date(dateString + "T00:00:00");
+        clickedDate.setHours(0, 0, 0, 0);
+
+        const movedDate = new Date(clickedDate);
+        movedDate.setDate(clickedDate.getDate() - 1);
+
+        const movedDateString = dateToString(movedDate);
+
+        plant.delayUntil = movedDateString;
+        localStorage.setItem(delayKey, movedDateString);
+    }
+
+    function toggleWateredForPlant(plant) {
+        const today = getTodayString();
+        const storageKey = plantStorageKey(plant);
+        const delayKey = delayStorageKey(plant);
+
+        if (plant.lastWatered === today) {
+          localStorage.removeItem(storageKey);
+          plant.lastWatered = plant.originalLastWatered;
+        } else {
+          plant.lastWatered = today;
+          localStorage.setItem(storageKey, today);
+
+          localStorage.removeItem(delayKey);
+          plant.delayUntil = null;
+        }
+    }
+
+    function toggleFertilizedForPlant(plant) {
+        const today = getTodayString();
+        const storageKey = fertilizerStorageKey(plant);
+
+        if (plant.lastFertilized === today) {
+          localStorage.removeItem(storageKey);
+          plant.lastFertilized = plant.originalLastFertilized;
+        } else {
+          plant.lastFertilized = today;
+          localStorage.setItem(storageKey, today);
+        }
+    }
+
+    function refreshCalendarViews() {
+        const duePanel = document.getElementById("duePanel");
+        const savedScrollTop = duePanel.scrollTop;
+
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+
+        if (selectedDueDate) {
+          openDuePanel(selectedDueDate);
+          duePanel.scrollTop = savedScrollTop;
+        }
+    }
+
+    function markWateredToday() {
+        if (activePlantIndex === null) {
+          return;
+        }
+
+        const plant = plants[activePlantIndex];
+
+        toggleWateredForPlant(plant);
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+        openPlantDetails(activePlantIndex);
+    }
+
+    function markFertilizedToday() {
+        if (activePlantIndex === null) {
+          return;
+        }
+
+        const plant = plants[activePlantIndex];
+
+        toggleFertilizedForPlant(plant);
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+        openPlantDetails(activePlantIndex);
+    }
+
+    function closeModal() {
+        document.getElementById("plantModal").style.display = "none";
+        showDashboardOverlays();
+
+        if (reopenCalendarDate) {
+          document.getElementById("calendarWrapper").classList.add("open");
+          renderCalendar();
+          renderUpcomingChecks();
+          openDuePanel(reopenCalendarDate);
+
+          reopenCalendarDate = null;
+        }
+    }
+
+
+  // ===== CALENDAR FUNCTIONS =====
+
+    function renderCalendar() {
+        const calendarGrid = document.getElementById("calendarGrid");
+        const calendarMonthTitle = document.getElementById("calendarMonthTitle");
+
+        calendarGrid.innerHTML = "";
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+
+        const monthName = today.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric"
+        });
+
+        calendarMonthTitle.textContent = monthName;
+
+        const startingWeekday = firstDayOfMonth.getDay();
+        const totalDays = lastDayOfMonth.getDate();
+
+        for (let i = 0; i < startingWeekday; i++) {
+          const emptyDay = document.createElement("div");
+          emptyDay.className = "calendar-day empty";
+          calendarGrid.appendChild(emptyDay);
+        }
+
+        for (let day = 1; day <= totalDays; day++) {
+          const date = new Date(year, month, day);
+            
+          const dateString = dateToString(date);
+          const plantsDue = getPlantsDueOnDate(dateString);
+          const plantsWatered = getPlantsWateredOnDate(dateString);
+
+          const dayBox = document.createElement("div");
+          dayBox.className = "calendar-day";
+          dayBox.textContent = day;
+
+          if (dateString === selectedCalendarDate) {
+            dayBox.classList.add("selected-day");
+          }
+
+          if (dateString === getTodayString()) {
+            dayBox.classList.add("today"); 
+          }
+
+        if (plantsDue.length > 0 || plantsWatered.length > 0) {
+          dayBox.classList.add("has-due");
+
+          const dotRow = document.createElement("div");
+          dotRow.className = "calendar-dot-row";
+
+        if (plantsDue.length > 0) {
+          const dueDot = document.createElement("div");
+          dueDot.className = "calendar-dot";
+          dotRow.appendChild(dueDot);
+        }
+
+        if (plantsWatered.length > 0) {
+          const wateredDot = document.createElement("div");
+          wateredDot.className = "calendar-watered-dot";
+          dotRow.appendChild(wateredDot);
+        }
+
+        const hasFertilizerDue = plantsDue.some(plant =>
+          shouldShowCalendarFertilizerRing(plant, dateString)
+        );
+
+        if (hasFertilizerDue) {
+          const fertilizerDot = document.createElement("div");
+          fertilizerDot.className = "fertilizer-calendar-dot";
+          dotRow.appendChild(fertilizerDot);
+        }
+
+        dayBox.appendChild(dotRow);
+
+        dayBox.addEventListener("click", function(event) {
+          event.stopPropagation();
+          selectedCalendarDate = dateString;
+          renderCalendar();
+          openDuePanel(dateString);
+        });
+      }
+
+          calendarGrid.appendChild(dayBox);
+        }
+    }
+
+
+  // ===== PLANTS DUE / WATERED PANEL FUNCTIONS =====
+
+    function openDuePanel(dateString) {
+        const duePanel = document.getElementById("duePanel");
+        const duePanelTitle = document.getElementById("duePanelTitle");
+        const duePlantList = document.getElementById("duePlantList");
+        const calendarPanel = document.getElementById("calendarPanel");
+
+        const hasAlreadySelectedThisDate =
+          selectedDueDate === dateString && selectedDuePlants.length > 0;
+
+        let plantsDue;
+
+        if (hasAlreadySelectedThisDate) {
+          plantsDue = selectedDuePlants;
+        } else {
+          plantsDue = getPlantsDueOnDate(dateString);
+          const plantsWatered = getPlantsWateredOnDate(dateString);
+
+          if (plantsDue.length === 0 && plantsWatered.length > 0) {
+            plantsDue = plantsWatered;
+          }
+
+          selectedDuePlants = [...plantsDue];
+        }
+
+        plantsDue.sort((a, b) => {
+          const aNeedsFertilizer =
+            hasFertilizerSchedule(a) &&
+            (shouldShowCalendarFertilizerRing(a, dateString) || a.lastFertilized === dateString);
+
+          const bNeedsFertilizer =
+            hasFertilizerSchedule(b) &&
+            (shouldShowCalendarFertilizerRing(b, dateString) || b.lastFertilized === dateString);
+
+          return bNeedsFertilizer - aNeedsFertilizer;
+        });
+
+        const hasDuePlants = getPlantsDueOnDate(dateString).length > 0;
+        const hasWateredPlants = getPlantsWateredOnDate(dateString).length > 0;
+
+        if (!hasDuePlants && hasWateredPlants) {
+          duePanelTitle.textContent = formatWateredPanelTitle(dateString);
+        } else {
+          duePanelTitle.textContent = formatDuePanelTitle(dateString);
+        }
+
+        const hasAnyFertilizerButton = plantsDue.some(plant =>
+          hasFertilizerSchedule(plant) &&
+          (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+        );
+
+        const isTodayPanel = dateString === getTodayString();
+        const isWateredOnlyPanel = !hasDuePlants && hasWateredPlants;
+
+        const todayHasFertilizerButton = plantsDue.some(plant =>
+          hasFertilizerSchedule(plant) &&
+          (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+        );
+
+        duePanel.classList.remove(
+          "watered-only",
+          "today-with-fertilizer",
+          "today-no-fertilizer"
+        );
+
+        if (isWateredOnlyPanel) {
+          duePanel.classList.add("watered-only");
+        } else if (isTodayPanel && todayHasFertilizerButton) {
+          duePanel.classList.add("today-with-fertilizer");
+        } else if (isTodayPanel) {
+          duePanel.classList.add("today-no-fertilizer");
+        }
+
+        duePlantList.innerHTML = "";
+        selectedDueDate = dateString;
+
+        duePanel.style.maxHeight = calendarPanel.offsetHeight + "px";
+
+        duePanel.classList.add("open");
+
+        plantsDue.forEach(plant => {
+          const isTodayPanel = dateString === getTodayString();
+
+          const plantItem = document.createElement("div");
+          plantItem.className = "due-plant-item";
+
+          const plantPhoto = document.createElement("img");
+          plantPhoto.className = "due-plant-photo";
+          plantPhoto.src = plant.image || "livingroom.jpg";
+          plantPhoto.alt = plant.name;
+
+          const plantName = document.createElement("button");
+          plantName.className = "due-plant-name due-plant-name-button";
+          plantName.textContent = plant.name;
+
+          plantName.addEventListener("click", function() {
+            const plantIndex = plants.indexOf(plant);
+
+            reopenCalendarDate = dateString;
+
+            closeDuePanel();
+            document.getElementById("calendarWrapper").classList.remove("open");
+
+            openPlantDetails(plantIndex);
+          });
+
+          const actionButtons = document.createElement("div");
+          actionButtons.className = "due-plant-actions";
+
+          if (isTodayPanel) {
+            const waterButton = document.createElement("button");
+            waterButton.className = "due-mini-button";
+            waterButton.textContent = "Water";
+
+            if (plant.lastWatered === dateString) {
+              waterButton.textContent = "Watered!";
+              waterButton.classList.add("watered-active");
+            }
+
+            waterButton.addEventListener("click", function(event) {
+              event.stopPropagation();
+              toggleWateredForPlant(plant);
+              refreshCalendarViews();
+            });
+
+            actionButtons.appendChild(waterButton);
+          }
+
+          if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
+            const delayBackButton = document.createElement("button");
+            delayBackButton.className = "due-mini-button delay-back-button";
+            delayBackButton.textContent = "-1 Day";
+
+            const clickedDateForBackButton = new Date(dateString + "T00:00:00");
+            clickedDateForBackButton.setHours(0, 0, 0, 0);
+
+            const movedEarlierDate = new Date(clickedDateForBackButton);
+            movedEarlierDate.setDate(clickedDateForBackButton.getDate() - 1);
+
+            const movedEarlierDateString = dateToString(movedEarlierDate);
+
+            if (plant.delayUntil === movedEarlierDateString) {
+              delayBackButton.textContent = "Earlier!";
+              delayBackButton.classList.add("earlier-active");
+            }
+
+            delayBackButton.addEventListener("click", function(event) {
+              event.stopPropagation();
+
+              const duePanel = document.getElementById("duePanel");
+              const savedScrollTop = duePanel.scrollTop;
+
+              moveWateringBackOneDayForPlant(plant, dateString);
+
+              delayBackButton.textContent = "Earlier!";
+              delayBackButton.classList.add("earlier-active");
+
+              updateMarkerColors();
+              renderCalendar();
+              renderUpcomingChecks();
+
+              duePanel.scrollTop = savedScrollTop;
+            });
+
+            actionButtons.appendChild(delayBackButton);
+          }
+
+          if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
+            const delayButton = document.createElement("button");
+            delayButton.className = "due-mini-button";
+            delayButton.textContent = "+1 Day";
+
+            const clickedDate = new Date(dateString + "T00:00:00");
+            clickedDate.setHours(0, 0, 0, 0);
+
+            const delayedDate = new Date(clickedDate);
+            delayedDate.setDate(clickedDate.getDate() + 1);
+
+            const delayedDateString = dateToString(delayedDate);
+
+            if (plant.delayUntil === delayedDateString) {
+              delayButton.textContent = "Delayed!";
+              delayButton.classList.add("delayed-active");
+            }
+
+            delayButton.addEventListener("click", function(event) {
+              event.stopPropagation();
+
+              const duePanel = document.getElementById("duePanel");
+              const savedScrollTop = duePanel.scrollTop;
+
+              toggleDelayWateringOneDayForPlant(plant, dateString);
+
+              updateMarkerColors();
+              renderCalendar();
+              renderUpcomingChecks();
+              openDuePanel(dateString);
+
+              duePanel.scrollTop = savedScrollTop;
+            });
+
+            actionButtons.appendChild(delayButton);
+
+            if (hasFertilizerSchedule(plant) && shouldShowCalendarFertilizerRing(plant, dateString)) {
+              const fertilizerDot = document.createElement("div");
+              fertilizerDot.className = "due-plant-fertilizer-dot";
+              actionButtons.appendChild(fertilizerDot);
+            }
+          }
+
+          if (
+            isTodayPanel &&
+            hasFertilizerSchedule(plant) &&
+            (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+          ) {
+            const fertilizeButton = document.createElement("button");
+            fertilizeButton.className = "due-mini-button";
+            fertilizeButton.textContent = "Fertilize";
+
+          if (plant.lastFertilized === dateString) {
+            fertilizeButton.textContent = "Fertilized!";
+            fertilizeButton.classList.add("fertilized-active");
+          }
+
+          fertilizeButton.addEventListener("click", function(event) {
+            event.stopPropagation();
+            toggleFertilizedForPlant(plant);
+            refreshCalendarViews();
+          });
+
+          actionButtons.appendChild(fertilizeButton);
+          }
+
+          const plantMain = document.createElement("div");
+          plantMain.className = "due-plant-main";
+
+          const plantInfo = document.createElement("div");
+          plantInfo.className = "due-plant-info";
+
+          plantInfo.appendChild(plantName);
+          plantInfo.appendChild(actionButtons);
+
+          plantMain.appendChild(plantPhoto);
+          plantMain.appendChild(plantInfo);
+
+          plantItem.appendChild(plantMain);
+
+          duePlantList.appendChild(plantItem);
+        });
+    }
+
+
+  // ===== UPCOMING CHECKS FUNCTIONS =====
+
+    function renderUpcomingChecks() {
+        const upcomingList = document.getElementById("upcomingList");
+
+        upcomingList.innerHTML = "";
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const upcomingDays = [];
+
+        for (let i = 0; i <= 3; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+
+          const dateString = dateToString(date);
+          const plantsDue = getPlantsDueOnDate(dateString);
+
+          if (plantsDue.length > 0) {
+            upcomingDays.push({
+              date,
+              dateString,
+              plantsDue
+            });
+          }
+        }
+
+        if (upcomingDays.length === 0) {
+          upcomingList.innerHTML = `<div class="upcoming-item">No checks due this week.</div>`;
+          return;
+        }
+
+        upcomingDays.forEach(item => {
+          const daysUntil = Math.round((item.date - today) / (1000 * 60 * 60 * 24));
+
+          let label = "";
+
+          if (daysUntil === 0) {
+            label = "Today";
+          } else if (daysUntil === 1) {
+            label = "Tomorrow";
+          } else {
+            label = item.dateString.slice(5);
+          }
+
+          const upcomingItem = document.createElement("div");
+          upcomingItem.className = "upcoming-item clickable-upcoming";
+          upcomingItem.textContent = `${label} — ${item.plantsDue.length} plant${item.plantsDue.length === 1 ? "" : "s"}`;
+
+          upcomingItem.addEventListener("click", function() {
+            openDuePanel(item.dateString);
+          });
+
+          upcomingList.appendChild(upcomingItem);
+        });
+    }
+
+
+  // ===== CALENDAR OPEN / CLOSE FUNCTIONS =====
+
+    function toggleCalendar() {
+        const calendarWrapper = document.getElementById("calendarWrapper");
+
+        calendarWrapper.classList.toggle("open");
+
+        if (calendarWrapper.classList.contains("open")) {
+          renderCalendar();
+          renderUpcomingChecks();
+        } else {
+          closeDuePanel();
+        }
+    }
+
+    function closeDuePanel() {
+      document.getElementById("duePanel").classList.remove("open");
+      selectedDueDate = null;
+      selectedDuePlants = [];
+      selectedCalendarDate = null;
+      renderCalendar();
+    }
+
+
+  // ===== MODAL + OUTSIDE CLICK LISTENERS =====
+
+    document.getElementById("plantModal").addEventListener("click", function(event) {
+        if (event.target.id === "plantModal") {
+          closeModal();
+        }
+    });
+
+    document.addEventListener("click", function(event) {
+        const calendarWrapper = document.getElementById("calendarWrapper");
+        const duePanel = document.getElementById("duePanel");
+        const calendarButton = document.querySelector(".calendar-button");
+        const plantModal = document.getElementById("plantModal");
+
+        const clickedInsideCalendar = calendarWrapper.contains(event.target);
+        const clickedInsideDuePanel = duePanel.contains(event.target);
+        const clickedCalendarButton = calendarButton.contains(event.target);
+        const clickedInsideModal = plantModal.contains(event.target);
+
+        if (
+          calendarWrapper.classList.contains("open") &&
+          !clickedInsideCalendar &&
+          !clickedInsideDuePanel &&
+          !clickedCalendarButton &&
+          !clickedInsideModal
+        ) {
+          calendarWrapper.classList.remove("open");
+          closeDuePanel();
+        }
+  });
+
+    window.addEventListener("resize", positionMarkers);
+
+
+  // ===== IMAGE PRELOADING =====
+
+    const preloadedPlantImages = [];
+
+    function preloadPlantImages() {
+        plants.forEach(plant => {
+          if (plant.image) {
+            const img = new Image();
+            img.src = plant.image;
+
+            if (img.decode) {
+              img.decode().catch(() => {});
+            }
+
+            preloadedPlantImages.push(img);
+          }
+        });
+    }
+
+
+  // ===== STARTUP / PAGE LOAD =====
+
+    loadSavedWateringDates();
+    preloadPlantImages();
+
+    const roomImage = document.getElementById("roomImage");
+
+    if (roomImage.complete) {
+      createMarkers();
+    } else {
+      roomImage.addEventListener("load", createMarkers);
+    }
+
+  </script>
+
+</body>
+</html>
