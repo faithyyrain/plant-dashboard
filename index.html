@@ -2295,9 +2295,11 @@
 
           delayButton.style.display = "inline-block";
 
-          if (plant.delayUntil) {
+          const todayString = getTodayString();
+
+          if (plant.delayUntil && plant.delayUntil > todayString) {
             delayButton.textContent = "Delayed!";
-            delayButton.classList.add("delay-active")
+            delayButton.classList.add("delay-active");
           } else {
             delayButton.textContent = "+1 Day";
             delayButton.classList.remove("delay-active");
