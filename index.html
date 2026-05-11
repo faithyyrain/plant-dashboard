@@ -221,6 +221,10 @@
       transition: filter 0.15s ease, transform 0.15s ease;
     }
 
+    .repot-popup-button.repot-done {
+      background: #7f9f8b;
+    }
+
     .repot-popup-button:hover {
       filter: brightness(1.08);
       transform: scale(1.05);
@@ -2351,102 +2355,118 @@
     }
 
     function openPlantDetails(index) {
-        activePlantIndex = index;
-        hideDashboardOverlays();
+      activePlantIndex = index;
+      hideDashboardOverlays();
 
-        const plant = plants[index];
-        const status = getPlantStatus(plant);
+      const plant = plants[index];
+      const status = getPlantStatus(plant);
+      const todayString = getTodayString();
 
-        document.getElementById("plantName").textContent = plant.name;
-        document.getElementById("plantSize").textContent = formatPotSize(plant.size);
-        document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
-        document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+      document.getElementById("plantName").textContent = plant.name;
+      document.getElementById("plantSize").textContent = formatPotSize(plant.size);
+      document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
 
-        const effectiveIntervalDays = getEffectiveIntervalDays(plant);
+      const repotButton = document.getElementById("repotPopupButton");
 
-        document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
-        document.getElementById("nextCheck").textContent = status.nextCheck;
+      if (repotButton) {
+        const isRepottedToday = plant.lastRepot === todayString;
 
-        const fertilizerStatus = getFertilizerStatus(
-          plant.lastFertilized,
-          plant.fertilizerIntervalDays,
-          plant.fertilizerBufferDays
-        );
+        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
+        repotButton.classList.toggle("repot-done", isRepottedToday);
+      }
 
-        const fertilizerGroup = document.getElementById("fertilizerGroup");
+      const repotPopup = document.getElementById("repotPopup");
 
-        if (hasFertilizerSchedule(plant)) {
-          document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
-          document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
-          fertilizerGroup.style.display = "block";
+      if (repotPopup) {
+        repotPopup.classList.remove("show");
+      }
+
+      document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+
+      const effectiveIntervalDays = getEffectiveIntervalDays(plant);
+
+      document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
+      document.getElementById("nextCheck").textContent = status.nextCheck;
+
+      const fertilizerStatus = getFertilizerStatus(
+        plant.lastFertilized,
+        plant.fertilizerIntervalDays,
+        plant.fertilizerBufferDays
+      );
+
+      const fertilizerGroup = document.getElementById("fertilizerGroup");
+
+      if (hasFertilizerSchedule(plant)) {
+        document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
+        document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
+        fertilizerGroup.style.display = "block";
+      } else {
+        fertilizerGroup.style.display = "none";
+      }
+
+      document.getElementById("plantNotes").textContent = plant.notes;
+
+      const plantStatus = document.getElementById("plantStatus");
+      plantStatus.textContent = status.label;
+      plantStatus.className = `status-pill status-${status.color}`;
+
+      const zoomView = document.getElementById("zoomView");
+
+      if (plant.image) {
+        zoomView.style.backgroundImage = `url("${plant.image}")`;
+        zoomView.style.backgroundSize = "cover";
+        zoomView.style.backgroundPosition = "center";
+      } else {
+        zoomView.style.backgroundImage = `url("livingroom.jpg")`;
+        zoomView.style.backgroundSize = "300%";
+        zoomView.style.backgroundPosition = `${plant.x}% ${plant.y}%`;
+      }
+
+      const wateredButton = document.querySelector(".watered-button");
+
+      if (plant.lastWatered === todayString) {
+        wateredButton.textContent = "Watered!";
+        wateredButton.classList.add("undo-watered");
+      } else {
+        wateredButton.textContent = "Water";
+        wateredButton.classList.remove("undo-watered");
+      }
+
+      const delayButton = document.querySelector(".delay-button");
+
+      if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
+        delayButton.style.display = "none";
+        delayButton.textContent = "+1 Day";
+        delayButton.classList.remove("delay-active");
+      } else {
+        delayButton.style.display = "inline-block";
+
+        if (plant.delayUntil && plant.delayUntil > todayString) {
+          delayButton.textContent = "Delayed!";
+          delayButton.classList.add("delay-active");
         } else {
-          fertilizerGroup.style.display = "none";
-        } 
-
-        document.getElementById("plantNotes").textContent = plant.notes;
-
-        const plantStatus = document.getElementById("plantStatus");
-          plantStatus.textContent = status.label;
-          plantStatus.className = `status-pill status-${status.color}`;
-
-        const zoomView = document.getElementById("zoomView");
-
-        if (plant.image) {
-          zoomView.style.backgroundImage = `url("${plant.image}")`;
-          zoomView.style.backgroundSize = "cover";
-          zoomView.style.backgroundPosition = "center";
-        } else {
-          zoomView.style.backgroundImage = `url("livingroom.jpg")`;
-          zoomView.style.backgroundSize = "300%";
-          zoomView.style.backgroundPosition = `${plant.x}% ${plant.y}%`;
-        }
-
-        const wateredButton = document.querySelector(".watered-button");
-
-        if (plant.lastWatered === getTodayString()) {
-          wateredButton.textContent = "Watered!";
-          wateredButton.classList.add("undo-watered");
-        } else {
-          wateredButton.textContent = "Water";
-          wateredButton.classList.remove("undo-watered");
-        }
-        const delayButton = document.querySelector(".delay-button");
-
-        if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === getTodayString()) {
-          delayButton.style.display = "none";
           delayButton.textContent = "+1 Day";
           delayButton.classList.remove("delay-active");
-        } else {
-
-          delayButton.style.display = "inline-block";
-
-          const todayString = getTodayString();
-
-          if (plant.delayUntil && plant.delayUntil > todayString) {
-            delayButton.textContent = "Delayed!";
-            delayButton.classList.add("delay-active");
-          } else {
-            delayButton.textContent = "+1 Day";
-            delayButton.classList.remove("delay-active");
-          }
         }
-        const fertilizedButton = document.querySelector(".fertilized-button");
+      }
 
-        if (hasFertilizerSchedule(plant)) {
-          fertilizedButton.style.display = "inline-block";
+      const fertilizedButton = document.querySelector(".fertilized-button");
 
-          if (plant.lastFertilized === getTodayString()) {
-            fertilizedButton.textContent = "Fertilized!";
-            fertilizedButton.classList.add("undo-fertilized");
-          } else {
-            fertilizedButton.textContent = "Fertilize";
-            fertilizedButton.classList.remove("undo-fertilized");
-          }
+      if (hasFertilizerSchedule(plant)) {
+        fertilizedButton.style.display = "inline-block";
+
+        if (plant.lastFertilized === todayString) {
+          fertilizedButton.textContent = "Fertilized!";
+          fertilizedButton.classList.add("undo-fertilized");
         } else {
-          fertilizedButton.style.display = "none";
+          fertilizedButton.textContent = "Fertilize";
+          fertilizedButton.classList.remove("undo-fertilized");
         }
+      } else {
+        fertilizedButton.style.display = "none";
+      }
 
-        document.getElementById("plantModal").style.display = "flex";
+      document.getElementById("plantModal").style.display = "flex";
     }
 
 
@@ -2655,7 +2675,10 @@
       const repotButton = document.getElementById("repotPopupButton");
 
       if (repotButton) {
-        repotButton.textContent = plant.lastRepot === todayString ? "Repotted!" : "Repot?";
+        const isRepottedToday = plant.lastRepot === todayString;
+
+        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
+        repotButton.classList.toggle("repot-done", isRepottedToday);
       }
     }
 
