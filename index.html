@@ -8,6 +8,48 @@
 
   <style>
 
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(245, 241, 233, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 24px;
+      padding: 28px 34px;
+      text-align: center;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.25);
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+
+    .login-card h2 {
+      margin: 0 0 8px 0;
+      color: #333;
+    }
+
+    .login-card p {
+      margin: 0 0 18px 0;
+      color: #555;
+    }
+
+    .login-card button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: #77b5b8;
+      color: white;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
 
   /* ===== BASE PAGE STYLES ===== */
 
@@ -812,6 +854,14 @@
 
 <body>
 
+    <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h2>Plant Dashboard</h2>
+      <p>Please sign in to sync your plant tracker.</p>
+      <button onclick="signInWithGoogle()">Sign in with Google</button>
+    </div>
+  </div>
+
 
   <!-- ===== CALENDAR BUTTON ===== -->
 
@@ -954,7 +1004,24 @@
 
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithRedirect(provider);
+
+      auth.signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+
+          if (!isAllowedUser(user)) {
+            alert("This Google account is not authorized to use this plant dashboard.");
+            auth.signOut();
+            return;
+          }
+
+          document.getElementById("loginScreen").style.display = "none";
+          loadPlantsFromFirebase();
+        })
+        .catch(error => {
+          console.error("Google sign-in error:", error);
+          alert("Sign-in failed. Please try again.");
+        });
     }
 
     function signOutOfDashboard() {
@@ -966,12 +1033,10 @@
         .then(() => {
           auth.onAuthStateChanged(user => {
             if (isAllowedUser(user)) {
+              document.getElementById("loginScreen").style.display = "none";
               loadPlantsFromFirebase();
-            } else if (user && !isAllowedUser(user)) {
-              alert("This Google account is not authorized to use this plant dashboard.");
-              auth.signOut();
             } else {
-              signInWithGoogle();
+              document.getElementById("loginScreen").style.display = "flex";
             }
           });
         })
@@ -979,28 +1044,6 @@
           console.error("Auth persistence error:", error);
           alert("Sign-in failed. Please try again.");
         });
-    }
-
-    function plantKey(plant) {
-      return `${plant.name}-${plant.x}-${plant.y}`
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-    }
-
-    function savePlantToFirebase(plant) {
-      if (!firebaseDataLoaded) {
-        return;
-      }
-
-      const key = plantKey(plant);
-
-      database.ref("plants/" + key).set({
-        lastWatered: plant.lastWatered || null,
-        lastFertilized: plant.lastFertilized || null,
-        delayUntil: plant.delayUntil || null,
-        lastRepot: plant.lastRepot || null
-      });
     }
 
     function loadPlantsFromFirebase() {
