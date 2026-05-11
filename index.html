@@ -147,7 +147,82 @@
       display: flex;
       align-items: baseline;
       gap: 8px;
-      cursor: default;
+    }
+
+    .repotted-label-button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: #423e3b;
+      cursor: pointer;
+      font-size: inherit;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
+    }
+
+    .repotted-label-button:hover {
+      transform: scale(1.08);
+      color: #2f2b28;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+    }
+
+    .repot-popup {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 9px);
+      transform: translateX(-50%);
+      align-items: center;
+      gap: 6px;
+      padding: 5px 6px;
+      border-radius: 999px;
+      background: rgba(236, 233, 231, 0.96);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.24);
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    .repot-popup.show {
+      display: flex;
+    }
+
+    .repot-popup-close {
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      background: rgba(50, 50, 50, 0.22);
+      color: #222;
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+
+    .repot-popup-close:hover {
+      filter: brightness(1.1);
+      transform: scale(1.08);
+    }
+
+    .repot-popup-button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      background: #8c8981;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      box-shadow: none;
+      white-space: nowrap;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .repot-popup-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
     }
 
     .size-right {
@@ -156,35 +231,6 @@
       gap: 8px;
     }
 
-    .repot-popup-button {
-      display: none;
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 8px);
-      transform: translateX(-50%);
-      border: none;
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: #8c8981;
-      color: white;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 800;
-      font-family: 'Nunito', Arial, sans-serif;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.22);
-      white-space: nowrap;
-      z-index: 50;
-      transition: filter 0.15s ease, transform 0.15s ease;
-    }
-
-    .repot-popup-button.show {
-      display: block;
-    }
-
-    .repot-popup-button:hover {
-      filter: brightness(1.08);
-      transform: translateX(-50%) scale(1.05);
-    }
 
   /* ===== CALENDAR BUTTON + PANELS ===== */
 
@@ -715,13 +761,6 @@
       margin: 0px 0;
     }
 
-    .repot-left {
-      justify-self: start;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-
     .size-right {
       justify-self: end;
       display: flex;
@@ -1005,13 +1044,18 @@
 
         <div class="detail-group size-group">
           <div class="detail-line size-line">
-            <div class="repot-hover-area" onmouseenter="startRepotHover()" onmouseleave="hideRepotPopup()">
-              <strong class="size-label">Repotted:</strong>
+            <div class="repot-hover-area">
+              <button class="repotted-label-button" onclick="toggleRepotPopup(event)">
+                Repotted:
+              </button>
               <span id="lastRepot"></span>
 
-              <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
-                Repot?
-              </button>
+              <div id="repotPopup" class="repot-popup">
+                <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
+                <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
+                  Repot?
+                </button>
+              </div>
             </div>
 
             <div class="size-right">
@@ -2565,27 +2609,23 @@
         openPlantDetails(activePlantIndex);
     }
 
-    let repotHoverTimer = null;
+    function toggleRepotPopup(event) {
+      event.stopPropagation();
 
-    function startRepotHover() {
-      clearTimeout(repotHoverTimer);
+      const repotPopup = document.getElementById("repotPopup");
 
-      repotHoverTimer = setTimeout(() => {
-        const repotButton = document.getElementById("repotPopupButton");
-
-        if (repotButton) {
-          repotButton.classList.add("show");
-        }
-      }, 1500);
+      if (repotPopup) {
+        repotPopup.classList.toggle("show");
+      }
     }
 
-    function hideRepotPopup() {
-      clearTimeout(repotHoverTimer);
+    function closeRepotPopup(event) {
+      event.stopPropagation();
 
-      const repotButton = document.getElementById("repotPopupButton");
+      const repotPopup = document.getElementById("repotPopup");
 
-      if (repotButton) {
-        repotButton.classList.remove("show");
+      if (repotPopup) {
+        repotPopup.classList.remove("show");
       }
     }
 
@@ -2615,7 +2655,6 @@
 
       if (repotButton) {
         repotButton.textContent = plant.lastRepot === todayString ? "Repotted!" : "Repot?";
-        repotButton.classList.remove("show");
       }
     }
 
