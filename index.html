@@ -132,6 +132,31 @@
       transform: scale(1.05);
     }
 
+    .repot-button {
+      border: none;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #8c8981;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: filter 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .repot-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
+
+    .size-repot-text {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
   /* ===== CALENDAR BUTTON + PANELS ===== */
 
@@ -665,9 +690,9 @@
     .size-line {
       display: flex;
       justify-content: space-between;
-      gap: 20px;
+      align-items: center;
+      gap: 12px;
       width: 100%;
-      padding-right: 12px;
     }
 
     .last-repot-value {
@@ -945,12 +970,16 @@
           <div id="plantStatus" class="status-pill"></div>
 
         <div class="detail-group size-group">
-          <div class="detail-line">
-            <strong class="size-label">Size:</strong> 
-            <span id="plantSize"></span>
-            <span class="size-divider">/</span>
-            <strong class="size-label">Repotted:</strong>
-            <span id="lastRepot"></span>
+          <div class="detail-line size-line">
+            <div class="size-repot-text">
+              <strong class="size-label">Size:</strong> 
+              <span id="plantSize"></span>
+              <span class="size-divider">/</span>
+              <strong class="size-label">Repotted:</strong>
+              <span id="lastRepot"></span>
+            </div>
+
+            <button class="repot-button" onclick="markRepottedToday()">Repot</button>
           </div>
         </div>
 
@@ -1716,8 +1745,8 @@
 
     function formatSlashDate(dateString) {
       const date = new Date(dateString + "T00:00:00");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
 
       return `${month}/${day}`;
     }
@@ -2491,6 +2520,20 @@
         renderCalendar();
         renderUpcomingChecks();
         openPlantDetails(activePlantIndex);
+    }
+
+    function markRepottedToday() {
+      if (activePlantIndex === null) {
+        return;
+      }
+
+      const plant = plants[activePlantIndex];
+      plant.lastRepot = getTodayString();
+
+      savePlantToFirebase(plant);
+
+      document.getElementById("lastRepot").textContent = formatSlashDate(plant.lastRepot);
+      openPlantDetails(activePlantIndex);
     }
 
     function closeModal() {
