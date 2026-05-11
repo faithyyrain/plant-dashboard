@@ -944,11 +944,16 @@
     const database = firebase.database();
     const auth = firebase.auth();
     let firebaseDataLoaded = false;
-    const allowedEmail = "faithyyrain@gmail.com";
+    const allowedEmail = "faithyyrain@gmail.com".toLowerCase().trim();
+
+    function isAllowedUser(user) {
+      return user &&
+        user.email &&
+        user.email.toLowerCase().trim() === allowedEmail;
+    }
 
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-
       auth.signInWithRedirect(provider);
     }
 
@@ -957,12 +962,12 @@
     }
 
     function checkAuthStatus() {
-      auth.getRedirectResult()
-        .then(result => {
-          return auth.onAuthStateChanged(user => {
-            if (user && user.email === allowedEmail) {
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+          auth.onAuthStateChanged(user => {
+            if (isAllowedUser(user)) {
               loadPlantsFromFirebase();
-            } else if (user && user.email !== allowedEmail) {
+            } else if (user && !isAllowedUser(user)) {
               alert("This Google account is not authorized to use this plant dashboard.");
               auth.signOut();
             } else {
@@ -971,7 +976,7 @@
           });
         })
         .catch(error => {
-          console.error("Google sign-in redirect error:", error);
+          console.error("Auth persistence error:", error);
           alert("Sign-in failed. Please try again.");
         });
     }
