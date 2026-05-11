@@ -132,31 +132,58 @@
       transform: scale(1.05);
     }
 
-    .repot-button {
-      justify-self: center;
+    .size-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      width: 100%;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .repot-hover-area {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      cursor: default;
+    }
+
+    .size-right {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .repot-popup-button {
+      display: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 8px);
+      transform: translateX(-50%);
       border: none;
       border-radius: 999px;
-      padding: 3px 9px;
+      padding: 5px 10px;
       background: #8c8981;
       color: white;
       cursor: pointer;
       font-size: 11px;
-      font-weight: 750;
+      font-weight: 800;
       font-family: 'Nunito', Arial, sans-serif;
-      transition: filter 0.15s ease, transform 0.15s ease;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.22);
       white-space: nowrap;
+      z-index: 50;
+      transition: filter 0.15s ease, transform 0.15s ease;
     }
 
-    .repot-button:hover {
+    .repot-popup-button.show {
+      display: block;
+    }
+
+    .repot-popup-button:hover {
       filter: brightness(1.08);
-      transform: scale(1.05);
-    }
-
-    .size-repot-text {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      flex-wrap: wrap;
+      transform: translateX(-50%) scale(1.05);
     }
 
   /* ===== CALENDAR BUTTON + PANELS ===== */
@@ -688,15 +715,6 @@
       margin: 0px 0;
     }
 
-    .size-line {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      white-space: nowrap;
-    }
-
     .repot-left {
       justify-self: start;
       display: flex;
@@ -987,12 +1005,14 @@
 
         <div class="detail-group size-group">
           <div class="detail-line size-line">
-            <div class="repot-left">
+            <div class="repot-hover-area" onmouseenter="startRepotHover()" onmouseleave="hideRepotPopup()">
               <strong class="size-label">Repotted:</strong>
               <span id="lastRepot"></span>
-            </div>
 
-            <button class="repot-button" onclick="markRepottedToday()">Repot</button>
+              <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
+                Repot?
+              </button>
+            </div>
 
             <div class="size-right">
               <strong class="size-label">Size:</strong>
@@ -1063,7 +1083,8 @@
         delayUntil: plant.delayUntil || null,
         lastRepot: plant.lastRepot || null,
         previousLastWatered: plant.previousLastWatered || null,
-        previousLastFertilized: plant.previousLastFertilized || null
+        previousLastFertilized: plant.previousLastFertilized || null,
+        previousLastRepot: plant.previousLastRepot || null
       });
     }
 
@@ -1149,6 +1170,10 @@
 
               if (savedPlant.previousLastFertilized !== undefined) {
                 plant.previousLastFertilized = savedPlant.previousLastFertilized;
+              }
+
+              if (savedPlant.previousLastRepot !== undefined) {
+                plant.previousLastRepot = savedPlant.previousLastRepot;
               }
             }
           });
@@ -2540,32 +2565,72 @@
         openPlantDetails(activePlantIndex);
     }
 
-    function markRepottedToday() {
+    let repotHoverTimer = null;
+
+    function startRepotHover() {
+      clearTimeout(repotHoverTimer);
+
+      repotHoverTimer = setTimeout(() => {
+        const repotButton = document.getElementById("repotPopupButton");
+
+        if (repotButton) {
+          repotButton.classList.add("show");
+        }
+      }, 1500);
+    }
+
+    function hideRepotPopup() {
+      clearTimeout(repotHoverTimer);
+
+      const repotButton = document.getElementById("repotPopupButton");
+
+      if (repotButton) {
+        repotButton.classList.remove("show");
+      }
+    }
+
+    function toggleRepottedToday(event) {
+      event.stopPropagation();
+
       if (activePlantIndex === null) {
         return;
       }
 
       const plant = plants[activePlantIndex];
-      plant.lastRepot = getTodayString();
+      const todayString = getTodayString();
+
+      if (plant.lastRepot === todayString && plant.previousLastRepot !== undefined) {
+        plant.lastRepot = plant.previousLastRepot;
+        plant.previousLastRepot = null;
+      } else {
+        plant.previousLastRepot = plant.lastRepot || null;
+        plant.lastRepot = todayString;
+      }
 
       savePlantToFirebase(plant);
 
-      document.getElementById("lastRepot").textContent = formatSlashDate(plant.lastRepot);
-      openPlantDetails(activePlantIndex);
+      document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
+
+      const repotButton = document.getElementById("repotPopupButton");
+
+      if (repotButton) {
+        repotButton.textContent = plant.lastRepot === todayString ? "Repotted!" : "Repot?";
+        repotButton.classList.remove("show");
+      }
     }
 
     function closeModal() {
-        document.getElementById("plantModal").style.display = "none";
-        showDashboardOverlays();
+      document.getElementById("plantModal").style.display = "none";
+      showDashboardOverlays();
 
-        if (reopenCalendarDate) {
-          document.getElementById("calendarWrapper").classList.add("open");
-          renderCalendar();
-          renderUpcomingChecks();
-          openDuePanel(reopenCalendarDate);
+      if (reopenCalendarDate) {
+        document.getElementById("calendarWrapper").classList.add("open");
+        renderCalendar();
+        renderUpcomingChecks();
+        openDuePanel(reopenCalendarDate);
 
-          reopenCalendarDate = null;
-        }
+        reopenCalendarDate = null;
+      }
     }
 
 
