@@ -949,7 +949,7 @@
             <strong class="size-label">Size:</strong> 
             <span id="plantSize"></span>
             <span class="size-divider">/</span>
-            <strong class="size-label">Last repot:</strong>
+            <strong class="size-label">Repotted:</strong>
             <span id="lastRepot"></span>
           </div>
         </div>
@@ -1714,6 +1714,14 @@
         });
     }
 
+    function formatSlashDate(dateString) {
+      const date = new Date(dateString + "T00:00:00");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
+      return `${month}/${day}`;
+    }
+
     function getTodayString() {
         const today = new Date();
         const year = today.getFullYear();
@@ -2234,7 +2242,7 @@
 
         document.getElementById("plantName").textContent = plant.name;
         document.getElementById("plantSize").textContent = formatPotSize(plant.size);
-        document.getElementById("lastRepot").textContent = plant.lastRepot ? formatShortDate(plant.lastRepot) : "N/A";
+        document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
         document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
 
         const effectiveIntervalDays = getEffectiveIntervalDays(plant);
