@@ -944,7 +944,7 @@
     let firebaseDataLoaded = false;
 
     function plantKey(plant) {
-      return plant.name
+      return `${plant.name}-${plant.x}-${plant.y}`
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
