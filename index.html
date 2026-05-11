@@ -804,7 +804,10 @@
     }
 
   </style>
-</head>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  </head>
 
 <body>
 
@@ -926,6 +929,78 @@
     </div>
 
     <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCI1YVaNYdQTqRfXhE4SlWmEwzmX6yG-Pk",
+      authDomain: "plant-dashboard2026.firebaseapp.com",
+      databaseURL: "https://plant-dashboard2026-default-rtdb.firebaseio.com",
+      projectId: "plant-dashboard2026",
+      storageBucket: "plant-dashboard2026.firebasestorage.app",
+      messagingSenderId: "564906366406",
+      appId: "1:564906366406:web:df477a9b5b0200412acec7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    let firebaseDataLoaded = false;
+
+    function plantKey(plant) {
+      return plant.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function savePlantToFirebase(plant) {
+      if (!firebaseDataLoaded) {
+        return;
+      }
+
+      const key = plantKey(plant);
+
+      database.ref("plants/" + key).set({
+        lastWatered: plant.lastWatered || null,
+        lastFertilized: plant.lastFertilized || null,
+        delayUntil: plant.delayUntil || null,
+        lastRepot: plant.lastRepot || null
+      });
+    }
+
+    function loadPlantsFromFirebase() {
+      database.ref("plants").once("value").then(snapshot => {
+        const savedPlants = snapshot.val();
+
+        if (savedPlants) {
+          plants.forEach(plant => {
+            const key = plantKey(plant);
+            const savedPlant = savedPlants[key];
+
+            if (savedPlant) {
+              if (savedPlant.lastWatered !== undefined) {
+                plant.lastWatered = savedPlant.lastWatered;
+              }
+
+              if (savedPlant.lastFertilized !== undefined) {
+                plant.lastFertilized = savedPlant.lastFertilized;
+              }
+
+              if (savedPlant.delayUntil !== undefined) {
+                plant.delayUntil = savedPlant.delayUntil;
+              }
+
+              if (savedPlant.lastRepot !== undefined) {
+                plant.lastRepot = savedPlant.lastRepot;
+              }
+            }
+          });
+        }
+
+        firebaseDataLoaded = true;
+
+        updateMarkerColors();
+        renderCalendar();
+        renderUpcomingChecks();
+      });
+    }
 
 
   // ===== PLANT DATA =====
@@ -1478,6 +1553,8 @@
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           }
           ];
+
+          loadPlantsFromFirebase();
 
 
   // ===== GLOBAL VARIABLES =====
@@ -2166,6 +2243,8 @@
           localStorage.setItem(delayKey, delayedDateString);
         }
 
+        savePlantToFirebase(plant);
+
         updateMarkerColors();
         renderCalendar();
         renderUpcomingChecks();
@@ -2191,6 +2270,8 @@
 
         plant.delayUntil = delayedDateString;
         localStorage.setItem(delayKey, delayedDateString);
+
+        savePlantToFirebase(plant);
     }
 
     function moveWateringBackOneDayForPlant(plant, dateString) {
@@ -2206,6 +2287,8 @@
 
         plant.delayUntil = movedDateString;
         localStorage.setItem(delayKey, movedDateString);
+
+        savePlantToFirebase(plant);
     }
 
     function toggleWateredForPlant(plant) {
@@ -2223,6 +2306,8 @@
           localStorage.removeItem(delayKey);
           plant.delayUntil = null;
         }
+
+        savePlantToFirebase(plant);
     }
 
     function toggleFertilizedForPlant(plant) {
@@ -2236,6 +2321,8 @@
           plant.lastFertilized = today;
           localStorage.setItem(storageKey, today);
         }
+
+        savePlantToFirebase(plant);
     }
 
     function refreshCalendarViews() {
