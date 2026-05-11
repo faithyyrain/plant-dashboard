@@ -133,13 +133,14 @@
     }
 
     .repot-button {
+      justify-self: center;
       border: none;
       border-radius: 999px;
-      padding: 4px 10px;
+      padding: 3px 9px;
       background: #8c8981;
       color: white;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 750;
       font-family: 'Nunito', Arial, sans-serif;
       transition: filter 0.15s ease, transform 0.15s ease;
@@ -688,11 +689,26 @@
     }
 
     .size-line {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
+      white-space: nowrap;
+    }
+
+    .repot-left {
+      justify-self: start;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .size-right {
+      justify-self: end;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
 
     .last-repot-value {
@@ -971,15 +987,17 @@
 
         <div class="detail-group size-group">
           <div class="detail-line size-line">
-            <div class="size-repot-text">
-              <strong class="size-label">Size:</strong> 
-              <span id="plantSize"></span>
-              <span class="size-divider">/</span>
+            <div class="repot-left">
               <strong class="size-label">Repotted:</strong>
               <span id="lastRepot"></span>
             </div>
 
             <button class="repot-button" onclick="markRepottedToday()">Repot</button>
+
+            <div class="size-right">
+              <strong class="size-label">Size:</strong>
+              <span id="plantSize"></span>
+            </div>
           </div>
         </div>
 
