@@ -996,6 +996,30 @@
     let firebaseDataLoaded = false;
     const allowedEmail = "faithyyrain@gmail.com".toLowerCase().trim();
 
+    function plantKey(plant) {
+      return `${plant.name}-${plant.x}-${plant.y}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function savePlantToFirebase(plant) {
+      if (!firebaseDataLoaded) {
+        return;
+      }
+
+      const key = plantKey(plant);
+
+      database.ref("plants/" + key).set({
+        lastWatered: plant.lastWatered || null,
+        lastFertilized: plant.lastFertilized || null,
+        delayUntil: plant.delayUntil || null,
+        lastRepot: plant.lastRepot || null,
+        previousLastWatered: plant.previousLastWatered || null,
+        previousLastFertilized: plant.previousLastFertilized || null
+      });
+    }
+
     function isAllowedUser(user) {
       return user &&
         user.email &&
@@ -1070,6 +1094,14 @@
 
               if (savedPlant.lastRepot !== undefined) {
                 plant.lastRepot = savedPlant.lastRepot;
+              }
+
+              if (savedPlant.previousLastWatered !== undefined) {
+                plant.previousLastWatered = savedPlant.previousLastWatered;
+              }
+
+              if (savedPlant.previousLastFertilized !== undefined) {
+                plant.previousLastFertilized = savedPlant.previousLastFertilized;
               }
             }
           });
@@ -2373,37 +2405,40 @@
     }
 
     function toggleWateredForPlant(plant) {
-        const today = getTodayString();
-        const storageKey = plantStorageKey(plant);
-        const delayKey = delayStorageKey(plant);
+      const today = getTodayString();
 
-        if (plant.lastWatered === today) {
-          localStorage.removeItem(storageKey);
-          plant.lastWatered = plant.originalLastWatered;
+      if (plant.lastWatered === today) {
+        if (plant.previousLastWatered) {
+          plant.lastWatered = plant.previousLastWatered;
+          plant.previousLastWatered = null;
         } else {
-          plant.lastWatered = today;
-          localStorage.setItem(storageKey, today);
-
-          localStorage.removeItem(delayKey);
-          plant.delayUntil = null;
+          plant.lastWatered = null;
         }
+      } else {
+        plant.previousLastWatered = plant.lastWatered || null;
+        plant.lastWatered = today;
+        plant.delayUntil = null;
+      }
 
-        savePlantToFirebase(plant);
+      savePlantToFirebase(plant);
     }
 
     function toggleFertilizedForPlant(plant) {
-        const today = getTodayString();
-        const storageKey = fertilizerStorageKey(plant);
+      const today = getTodayString();
 
-        if (plant.lastFertilized === today) {
-          localStorage.removeItem(storageKey);
-          plant.lastFertilized = plant.originalLastFertilized;
+      if (plant.lastFertilized === today) {
+        if (plant.previousLastFertilized) {
+          plant.lastFertilized = plant.previousLastFertilized;
+          plant.previousLastFertilized = null;
         } else {
-          plant.lastFertilized = today;
-          localStorage.setItem(storageKey, today);
+          plant.lastFertilized = null;
         }
+      } else {
+        plant.previousLastFertilized = plant.lastFertilized || null;
+        plant.lastFertilized = today;
+      }
 
-        savePlantToFirebase(plant);
+      savePlantToFirebase(plant);
     }
 
     function refreshCalendarViews() {
@@ -2948,7 +2983,6 @@
 
   // ===== STARTUP / PAGE LOAD =====
 
-    loadSavedWateringDates();
     preloadPlantImages();
 
     const roomImage = document.getElementById("roomImage");
