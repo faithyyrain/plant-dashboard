@@ -949,22 +949,7 @@
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
-      auth.signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-
-          if (user.email !== allowedEmail) {
-            alert("This Google account is not authorized to use this plant dashboard.");
-            auth.signOut();
-            return;
-          }
-
-          loadPlantsFromFirebase();
-        })
-        .catch(error => {
-          console.error("Google sign-in error:", error);
-          alert("Sign-in failed. Please try again.");
-        });
+      auth.signInWithRedirect(provider);
     }
 
     function signOutOfDashboard() {
@@ -972,14 +957,23 @@
     }
 
     function checkAuthStatus() {
-      auth.onAuthStateChanged(user => {
-        if (user && user.email === allowedEmail) {
-          loadPlantsFromFirebase();
-        } else {
-          firebaseDataLoaded = false;
-          signInWithGoogle();
-        }
-      });
+      auth.getRedirectResult()
+        .then(result => {
+          return auth.onAuthStateChanged(user => {
+            if (user && user.email === allowedEmail) {
+              loadPlantsFromFirebase();
+            } else if (user && user.email !== allowedEmail) {
+              alert("This Google account is not authorized to use this plant dashboard.");
+              auth.signOut();
+            } else {
+              signInWithGoogle();
+            }
+          });
+        })
+        .catch(error => {
+          console.error("Google sign-in redirect error:", error);
+          alert("Sign-in failed. Please try again.");
+        });
     }
 
     function plantKey(plant) {
