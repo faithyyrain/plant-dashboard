@@ -172,9 +172,9 @@
       align-items: center;
       justify-self: end;
       gap: 6px;
-      padding: 5px 9px;
+      padding: 4px 5px;
       border-radius: 999px;
-      background: #8c8981;
+      background: rgba(236, 233, 231, 0.96);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.20);
       z-index: 50;
       white-space: nowrap;
@@ -186,38 +186,44 @@
 
     .repot-popup-close {
       border: none;
-      background: transparent;
-      color: white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      background: rgba(50, 50, 50, 0.22);
+      color: #222;
       cursor: pointer;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 900;
       line-height: 1;
       font-family: 'Nunito', Arial, sans-serif;
-      padding: 0 2px 1px 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0;
     }
 
     .repot-popup-button {
       border: none;
-      background: transparent;
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: #8c8981;
       color: white;
       cursor: pointer;
       font-size: 12px;
       font-weight: 800;
       font-family: 'Nunito', Arial, sans-serif;
-      padding: 0;
+      box-shadow: none;
       white-space: nowrap;
+      transition: filter 0.15s ease, transform 0.15s ease;
     }
 
     .repot-popup-close:hover,
     .repot-popup-button:hover {
-      filter: brightness(1.15);
+      filter: brightness(1.08);
       transform: scale(1.05);
     }
 
-    .repot-popup.repot-done {
+    .repot-popup-button.repot-done {
       background: #7f9f8b;
     }
 
