@@ -724,8 +724,8 @@
     }
 
     .modal-card {
-      width: min(900px, 92vw);
-      max-height: 88vh;
+      width: min(860px, calc(100vw - 80px));
+      max-height: calc(100vh - 80px);
       background: rgb(236, 233, 231);
       border-radius: 18px;
       overflow: hidden;
@@ -830,16 +830,16 @@
     }
 
     .plant-details {
-      padding: 28px;
+      padding: clamp(20px, 2.2vw, 28px);
       overflow-y: auto;
-      font-size: 19px;
+      font-size: clamp(16px, 1.35vw, 19px);
     }
 
     .plant-details h2 {
       margin-top: 0;
       margin-bottom: 12px;
       text-align: center;
-      font-size: 30px;
+      font-size: clamp(24px, 2vw, 30px);
       line-height: 1.08;
     }
 
