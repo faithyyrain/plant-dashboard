@@ -193,24 +193,6 @@
       text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
     }
 
-    .repot-popup-close {
-      border: none;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      background: rgba(50, 50, 50, 0.22);
-      color: #222;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1;
-      font-family: 'Nunito', Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-
     .repot-popup-button {
       border: none;
       border-radius: 999px;
@@ -226,7 +208,6 @@
       transition: filter 0.15s ease, transform 0.15s ease;
     }
 
-    .repot-popup-close:hover,
     .repot-popup-button:hover {
       filter: brightness(1.08);
       transform: scale(1.05);
@@ -1056,7 +1037,6 @@
             </div>
 
             <div id="repotPopup" class="repot-popup">
-              <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
               <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
                 Repot?
               </button>
@@ -2645,16 +2625,6 @@
 
       if (repotPopup) {
         repotPopup.classList.toggle("show");
-      }
-    }
-
-    function closeRepotPopup(event) {
-      event.stopPropagation();
-
-      const repotPopup = document.getElementById("repotPopup");
-
-      if (repotPopup) {
-        repotPopup.classList.remove("show");
       }
     }
 
