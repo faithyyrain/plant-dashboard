@@ -141,29 +141,18 @@
       white-space: nowrap;
     }
 
-    .repot-hover-area {
+    .size-left {
       justify-self: start;
       display: flex;
       align-items: baseline;
       gap: 8px;
     }
 
-    .repotted-label-button {
-      border: none;
-      background: transparent;
-      padding: 0;
-      color: #423e3b;
-      cursor: pointer;
-      font-size: inherit;
-      font-weight: 800;
-      font-family: 'Nunito', Arial, sans-serif;
-      transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
-    }
-
-    .repotted-label-button:hover {
-      transform: scale(1.015);
-      color: #48796d;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+    .repot-hover-area {
+      justify-self: center;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
 
     .repot-popup {
@@ -182,6 +171,24 @@
 
     .repot-popup.show {
       visibility: visible;
+    }
+
+    .repotted-label-button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: #423e3b;
+      cursor: pointer;
+      font-size: inherit;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
+    }
+
+    .repotted-label-button:hover {
+      transform: scale(1.015);
+      color: #48796d;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
     }
 
     .repot-popup-close {
@@ -227,12 +234,6 @@
       background: #7f9f8b;
     }
 
-    .size-middle {
-      justify-self: center;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
 
 
   /* ===== CALENDAR BUTTON + PANELS ===== */
@@ -1040,16 +1041,16 @@
 
         <div class="detail-group size-group">
           <div class="detail-line size-line">
+            <div class="size-left">
+              <strong class="size-label">Size:</strong>
+              <span id="plantSize"></span>
+            </div>
+
             <div class="repot-hover-area">
               <button class="repotted-label-button" onclick="toggleRepotPopup(event)">
                 Repotted:
               </button>
               <span id="lastRepot"></span>
-            </div>
-
-            <div class="size-middle">
-              <strong class="size-label">Size:</strong>
-              <span id="plantSize"></span>
             </div>
 
             <div id="repotPopup" class="repot-popup">
@@ -2679,16 +2680,11 @@
 
       const repotButton = document.getElementById("repotPopupButton");
 
-      const repotPopup = document.getElementById("repotPopup");
-
       if (repotButton) {
         const isRepottedToday = plant.lastRepot === todayString;
 
         repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
-
-        if (repotPopup) {
-          repotPopup.classList.toggle("repot-done", isRepottedToday);
-        }
+        repotButton.classList.toggle("repot-done", isRepottedToday);
       }
     }
 
