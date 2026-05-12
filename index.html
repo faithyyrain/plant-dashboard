@@ -2480,7 +2480,6 @@
           return;
         }
 
-        const delayKey = delayStorageKey(plant);
         const nextWaterDate = getEffectiveNextWaterDate(plant);
 
         if (!nextWaterDate) {
@@ -2493,11 +2492,9 @@
         const delayedDateString = dateToString(delayedDate);
 
         if (plant.delayUntil === delayedDateString) {
-          localStorage.removeItem(delayKey);
           plant.delayUntil = null;
         } else {
           plant.delayUntil = delayedDateString;
-          localStorage.setItem(delayKey, delayedDateString);
         }
 
         savePlantToFirebase(plant);
@@ -2509,7 +2506,6 @@
     }
 
     function toggleDelayWateringOneDayForPlant(plant, dateString) {
-        const delayKey = delayStorageKey(plant);
 
         const clickedDate = new Date(dateString + "T00:00:00");
         clickedDate.setHours(0, 0, 0, 0);
@@ -2520,19 +2516,17 @@
         const delayedDateString = dateToString(delayedDate);
 
         if (plant.delayUntil === delayedDateString) {
-          localStorage.removeItem(delayKey);
           plant.delayUntil = null;
+          savePlantToFirebase(plant);
           return;
         }
 
         plant.delayUntil = delayedDateString;
-        localStorage.setItem(delayKey, delayedDateString);
 
         savePlantToFirebase(plant);
     }
 
     function moveWateringBackOneDayForPlant(plant, dateString) {
-        const delayKey = delayStorageKey(plant);
 
         const clickedDate = new Date(dateString + "T00:00:00");
         clickedDate.setHours(0, 0, 0, 0);
@@ -2543,7 +2537,6 @@
         const movedDateString = dateToString(movedDate);
 
         plant.delayUntil = movedDateString;
-        localStorage.setItem(delayKey, movedDateString);
 
         savePlantToFirebase(plant);
     }
