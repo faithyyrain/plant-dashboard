@@ -171,10 +171,10 @@
       display: flex;
       align-items: center;
       justify-self: center;
-      gap: 4px;
-      padding: 3px 4px;
+      gap: 6px;
+      padding: 5px 9px;
       border-radius: 999px;
-      background: rgba(236, 233, 231, 0.96);
+      background: #8c8981;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.20);
       z-index: 50;
       white-space: nowrap;
@@ -186,47 +186,38 @@
 
     .repot-popup-close {
       border: none;
-      border-radius: 50%;
-      width: 19px;
-      height: 19px;
-      background: rgba(50, 50, 50, 0.22);
-      color: #222;
+      background: transparent;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 900;
       line-height: 1;
       font-family: 'Nunito', Arial, sans-serif;
+      padding: 0 2px 1px 0;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .repot-popup-close:hover {
-      filter: brightness(1.1);
-      transform: scale(1.08);
-    }
-
     .repot-popup-button {
       border: none;
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: #8c8981;
+      background: transparent;
       color: white;
       cursor: pointer;
       font-size: 12px;
       font-weight: 800;
       font-family: 'Nunito', Arial, sans-serif;
-      box-shadow: none;
+      padding: 0;
       white-space: nowrap;
-      transition: filter 0.15s ease, transform 0.15s ease;
     }
 
+    .repot-popup-close:hover,
     .repot-popup-button:hover {
-      filter: brightness(1.08);
-      transform: scale(1.04);
+      filter: brightness(1.15);
+      transform: scale(1.05);
     }
 
-    .repot-popup-button.repot-done {
+    .repot-popup.repot-done {
       background: #7f9f8b;
     }
 
@@ -2689,11 +2680,16 @@
 
       const repotButton = document.getElementById("repotPopupButton");
 
+      const repotPopup = document.getElementById("repotPopup");
+
       if (repotButton) {
         const isRepottedToday = plant.lastRepot === todayString;
 
         repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
-        repotButton.classList.toggle("repot-done", isRepottedToday);
+
+        if (repotPopup) {
+          repotPopup.classList.toggle("repot-done", isRepottedToday);
+        }
       }
     }
 
