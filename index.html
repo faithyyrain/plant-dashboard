@@ -2096,60 +2096,70 @@
         return plant.lastFertilized && plant.fertilizerIntervalDays;
     }
 
-    function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBufferDays = 0) {
-        if (!lastFertilized || !fertilizerIntervalDays) {
-          return {
-            due: false,
-            readySoon: false,
-            label: "No fertilizer schedule",
-            nextFertilizer: "N/A"
-          };
-        }
+    function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBeforeBufferDays = 0, fertilizerAfterBufferDays = 7) {
+      if (!lastFertilized || !fertilizerIntervalDays) {
+        return {
+          due: false,
+          readySoon: false,
+          label: "No fertilizer schedule",
+          nextFertilizer: "N/A"
+        };
+      }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-        const fertilizedDate = new Date(lastFertilized + "T00:00:00");
-        const nextFertilizerDate = new Date(fertilizedDate);
+      const fertilizedDate = new Date(lastFertilized + "T00:00:00");
+      const nextFertilizerDate = new Date(fertilizedDate);
 
-        nextFertilizerDate.setDate(fertilizedDate.getDate() + fertilizerIntervalDays);
+      nextFertilizerDate.setDate(fertilizedDate.getDate() + fertilizerIntervalDays);
+      nextFertilizerDate.setHours(0, 0, 0, 0);
 
-        const msPerDay = 1000 * 60 * 60 * 24;
-        const daysUntilFertilizer = Math.round((nextFertilizerDate - today) / msPerDay);
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const daysUntilFertilizer = Math.round((nextFertilizerDate - today) / msPerDay);
 
-        if (daysUntilFertilizer > fertilizerBufferDays) {
-          return {
-            due: false,
-            readySoon: false,
-            label: `${daysUntilFertilizer} days left`,
-            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
-          };
-        }
+      if (daysUntilFertilizer > fertilizerBeforeBufferDays) {
+        return {
+          due: false,
+          readySoon: false,
+          label: `${daysUntilFertilizer} days left`,
+          nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+        };
+      }
 
-        if (daysUntilFertilizer > 0) {
-          return {
-            due: false,
-            readySoon: true,
-            label: `Ready to line up with watering (${daysUntilFertilizer} day(s) early)`,
-            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
-          };
-        }
+      if (daysUntilFertilizer > 0) {
+        return {
+          due: false,
+          readySoon: true,
+          label: `Ready to line up with watering (${daysUntilFertilizer} day(s) early)`,
+          nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+        };
+      }
 
-        if (daysUntilFertilizer === 0) {
-          return {
-            due: true,
-            readySoon: true,
-            label: "Fertilizer due today",
-            nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
-          };
-        }
+      if (daysUntilFertilizer === 0) {
+        return {
+          due: true,
+          readySoon: true,
+          label: "Fertilizer due today",
+          nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+        };
+      }
 
+      if (Math.abs(daysUntilFertilizer) <= fertilizerAfterBufferDays) {
         return {
           due: true,
           readySoon: true,
           label: `${Math.abs(daysUntilFertilizer)} day(s) overdue for fertilizer`,
           nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
         };
+      }
+
+      return {
+        due: true,
+        readySoon: false,
+        label: `${Math.abs(daysUntilFertilizer)} day(s) past fertilizer window`,
+        nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
+      };
     }
 
     function shouldShowFertilizerRing(plant) {
@@ -2166,26 +2176,30 @@
     }
 
     function shouldShowCalendarFertilizerRing(plant, dateString) {
-        if (!plant.lastFertilized || !plant.fertilizerIntervalDays) {
-          return false;
-        }
+      if (!plant.lastFertilized || !plant.fertilizerIntervalDays) {
+        return false;
+      }
 
-        const targetDate = new Date(dateString + "T00:00:00");
-        targetDate.setHours(0, 0, 0, 0);
+      const targetDate = new Date(dateString + "T00:00:00");
+      targetDate.setHours(0, 0, 0, 0);
 
-        const fertilizedDate = new Date(plant.lastFertilized + "T00:00:00");
-        fertilizedDate.setHours(0, 0, 0, 0);
+      const fertilizedDate = new Date(plant.lastFertilized + "T00:00:00");
+      fertilizedDate.setHours(0, 0, 0, 0);
 
-        const idealFertilizerDate = new Date(fertilizedDate);
-        idealFertilizerDate.setDate(fertilizedDate.getDate() + plant.fertilizerIntervalDays);
-        idealFertilizerDate.setHours(0, 0, 0, 0);
+      const idealFertilizerDate = new Date(fertilizedDate);
+      idealFertilizerDate.setDate(fertilizedDate.getDate() + plant.fertilizerIntervalDays);
+      idealFertilizerDate.setHours(0, 0, 0, 0);
 
-        const bufferDays = plant.fertilizerBufferDays || 0;
+      const beforeBufferDays = plant.fertilizerBufferDays || 0;
+      const afterBufferDays = plant.fertilizerAfterBufferDays || 7;
 
-        const bufferStartDate = new Date(idealFertilizerDate);
-        bufferStartDate.setDate(idealFertilizerDate.getDate() - bufferDays);
+      const bufferStartDate = new Date(idealFertilizerDate);
+      bufferStartDate.setDate(idealFertilizerDate.getDate() - beforeBufferDays);
 
-        return targetDate >= bufferStartDate;
+      const bufferEndDate = new Date(idealFertilizerDate);
+      bufferEndDate.setDate(idealFertilizerDate.getDate() + afterBufferDays);
+
+      return targetDate >= bufferStartDate && targetDate <= bufferEndDate;
     }
 
 
