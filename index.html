@@ -139,20 +139,22 @@
       gap: 10px;
       width: 100%;
       white-space: nowrap;
-      font-size: 18px;
+      font-size: 17px;
+      line-height: 1;
+      min-height: 38px;
     }
 
     .size-left {
       justify-self: start;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
     }
 
     .repot-hover-area {
       justify-self: center;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
     }
 
@@ -160,9 +162,9 @@
       visibility: hidden;
       display: flex;
       align-items: center;
+      justify-content: center;
       justify-self: end;
-      gap: 4px;
-      padding: 4px 5px;
+      padding: 4px;
       border-radius: 999px;
       background: rgba(236, 233, 231, 0.96);
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.18);
@@ -196,13 +198,18 @@
     .repot-popup-button {
       border: none;
       border-radius: 999px;
-      padding: 5px 10px;
+      height: 26px;
+      padding: 0 11px;
       background: #8c8981;
       color: white;
       cursor: pointer;
       font-size: 12px;
       font-weight: 800;
       font-family: 'Nunito', Arial, sans-serif;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: none;
       white-space: nowrap;
       transition: filter 0.15s ease, transform 0.15s ease;
