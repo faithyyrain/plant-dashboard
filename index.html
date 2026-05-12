@@ -133,17 +133,16 @@
     }
 
     .size-line {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      gap: 10px;
       width: 100%;
       white-space: nowrap;
-      position: relative;
     }
 
     .repot-hover-area {
-      position: relative;
+      justify-self: start;
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -168,37 +167,38 @@
     }
 
     .repot-popup {
-      display: none;
-      position: absolute;
-      left: 34px;
-      bottom: calc(100% + 20px);
-      transform: translateX(-50%);
+      visibility: hidden;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 6px;
+      justify-self: center;
+      gap: 4px;
+      padding: 3px 4px;
       border-radius: 999px;
       background: rgba(236, 233, 231, 0.96);
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.24);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.20);
       z-index: 50;
       white-space: nowrap;
     }
 
     .repot-popup.show {
-      display: flex;
+      visibility: visible;
     }
 
     .repot-popup-close {
       border: none;
       border-radius: 50%;
-      width: 22px;
-      height: 22px;
+      width: 19px;
+      height: 19px;
       background: rgba(50, 50, 50, 0.22);
       color: #222;
       cursor: pointer;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
       line-height: 1;
       font-family: 'Nunito', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .repot-popup-close:hover {
@@ -209,11 +209,11 @@
     .repot-popup-button {
       border: none;
       border-radius: 999px;
-      padding: 7px 14px;
+      padding: 5px 10px;
       background: #8c8981;
       color: white;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 800;
       font-family: 'Nunito', Arial, sans-serif;
       box-shadow: none;
@@ -221,16 +221,17 @@
       transition: filter 0.15s ease, transform 0.15s ease;
     }
 
+    .repot-popup-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.04);
+    }
+
     .repot-popup-button.repot-done {
       background: #7f9f8b;
     }
 
-    .repot-popup-button:hover {
-      filter: brightness(1.08);
-      transform: scale(1.05);
-    }
-
     .size-right {
+      justify-self: end;
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -1054,13 +1055,13 @@
                 Repotted:
               </button>
               <span id="lastRepot"></span>
+            </div>
 
-              <div id="repotPopup" class="repot-popup">
-                <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
-                <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
-                  Repot?
-                </button>
-              </div>
+            <div id="repotPopup" class="repot-popup">
+              <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
+              <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
+                Repot?
+              </button>
             </div>
 
             <div class="size-right">
