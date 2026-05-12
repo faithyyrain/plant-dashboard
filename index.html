@@ -170,7 +170,7 @@
       visibility: hidden;
       display: flex;
       align-items: center;
-      justify-self: center;
+      justify-self: end;
       gap: 6px;
       padding: 5px 9px;
       border-radius: 999px;
@@ -221,8 +221,8 @@
       background: #7f9f8b;
     }
 
-    .size-right {
-      justify-self: end;
+    .size-middle {
+      justify-self: center;
       display: flex;
       align-items: baseline;
       gap: 8px;
@@ -1048,16 +1048,16 @@
               <span id="lastRepot"></span>
             </div>
 
+            <div class="size-middle">
+              <strong class="size-label">Size:</strong>
+              <span id="plantSize"></span>
+            </div>
+
             <div id="repotPopup" class="repot-popup">
               <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
               <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
                 Repot?
               </button>
-            </div>
-
-            <div class="size-right">
-              <strong class="size-label">Size:</strong>
-              <span id="plantSize"></span>
             </div>
           </div>
         </div>
