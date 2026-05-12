@@ -79,7 +79,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 32px;
+      margin-top: 18px;
     }
 
     .close-button,
@@ -130,6 +130,110 @@
     .close-button:hover {
       filter: brightness(1.08);
       transform: scale(1.05);
+    }
+
+    .size-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      width: 100%;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .repot-hover-area {
+      position: relative;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .repotted-label-button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      color: #423e3b;
+      cursor: pointer;
+      font-size: inherit;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      transition: transform 0.15s ease, color 0.15s ease, text-shadow 0.15s ease;
+    }
+
+    .repotted-label-button:hover {
+      transform: scale(1.015);
+      color: #48796d;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+    }
+
+    .repot-popup {
+      display: none;
+      position: absolute;
+      left: 34px;
+      bottom: calc(100% + 20px);
+      transform: translateX(-50%);
+      align-items: center;
+      gap: 6px;
+      padding: 5px 6px;
+      border-radius: 999px;
+      background: rgba(236, 233, 231, 0.96);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.24);
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    .repot-popup.show {
+      display: flex;
+    }
+
+    .repot-popup-close {
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      background: rgba(50, 50, 50, 0.22);
+      color: #222;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1;
+      font-family: 'Nunito', Arial, sans-serif;
+    }
+
+    .repot-popup-close:hover {
+      filter: brightness(1.1);
+      transform: scale(1.08);
+    }
+
+    .repot-popup-button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      background: #8c8981;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      box-shadow: none;
+      white-space: nowrap;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .repot-popup-button.repot-done {
+      background: #7f9f8b;
+    }
+
+    .repot-popup-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
+
+    .size-right {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
     }
 
 
@@ -662,12 +766,11 @@
       margin: 0px 0;
     }
 
-    .size-line {
+    .size-right {
+      justify-self: end;
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      width: 100%;
-      padding-right: 12px;
+      align-items: baseline;
+      gap: 8px;
     }
 
     .last-repot-value {
@@ -945,12 +1048,25 @@
           <div id="plantStatus" class="status-pill"></div>
 
         <div class="detail-group size-group">
-          <div class="detail-line">
-            <strong class="size-label">Size:</strong> 
-            <span id="plantSize"></span>
-            <span class="size-divider">/</span>
-            <strong class="size-label">Last repot:</strong>
-            <span id="lastRepot"></span>
+          <div class="detail-line size-line">
+            <div class="repot-hover-area">
+              <button class="repotted-label-button" onclick="toggleRepotPopup(event)">
+                Repotted:
+              </button>
+              <span id="lastRepot"></span>
+
+              <div id="repotPopup" class="repot-popup">
+                <button class="repot-popup-close" onclick="closeRepotPopup(event)">×</button>
+                <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
+                  Repot?
+                </button>
+              </div>
+            </div>
+
+            <div class="size-right">
+              <strong class="size-label">Size:</strong>
+              <span id="plantSize"></span>
+            </div>
           </div>
         </div>
 
@@ -995,6 +1111,31 @@
     const auth = firebase.auth();
     let firebaseDataLoaded = false;
     const allowedEmail = "faithyyrain@gmail.com".toLowerCase().trim();
+
+    function plantKey(plant) {
+      return `${plant.name}-${plant.x}-${plant.y}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    function savePlantToFirebase(plant) {
+      if (!firebaseDataLoaded) {
+        return;
+      }
+
+      const key = plantKey(plant);
+
+      database.ref("plants/" + key).set({
+        lastWatered: plant.lastWatered || null,
+        lastFertilized: plant.lastFertilized || null,
+        delayUntil: plant.delayUntil || null,
+        lastRepot: plant.lastRepot || null,
+        previousLastWatered: plant.previousLastWatered || null,
+        previousLastFertilized: plant.previousLastFertilized || null,
+        previousLastRepot: plant.previousLastRepot || null
+      });
+    }
 
     function isAllowedUser(user) {
       return user &&
@@ -1070,6 +1211,18 @@
 
               if (savedPlant.lastRepot !== undefined) {
                 plant.lastRepot = savedPlant.lastRepot;
+              }
+
+              if (savedPlant.previousLastWatered !== undefined) {
+                plant.previousLastWatered = savedPlant.previousLastWatered;
+              }
+
+              if (savedPlant.previousLastFertilized !== undefined) {
+                plant.previousLastFertilized = savedPlant.previousLastFertilized;
+              }
+
+              if (savedPlant.previousLastRepot !== undefined) {
+                plant.previousLastRepot = savedPlant.previousLastRepot;
               }
             }
           });
@@ -1682,6 +1835,14 @@
         });
     }
 
+    function formatSlashDate(dateString) {
+      const date = new Date(dateString + "T00:00:00");
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+
+      return `${month}/${day}`;
+    }
+
     function getTodayString() {
         const today = new Date();
         const year = today.getFullYear();
@@ -2194,100 +2355,118 @@
     }
 
     function openPlantDetails(index) {
-        activePlantIndex = index;
-        hideDashboardOverlays();
+      activePlantIndex = index;
+      hideDashboardOverlays();
 
-        const plant = plants[index];
-        const status = getPlantStatus(plant);
+      const plant = plants[index];
+      const status = getPlantStatus(plant);
+      const todayString = getTodayString();
 
-        document.getElementById("plantName").textContent = plant.name;
-        document.getElementById("plantSize").textContent = formatPotSize(plant.size);
-        document.getElementById("lastRepot").textContent = plant.lastRepot ? formatShortDate(plant.lastRepot) : "N/A";
-        document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+      document.getElementById("plantName").textContent = plant.name;
+      document.getElementById("plantSize").textContent = formatPotSize(plant.size);
+      document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
 
-        const effectiveIntervalDays = getEffectiveIntervalDays(plant);
+      const repotButton = document.getElementById("repotPopupButton");
 
-        document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
-        document.getElementById("nextCheck").textContent = status.nextCheck;
+      if (repotButton) {
+        const isRepottedToday = plant.lastRepot === todayString;
 
-        const fertilizerStatus = getFertilizerStatus(
-          plant.lastFertilized,
-          plant.fertilizerIntervalDays,
-          plant.fertilizerBufferDays
-        );
+        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
+        repotButton.classList.toggle("repot-done", isRepottedToday);
+      }
 
-        const fertilizerGroup = document.getElementById("fertilizerGroup");
+      const repotPopup = document.getElementById("repotPopup");
 
-        if (hasFertilizerSchedule(plant)) {
-          document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
-          document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
-          fertilizerGroup.style.display = "block";
+      if (repotPopup) {
+        repotPopup.classList.remove("show");
+      }
+
+      document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
+
+      const effectiveIntervalDays = getEffectiveIntervalDays(plant);
+
+      document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
+      document.getElementById("nextCheck").textContent = status.nextCheck;
+
+      const fertilizerStatus = getFertilizerStatus(
+        plant.lastFertilized,
+        plant.fertilizerIntervalDays,
+        plant.fertilizerBufferDays
+      );
+
+      const fertilizerGroup = document.getElementById("fertilizerGroup");
+
+      if (hasFertilizerSchedule(plant)) {
+        document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
+        document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
+        fertilizerGroup.style.display = "block";
+      } else {
+        fertilizerGroup.style.display = "none";
+      }
+
+      document.getElementById("plantNotes").textContent = plant.notes;
+
+      const plantStatus = document.getElementById("plantStatus");
+      plantStatus.textContent = status.label;
+      plantStatus.className = `status-pill status-${status.color}`;
+
+      const zoomView = document.getElementById("zoomView");
+
+      if (plant.image) {
+        zoomView.style.backgroundImage = `url("${plant.image}")`;
+        zoomView.style.backgroundSize = "cover";
+        zoomView.style.backgroundPosition = "center";
+      } else {
+        zoomView.style.backgroundImage = `url("livingroom.jpg")`;
+        zoomView.style.backgroundSize = "300%";
+        zoomView.style.backgroundPosition = `${plant.x}% ${plant.y}%`;
+      }
+
+      const wateredButton = document.querySelector(".watered-button");
+
+      if (plant.lastWatered === todayString) {
+        wateredButton.textContent = "Watered!";
+        wateredButton.classList.add("undo-watered");
+      } else {
+        wateredButton.textContent = "Water";
+        wateredButton.classList.remove("undo-watered");
+      }
+
+      const delayButton = document.querySelector(".delay-button");
+
+      if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
+        delayButton.style.display = "none";
+        delayButton.textContent = "+1 Day";
+        delayButton.classList.remove("delay-active");
+      } else {
+        delayButton.style.display = "inline-block";
+
+        if (plant.delayUntil && plant.delayUntil > todayString) {
+          delayButton.textContent = "Delayed!";
+          delayButton.classList.add("delay-active");
         } else {
-          fertilizerGroup.style.display = "none";
-        } 
-
-        document.getElementById("plantNotes").textContent = plant.notes;
-
-        const plantStatus = document.getElementById("plantStatus");
-          plantStatus.textContent = status.label;
-          plantStatus.className = `status-pill status-${status.color}`;
-
-        const zoomView = document.getElementById("zoomView");
-
-        if (plant.image) {
-          zoomView.style.backgroundImage = `url("${plant.image}")`;
-          zoomView.style.backgroundSize = "cover";
-          zoomView.style.backgroundPosition = "center";
-        } else {
-          zoomView.style.backgroundImage = `url("livingroom.jpg")`;
-          zoomView.style.backgroundSize = "300%";
-          zoomView.style.backgroundPosition = `${plant.x}% ${plant.y}%`;
-        }
-
-        const wateredButton = document.querySelector(".watered-button");
-
-        if (plant.lastWatered === getTodayString()) {
-          wateredButton.textContent = "Watered!";
-          wateredButton.classList.add("undo-watered");
-        } else {
-          wateredButton.textContent = "Water";
-          wateredButton.classList.remove("undo-watered");
-        }
-        const delayButton = document.querySelector(".delay-button");
-
-        if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === getTodayString()) {
-          delayButton.style.display = "none";
           delayButton.textContent = "+1 Day";
           delayButton.classList.remove("delay-active");
-        } else {
-
-          delayButton.style.display = "inline-block";
-
-          if (plant.delayUntil) {
-            delayButton.textContent = "Delayed!";
-            delayButton.classList.add("delay-active")
-          } else {
-            delayButton.textContent = "+1 Day";
-            delayButton.classList.remove("delay-active");
-          }
         }
-        const fertilizedButton = document.querySelector(".fertilized-button");
+      }
 
-        if (hasFertilizerSchedule(plant)) {
-          fertilizedButton.style.display = "inline-block";
+      const fertilizedButton = document.querySelector(".fertilized-button");
 
-          if (plant.lastFertilized === getTodayString()) {
-            fertilizedButton.textContent = "Fertilized!";
-            fertilizedButton.classList.add("undo-fertilized");
-          } else {
-            fertilizedButton.textContent = "Fertilize";
-            fertilizedButton.classList.remove("undo-fertilized");
-          }
+      if (hasFertilizerSchedule(plant)) {
+        fertilizedButton.style.display = "inline-block";
+
+        if (plant.lastFertilized === todayString) {
+          fertilizedButton.textContent = "Fertilized!";
+          fertilizedButton.classList.add("undo-fertilized");
         } else {
-          fertilizedButton.style.display = "none";
+          fertilizedButton.textContent = "Fertilize";
+          fertilizedButton.classList.remove("undo-fertilized");
         }
+      } else {
+        fertilizedButton.style.display = "none";
+      }
 
-        document.getElementById("plantModal").style.display = "flex";
+      document.getElementById("plantModal").style.display = "flex";
     }
 
 
@@ -2373,37 +2552,40 @@
     }
 
     function toggleWateredForPlant(plant) {
-        const today = getTodayString();
-        const storageKey = plantStorageKey(plant);
-        const delayKey = delayStorageKey(plant);
+      const today = getTodayString();
 
-        if (plant.lastWatered === today) {
-          localStorage.removeItem(storageKey);
-          plant.lastWatered = plant.originalLastWatered;
+      if (plant.lastWatered === today) {
+        if (plant.previousLastWatered) {
+          plant.lastWatered = plant.previousLastWatered;
+          plant.previousLastWatered = null;
         } else {
-          plant.lastWatered = today;
-          localStorage.setItem(storageKey, today);
-
-          localStorage.removeItem(delayKey);
-          plant.delayUntil = null;
+          plant.lastWatered = null;
         }
+      } else {
+        plant.previousLastWatered = plant.lastWatered || null;
+        plant.lastWatered = today;
+        plant.delayUntil = null;
+      }
 
-        savePlantToFirebase(plant);
+      savePlantToFirebase(plant);
     }
 
     function toggleFertilizedForPlant(plant) {
-        const today = getTodayString();
-        const storageKey = fertilizerStorageKey(plant);
+      const today = getTodayString();
 
-        if (plant.lastFertilized === today) {
-          localStorage.removeItem(storageKey);
-          plant.lastFertilized = plant.originalLastFertilized;
+      if (plant.lastFertilized === today) {
+        if (plant.previousLastFertilized) {
+          plant.lastFertilized = plant.previousLastFertilized;
+          plant.previousLastFertilized = null;
         } else {
-          plant.lastFertilized = today;
-          localStorage.setItem(storageKey, today);
+          plant.lastFertilized = null;
         }
+      } else {
+        plant.previousLastFertilized = plant.lastFertilized || null;
+        plant.lastFertilized = today;
+      }
 
-        savePlantToFirebase(plant);
+      savePlantToFirebase(plant);
     }
 
     function refreshCalendarViews() {
@@ -2448,18 +2630,70 @@
         openPlantDetails(activePlantIndex);
     }
 
+    function toggleRepotPopup(event) {
+      event.stopPropagation();
+
+      const repotPopup = document.getElementById("repotPopup");
+
+      if (repotPopup) {
+        repotPopup.classList.toggle("show");
+      }
+    }
+
+    function closeRepotPopup(event) {
+      event.stopPropagation();
+
+      const repotPopup = document.getElementById("repotPopup");
+
+      if (repotPopup) {
+        repotPopup.classList.remove("show");
+      }
+    }
+
+    function toggleRepottedToday(event) {
+      event.stopPropagation();
+
+      if (activePlantIndex === null) {
+        return;
+      }
+
+      const plant = plants[activePlantIndex];
+      const todayString = getTodayString();
+
+      if (plant.lastRepot === todayString && plant.previousLastRepot !== undefined) {
+        plant.lastRepot = plant.previousLastRepot;
+        plant.previousLastRepot = null;
+      } else {
+        plant.previousLastRepot = plant.lastRepot || null;
+        plant.lastRepot = todayString;
+      }
+
+      savePlantToFirebase(plant);
+
+      document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
+
+      const repotButton = document.getElementById("repotPopupButton");
+
+      if (repotButton) {
+        const isRepottedToday = plant.lastRepot === todayString;
+
+        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
+        repotButton.classList.toggle("repot-done", isRepottedToday);
+      }
+    }
+
     function closeModal() {
-        document.getElementById("plantModal").style.display = "none";
-        showDashboardOverlays();
+      document.getElementById("plantModal").style.display = "none";
+      showDashboardOverlays();
 
-        if (reopenCalendarDate) {
-          document.getElementById("calendarWrapper").classList.add("open");
-          renderCalendar();
-          renderUpcomingChecks();
-          openDuePanel(reopenCalendarDate);
+      if (reopenCalendarDate) {
+        document.getElementById("calendarWrapper").classList.add("open");
+        renderCalendar();
+        renderUpcomingChecks();
+        openDuePanel(reopenCalendarDate);
 
-          reopenCalendarDate = null;
-        }
+        reopenCalendarDate = null;
+      }
     }
 
 
@@ -2948,7 +3182,6 @@
 
   // ===== STARTUP / PAGE LOAD =====
 
-    loadSavedWateringDates();
     preloadPlantImages();
 
     const roomImage = document.getElementById("roomImage");
