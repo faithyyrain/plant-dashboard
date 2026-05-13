@@ -658,6 +658,11 @@
       z-index: 2;
       object-fit: contain;
       user-select: none;
+      filter:
+        drop-shadow(1px 0 0 rgba(30, 25, 20, 0.9))
+        drop-shadow(-1px 0 0 rgba(30, 25, 20, 0.9))
+        drop-shadow(0 1px 0 rgba(30, 25, 20, 0.9))
+        drop-shadow(0 -1px 0 rgba(30, 25, 20, 0.9));
     }
 
     .plant-marker {
@@ -1240,8 +1245,7 @@
             sticker: "plant-stickers/thai-con.png",
             stickerX: 45.3,
             stickerY: 35.3,
-            stickerWidth: 160,
-            stickerFilter: "brightness(1) saturate(1)",
+            stickerWidth: 140,
             lastWatered: "2026-04-30",
             intervalDays: 11,
             lastFertilized: "2026-04-30",
@@ -2239,7 +2243,6 @@
             sticker.className = "plant-sticker";
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
-            sticker.style.filter = plant.stickerFilter || "none";
 
             roomContainer.appendChild(sticker);
 
@@ -2315,7 +2318,7 @@
           marker.style.left = x + "px";
           marker.style.top = y + "px";
         });
-        
+
         stickers.forEach(({ sticker, plant }) => {
           const stickerX = plant.stickerX ?? plant.x;
           const stickerY = plant.stickerY ?? plant.y;
