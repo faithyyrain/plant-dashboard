@@ -651,6 +651,15 @@
       display: block;
     }
 
+    .plant-sticker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 2;
+      object-fit: contain;
+      user-select: none;
+    }
+
     .plant-marker {
       position: absolute;
       width: 19px;
@@ -1228,6 +1237,11 @@
             x: 45.3,
             y: 35.3,
             image: "plant-photos/thai-con.jpeg",
+            sticker: "plant-stickers/thai-con.png",
+            stickerX: 45.3,
+            stickerY: 35.3,
+            stickerWidth: 160,
+            stickerFilter: "brightness(1) saturate(1)",
             lastWatered: "2026-04-30",
             intervalDays: 11,
             lastFertilized: "2026-04-30",
@@ -2215,9 +2229,25 @@
   // ===== PLANT DOT / MARKER FUNCTIONS =====
 
         const markers = [];
+        const stickers = [];
 
     function createMarkers() {
         plants.forEach((plant, index) => {
+          if (plant.sticker) {
+            const sticker = document.createElement("img");
+
+            sticker.className = "plant-sticker";
+            sticker.src = plant.sticker;
+            sticker.alt = plant.name;
+            sticker.style.filter = plant.stickerFilter || "none";
+
+            roomContainer.appendChild(sticker);
+
+            stickers.push({
+              sticker,
+              plant
+            });
+          }
         const status = getPlantStatus(plant);
 
         const marker = document.createElement("button");
@@ -2284,6 +2314,19 @@
 
           marker.style.left = x + "px";
           marker.style.top = y + "px";
+        });
+        
+        stickers.forEach(({ sticker, plant }) => {
+          const stickerX = plant.stickerX ?? plant.x;
+          const stickerY = plant.stickerY ?? plant.y;
+          const stickerWidth = plant.stickerWidth || 120;
+
+          const x = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+          const y = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+          sticker.style.left = x + "px";
+          sticker.style.top = y + "px";
+          sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
         });
 
         positionLegend();
