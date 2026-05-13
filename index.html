@@ -654,7 +654,7 @@
     .plant-sticker {
       position: absolute;
       transform: translate(-50%, -50%);
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 2;
       object-fit: contain;
       user-select: none;
@@ -1801,6 +1801,8 @@
       let selectedDueDate = null;
       let selectedDuePlants = [];
       let selectedCalendarDate = null;
+      let draggingSticker = null;
+      let draggingPlant = null;
 
 
   // ===== DATE + FORMAT HELPERS =====
@@ -2244,6 +2246,7 @@
             sticker.className = "plant-sticker";
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
+            sticker.addEventListener("mousedown", startDraggingSticker);
 
             roomContainer.appendChild(sticker);
 
@@ -2274,6 +2277,54 @@
       });
 
         positionMarkers();
+    }
+
+    function startDraggingSticker(event) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      draggingSticker = event.target;
+
+      const stickerInfo = stickers.find(item => item.sticker === draggingSticker);
+      draggingPlant = stickerInfo ? stickerInfo.plant : null;
+
+      document.addEventListener("mousemove", dragSticker);
+      document.addEventListener("mouseup", stopDraggingSticker);
+    }
+
+    function dragSticker(event) {
+      if (!draggingSticker || !draggingPlant) {
+        return;
+      }
+
+      const metrics = getImageMetrics();
+
+      const x = event.clientX - metrics.containerRect.left;
+      const y = event.clientY - metrics.containerRect.top;
+
+      const stickerX = ((x - metrics.offsetX) / metrics.displayedWidth) * 100;
+      const stickerY = ((y - metrics.offsetY) / metrics.displayedHeight) * 100;
+
+      draggingPlant.stickerX = Number(stickerX.toFixed(1));
+      draggingPlant.stickerY = Number(stickerY.toFixed(1));
+
+      positionMarkers();
+    }
+
+    function stopDraggingSticker() {
+      if (draggingPlant) {
+        alert(
+          `${draggingPlant.name}\n` +
+          `stickerX: ${draggingPlant.stickerX},\n` +
+          `stickerY: ${draggingPlant.stickerY},`
+        );
+      }
+
+      draggingSticker = null;
+      draggingPlant = null;
+
+      document.removeEventListener("mousemove", dragSticker);
+      document.removeEventListener("mouseup", stopDraggingSticker);
     }
  
 
