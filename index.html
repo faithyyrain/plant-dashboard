@@ -659,6 +659,33 @@
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
+    .squish-icon {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+
+    .squish-icon::before {
+      content: "↓";
+      position: absolute;
+      top: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .squish-icon::after {
+      content: "↑";
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      line-height: 1;
+    }
+
     .sticker-edit-controls button:hover {
       filter: brightness(1.12);
       scale: 1.08;
@@ -2145,7 +2172,7 @@
         <button id="stretchWideStickerButton">↔</button>
         <button id="squishNarrowStickerButton">→←</button>
         <button id="stretchTallStickerButton">↕</button>
-        <button id="squishShortStickerButton">↓↑</button>
+        <button id="squishShortStickerButton"><span class="squish-icon"></span></button>
         <button id="lockStickerButton">Lock</button>
       `;
 
