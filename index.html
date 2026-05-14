@@ -668,7 +668,11 @@
     #growStickerButton,
     #shrinkStickerButton,
     #rotateLeftStickerButton,
-    #rotateRightStickerButton {
+    #rotateRightStickerButton,
+    #stretchWideStickerButton,
+    #squishNarrowStickerButton,
+    #stretchTallStickerButton,
+    #squishShortStickerButton {
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -684,6 +688,30 @@
     #moveStickerButton {
       top: 16px;
       left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #stretchWideStickerButton {
+      right: 16px;
+      top: 50%;
+      transform: translate(50%, -50%);
+    }
+
+    #squishNarrowStickerButton {
+      right: 16px;
+      top: 80%;
+      transform: translate(50%, -50%);
+    }
+
+    #stretchTallStickerButton {
+      left: 16px;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #squishShortStickerButton {
+      left: 16px;
+      top: 80%;
       transform: translate(-50%, -50%);
     }
 
@@ -1235,7 +1263,9 @@
         markerX: plant.markerX ?? null,
         markerY: plant.markerY ?? null,
         stickerWidth: plant.stickerWidth ?? null,
-        stickerRotation: plant.stickerRotation ?? null
+        stickerRotation: plant.stickerRotation ?? null,
+        stickerScaleX: plant.stickerScaleX ?? null,
+        stickerScaleY: plant.stickerScaleY ?? null
       });
     }
 
@@ -1349,6 +1379,14 @@
 
               if (savedPlant.stickerRotation !== undefined) {
                 plant.stickerRotation = savedPlant.stickerRotation;
+              }
+
+              if (savedPlant.stickerScaleX !== undefined) {
+                plant.stickerScaleX = savedPlant.stickerScaleX;
+              }
+
+              if (savedPlant.stickerScaleY !== undefined) {
+                plant.stickerScaleY = savedPlant.stickerScaleY;
               }
             }
           });
@@ -2098,6 +2136,10 @@
         <button id="growStickerButton">+</button>
         <button id="rotateLeftStickerButton">⟲</button>
         <button id="rotateRightStickerButton">⟳</button>
+        <button id="stretchWideStickerButton">↔</button>
+        <button id="squishNarrowStickerButton">→←</button>
+        <button id="stretchTallStickerButton">↕</button>
+        <button id="squishShortStickerButton">↓↑</button>
         <button id="lockStickerButton">Lock</button>
       `;
 
@@ -2107,6 +2149,10 @@
       document.getElementById("growStickerButton").addEventListener("click", growSticker);
       document.getElementById("rotateLeftStickerButton").addEventListener("click", rotateStickerLeft);
       document.getElementById("rotateRightStickerButton").addEventListener("click", rotateStickerRight);
+      document.getElementById("stretchWideStickerButton").addEventListener("click", stretchStickerWide);
+      document.getElementById("squishNarrowStickerButton").addEventListener("click", squishStickerNarrow);
+      document.getElementById("stretchTallStickerButton").addEventListener("click", stretchStickerTall);
+      document.getElementById("squishShortStickerButton").addEventListener("click", squishStickerShort);
       document.getElementById("lockStickerButton").addEventListener("click", lockStickerEdits);
     }
 
@@ -2192,6 +2238,46 @@
       if (!editingPlant) return;
 
       editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) + 1;
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function stretchStickerWide(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerScaleX = Number(((editingPlant.stickerScaleX || 1) + 0.05).toFixed(2));
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function squishStickerNarrow(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerScaleX = Math.max(0.3, Number(((editingPlant.stickerScaleX || 1) - 0.05).toFixed(2)));
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function stretchStickerTall(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerScaleY = Number(((editingPlant.stickerScaleY || 1) + 0.05).toFixed(2));
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function squishStickerShort(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerScaleY = Math.max(0.3, Number(((editingPlant.stickerScaleY || 1) - 0.05).toFixed(2)));
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2783,6 +2869,8 @@
           const stickerY = plant.stickerY ?? plant.y;
           const stickerWidth = plant.stickerWidth || 120;
           const stickerRotation = plant.stickerRotation || 0;
+          const stickerScaleX = plant.stickerScaleX || 1;
+          const stickerScaleY = plant.stickerScaleY || 1;
 
           const x = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
           const y = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
@@ -2790,7 +2878,7 @@
           sticker.style.left = x + "px";
           sticker.style.top = y + "px";
           sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
-          sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg)`;
+          sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg) scale(${stickerScaleX}, ${stickerScaleY})`;
         });
 
         positionLegend();
