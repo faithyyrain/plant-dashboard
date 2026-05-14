@@ -2974,6 +2974,7 @@
 
           marker.style.left = x + "px";
           marker.style.top = y + "px";
+          marker.style.zIndex = 2000;
         });
 
         stickers.forEach(({ sticker, plant }) => {
@@ -2990,6 +2991,7 @@
           sticker.style.left = x + "px";
           sticker.style.top = y + "px";
           sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
+          sticker.style.zIndex = 100 + Math.round(stickerY * 10);
           sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg) scale(${stickerScaleX}, ${stickerScaleY})`;
         });
 
