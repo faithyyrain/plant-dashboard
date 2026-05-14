@@ -637,15 +637,14 @@
       position: fixed;
       z-index: 30;
       display: none;
-      gap: 6px;
-      padding: 8px;
-      border-radius: 14px;
-      background: rgba(245, 241, 233, 0.9);
-      box-shadow: 0 0 14px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(8px);
+      width: 180px;
+      height: 180px;
+      pointer-events: none;
     }
 
     .sticker-edit-controls button {
+      position: absolute;
+      pointer-events: auto;
       border: none;
       border-radius: 999px;
       padding: 6px 10px;
@@ -666,6 +665,38 @@
       font-weight: 900;
       line-height: 1;
       padding: 4px 10px 6px 10px;
+    }
+
+    #moveStickerButton {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #lockStickerButton {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #rotateLeftStickerButton {
+      left: 0;
+      top: 56px;
+    }
+
+    #rotateRightStickerButton {
+      left: 0;
+      top: 104px;
+    }
+
+    #growStickerButton {
+      right: 0;
+      top: 56px;
+    }
+
+    #shrinkStickerButton {
+      right: 0;
+      top: 104px;
     }
 
     .sticker-edit-controls button:hover {
@@ -2076,20 +2107,13 @@
       const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
       const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
 
-      editControls.style.display = "flex";
+      editControls.style.display = "block";
 
       const menuWidth = editControls.offsetWidth;
       const menuHeight = editControls.offsetHeight;
-      const margin = 10;
 
-      let left = plantPixelX - menuWidth / 2;
-      let top = plantPixelY - menuHeight - 42;
-
-      left = Math.max(margin, Math.min(left, window.innerWidth - menuWidth - margin));
-      top = Math.max(margin, top);
-
-      editControls.style.left = left + "px";
-      editControls.style.top = top + "px";
+      editControls.style.left = plantPixelX - menuWidth / 2 + "px";
+      editControls.style.top = plantPixelY - menuHeight / 2 + "px";
     }
 
     function openStickerEditControls(event, plant) {
