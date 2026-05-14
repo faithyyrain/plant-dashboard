@@ -655,6 +655,19 @@
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 800;
       font-size: 12px;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    #rotateLeftStickerButton,
+    #rotateRightStickerButton {
+      font-size: 20px;
+      line-height: 1;
+      padding: 4px 10px 6px 10px;
+    }
+
+    .sticker-edit-controls button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.05);
     }
 
 
@@ -687,6 +700,16 @@
         drop-shadow(-0.5px 0 0 rgba(30, 25, 20, 0.75))
         drop-shadow(0 0.5px 0 rgba(30, 25, 20, 0.75))
         drop-shadow(0 -0.5px 0 rgba(30, 25, 20, 0.75));
+    }
+
+    .plant-sticker.editing-sticker {
+      transform: translate(-50%, -50%) scale(1.06);
+      filter:
+        drop-shadow(0.5px 0 0 rgba(30, 25, 20, 0.75))
+        drop-shadow(-0.5px 0 0 rgba(30, 25, 20, 0.75))
+        drop-shadow(0 0.5px 0 rgba(30, 25, 20, 0.75))
+        drop-shadow(0 -0.5px 0 rgba(30, 25, 20, 0.75))
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.75));
     }
 
     .plant-marker {
@@ -2063,7 +2086,14 @@
     function openStickerEditControls(event, plant) {
       event.stopPropagation();
 
+      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
       editingPlant = plant;
+      const stickerInfo = stickers.find(item => item.plant === plant);
+      if (stickerInfo) {
+        stickerInfo.sticker.classList.add("editing-sticker");
+      }
+
+      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
       movingPlant = false;
 
       positionEditControlsAbovePlant(plant);
@@ -2119,7 +2149,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) - 5;
+      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) - 1;
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2129,7 +2159,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) + 5;
+      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) + 1;
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
