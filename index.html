@@ -640,6 +640,11 @@
       width: 180px;
       height: 180px;
       pointer-events: none;
+      border-radius: 50%;
+      border: 1px solid rgba(80, 70, 60, 0.28);
+      background: rgba(245, 241, 233, 0.16);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(2px);
     }
 
     .sticker-edit-controls button {
@@ -3626,9 +3631,8 @@
 
       positionMarkers();
 
-      if (editControls) {
-        editControls.style.left = event.clientX + 18 + "px";
-        editControls.style.top = event.clientY + 18 + "px";
+      if (editControls && editingPlant) {
+        positionEditControlsAbovePlant(editingPlant);
       }
 
     });
