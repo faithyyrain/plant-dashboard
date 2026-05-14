@@ -637,29 +637,30 @@
       position: fixed;
       z-index: 30;
       display: none;
-      width: 180px;
-      height: 180px;
-      pointer-events: none;
+      width: 260px;
+      height: 260px;
       border-radius: 50%;
-      border: 1px solid rgba(80, 70, 60, 0.28);
-      background: rgba(245, 241, 233, 0.16);
+      border: 44px solid rgba(245, 241, 233, 0.42);
+      background: transparent;
       box-shadow: 0 0 14px rgba(0, 0, 0, 0.18);
-      backdrop-filter: blur(2px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      box-sizing: border-box;
     }
 
     .sticker-edit-controls button {
       position: absolute;
-      pointer-events: auto;
       border: none;
       border-radius: 999px;
-      padding: 6px 10px;
-      background: #8c8981;
+      width: 58px;
+      height: 38px;
+      background: rgba(94, 96, 96, 0.82);
       color: white;
       cursor: pointer;
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 800;
-      font-size: 12px;
-      transition: filter 0.15s ease, transform 0.15s ease;
+      font-size: 14px;
+      pointer-events: auto;
     }
 
     #shrinkStickerButton,
@@ -673,35 +674,39 @@
     }
 
     #moveStickerButton {
-      top: 0;
+      top: -42px;
       left: 50%;
       transform: translateX(-50%);
     }
 
     #lockStickerButton {
-      bottom: 0;
+      bottom: -42px;
       left: 50%;
       transform: translateX(-50%);
     }
 
-    #rotateLeftStickerButton {
-      left: 0;
-      top: 56px;
-    }
-
-    #rotateRightStickerButton {
-      left: 0;
-      top: 104px;
+    #shrinkStickerButton {
+      right: -42px;
+      top: 58%;
+      transform: translateY(-50%);
     }
 
     #growStickerButton {
-      right: 0;
-      top: 56px;
+      right: -42px;
+      top: 28%;
+      transform: translateY(-50%);
     }
 
-    #shrinkStickerButton {
-      right: 0;
-      top: 104px;
+    #rotateLeftStickerButton {
+      left: -42px;
+      top: 28%;
+      transform: translateY(-50%);
+    }
+
+    #rotateRightStickerButton {
+      left: -42px;
+      top: 58%;
+      transform: translateY(-50%);
     }
 
     .sticker-edit-controls button:hover {
