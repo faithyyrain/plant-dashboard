@@ -658,9 +658,11 @@
       transition: filter 0.15s ease, transform 0.15s ease;
     }
 
+    #shrinkStickerButton,
+    #growStickerButton,
     #rotateLeftStickerButton,
     #rotateRightStickerButton {
-      font-size: 20px;
+      font-size: 26px;
       line-height: 1;
       padding: 4px 10px 6px 10px;
     }
@@ -2041,8 +2043,8 @@
 
       editControls.innerHTML = `
         <button id="moveStickerButton">Move</button>
-        <button id="shrinkStickerButton">Smaller</button>
-        <button id="growStickerButton">Bigger</button>
+        <button id="shrinkStickerButton">−</button>
+        <button id="growStickerButton">+</button>
         <button id="rotateLeftStickerButton">↺</button>
         <button id="rotateRightStickerButton">↻</button>
         <button id="lockStickerButton">Lock</button>
@@ -2074,7 +2076,7 @@
       const margin = 10;
 
       let left = plantPixelX - menuWidth / 2;
-      let top = plantPixelY - menuHeight - 18;
+      let top = plantPixelY - menuHeight - 42;
 
       left = Math.max(margin, Math.min(left, window.innerWidth - menuWidth - margin));
       top = Math.max(margin, top);
