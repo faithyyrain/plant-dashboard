@@ -2240,16 +2240,16 @@
       editControls.className = "sticker-edit-controls";
 
       editControls.innerHTML = `
-        <button id="moveStickerButton">Move</button>
-        <button id="shrinkStickerButton">−</button>
-        <button id="growStickerButton">+</button>
-        <button id="rotateLeftStickerButton">⟲</button>
-        <button id="rotateRightStickerButton">⟳</button>
-        <button id="stretchWideStickerButton">↔</button>
-        <button id="squishNarrowStickerButton">→←</button>
-        <button id="stretchTallStickerButton">↕</button>
-        <button id="squishShortStickerButton"><span class="squish-icon"></span></button>
-        <button id="lockStickerButton">Lock</button>
+        <button id="moveStickerButton" title="Move plant">Move</button>
+        <button id="shrinkStickerButton" title="Make smaller">−</button>
+        <button id="growStickerButton" title="Make bigger">+</button>
+        <button id="rotateLeftStickerButton" title="Rotate left">⟲</button>
+        <button id="rotateRightStickerButton" title="Rotate right">⟳</button>
+        <button id="stretchWideStickerButton" title="Stretch horizontal">↔</button>
+        <button id="squishNarrowStickerButton" title="Squish horizontal">→←</button>
+        <button id="stretchTallStickerButton" title="Stretch vertical">↕</button>
+        <button id="squishShortStickerButton" title="Squish vertical">↕−</button>
+        <button id="lockStickerButton" title="Lock edits">Lock</button>
       `;
 
       document.body.appendChild(editControls);
