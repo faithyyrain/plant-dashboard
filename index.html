@@ -655,6 +655,13 @@
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 800;
       pointer-events: auto;
+      scale: 1;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .sticker-edit-controls button:hover {
+      filter: brightness(1.12);
+      scale: 1.08;
     }
 
     #moveStickerButton,
@@ -685,13 +692,13 @@
     }
 
     #moveStickerButton {
-      top: 0;
+      top: 8px;
       left: 50%;
       transform: translate(-50%, -50%);
     }
 
     #lockStickerButton {
-      top: 100%;
+      top: calc(100% - 8px);
       left: 50%;
       transform: translate(-50%, -50%);
     }
@@ -2206,7 +2213,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerWidth = Math.max(20, (editingPlant.stickerWidth || 120) - 5);
+      editingPlant.stickerWidth = Math.max(20, (editingPlant.stickerWidth || 120) - 1);
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2216,7 +2223,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerWidth = (editingPlant.stickerWidth || 120) + 5;
+      editingPlant.stickerWidth = (editingPlant.stickerWidth || 120) + 1;
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2246,17 +2253,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerScaleX = Number(((editingPlant.stickerScaleX || 1) + 0.05).toFixed(2));
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function squishStickerNarrow(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerScaleX = Math.max(0.3, Number(((editingPlant.stickerScaleX || 1) - 0.05).toFixed(2)));
+      editingPlant.stickerScaleX = Number(((editingPlant.stickerScaleX || 1) + 0.01).toFixed(2));
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2266,7 +2263,17 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerScaleY = Number(((editingPlant.stickerScaleY || 1) + 0.05).toFixed(2));
+      editingPlant.stickerScaleY = Number(((editingPlant.stickerScaleY || 1) + 0.01).toFixed(2));
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function squishStickerNarrow(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerScaleX = Math.max(0.3, Number(((editingPlant.stickerScaleX || 1) - 0.01).toFixed(2)));
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
@@ -2276,7 +2283,7 @@
 
       if (!editingPlant) return;
 
-      editingPlant.stickerScaleY = Math.max(0.3, Number(((editingPlant.stickerScaleY || 1) - 0.05).toFixed(2)));
+      editingPlant.stickerScaleY = Math.max(0.3, Number(((editingPlant.stickerScaleY || 1) - 0.01).toFixed(2)));
       savePlantToFirebase(editingPlant);
       positionMarkers();
     }
