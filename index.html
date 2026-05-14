@@ -2008,6 +2008,8 @@
       let editingPlant = null;
       let movingPlant = false;
       let editControls = null;
+      let moveOffsetX = 0;
+      let moveOffsetY = 0;
 
     function createStickerEditControls() {
       editControls = document.createElement("div");
@@ -2044,6 +2046,22 @@
 
     function startMoveMode(event) {
       event.stopPropagation();
+
+      if (!editingPlant) {
+        return;
+      }
+
+      const metrics = getImageMetrics();
+
+      const stickerX = editingPlant.stickerX ?? editingPlant.x;
+      const stickerY = editingPlant.stickerY ?? editingPlant.y;
+
+      const plantPixelX = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+      const plantPixelY = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+      moveOffsetX = event.clientX - plantPixelX;
+      moveOffsetY = event.clientY - plantPixelY;
+
       movingPlant = true;
 
       if (editControls) {
@@ -2548,7 +2566,7 @@
             sticker.className = "plant-sticker";
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
-            sticker.addEventListener("click", function(event) {
+            sticker.addEventListener("dblclick", function(event) {
               openStickerEditControls(event, plant);
             });
 
@@ -3539,8 +3557,8 @@
       const x = event.clientX - metrics.containerRect.left;
       const y = event.clientY - metrics.containerRect.top;
 
-      const newX = ((x - metrics.offsetX) / metrics.displayedWidth) * 100;
-      const newY = ((y - metrics.offsetY) / metrics.displayedHeight) * 100;
+      const newX = ((x - moveOffsetX - metrics.offsetX) / metrics.displayedWidth) * 100;
+      const newY = ((y - moveOffsetY - metrics.offsetY) / metrics.displayedHeight) * 100;
 
       editingPlant.stickerX = Number(newX.toFixed(1));
       editingPlant.stickerY = Number(newY.toFixed(1));
@@ -3574,9 +3592,16 @@
           savePlantToFirebase(editingPlant);
           positionMarkers();
 
-          if (editControls) {
-            editControls.style.left = event.clientX + 18 + "px";
-            editControls.style.top = event.clientY + 18 + "px";
+          if (editControls && editingPlant) {
+            const metrics = getImageMetrics();
+            const stickerX = editingPlant.stickerX ?? editingPlant.x;
+            const stickerY = editingPlant.stickerY ?? editingPlant.y;
+
+            const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+            const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+            editControls.style.left = plantPixelX + 18 + "px";
+            editControls.style.top = plantPixelY + 18 + "px";
             editControls.style.display = "flex";
           }
 
