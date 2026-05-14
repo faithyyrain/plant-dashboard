@@ -633,6 +633,30 @@
       background: #e4b164;
     }
 
+    .sticker-edit-controls {
+      position: fixed;
+      z-index: 30;
+      display: none;
+      gap: 6px;
+      padding: 8px;
+      border-radius: 14px;
+      background: rgba(245, 241, 233, 0.9);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .sticker-edit-controls button {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #8c8981;
+      color: white;
+      cursor: pointer;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
 
   /* ===== ROOM IMAGE + PLANT DOTS ===== */
 
@@ -1130,7 +1154,13 @@
         lastRepot: plant.lastRepot || null,
         previousLastWatered: plant.previousLastWatered || null,
         previousLastFertilized: plant.previousLastFertilized || null,
-        previousLastRepot: plant.previousLastRepot || null
+        previousLastRepot: plant.previousLastRepot || null,
+        stickerX: plant.stickerX ?? null,
+        stickerY: plant.stickerY ?? null,
+        markerX: plant.markerX ?? null,
+        markerY: plant.markerY ?? null,
+        stickerWidth: plant.stickerWidth ?? null,
+        stickerRotation: plant.stickerRotation ?? null
       });
     }
 
@@ -1220,6 +1250,30 @@
 
               if (savedPlant.previousLastRepot !== undefined) {
                 plant.previousLastRepot = savedPlant.previousLastRepot;
+              }
+
+              if (savedPlant.stickerX !== undefined) {
+                plant.stickerX = savedPlant.stickerX;
+              }
+
+              if (savedPlant.stickerY !== undefined) {
+                plant.stickerY = savedPlant.stickerY;
+              }
+
+              if (savedPlant.markerX !== undefined) {
+                plant.markerX = savedPlant.markerX;
+              }
+
+              if (savedPlant.markerY !== undefined) {
+                plant.markerY = savedPlant.markerY;
+              }
+
+              if (savedPlant.stickerWidth !== undefined) {
+                plant.stickerWidth = savedPlant.stickerWidth;
+              }
+
+              if (savedPlant.stickerRotation !== undefined) {
+                plant.stickerRotation = savedPlant.stickerRotation;
               }
             }
           });
@@ -1951,6 +2005,98 @@
       let selectedCalendarDate = null;
       let draggingSticker = null;
       let draggingPlant = null;
+      let editingPlant = null;
+      let movingPlant = false;
+      let editControls = null;
+
+    function createStickerEditControls() {
+      editControls = document.createElement("div");
+      editControls.className = "sticker-edit-controls";
+
+      editControls.innerHTML = `
+        <button id="moveStickerButton">Move</button>
+        <button id="shrinkStickerButton">Smaller</button>
+        <button id="growStickerButton">Bigger</button>
+        <button id="rotateLeftStickerButton">↺</button>
+        <button id="rotateRightStickerButton">↻</button>
+        <button id="lockStickerButton">Lock</button>
+      `;
+
+      document.body.appendChild(editControls);
+      document.getElementById("moveStickerButton").addEventListener("click", startMoveMode);
+      document.getElementById("shrinkStickerButton").addEventListener("click", shrinkSticker);
+      document.getElementById("growStickerButton").addEventListener("click", growSticker);
+      document.getElementById("rotateLeftStickerButton").addEventListener("click", rotateStickerLeft);
+      document.getElementById("rotateRightStickerButton").addEventListener("click", rotateStickerRight);
+      document.getElementById("lockStickerButton").addEventListener("click", lockStickerEdits);
+    }
+
+    function openStickerEditControls(event, plant) {
+      event.stopPropagation();
+
+      editingPlant = plant;
+      movingPlant = false;
+
+      editControls.style.left = event.clientX + "px";
+      editControls.style.top = event.clientY + "px";
+      editControls.style.display = "flex";
+    }
+
+    function startMoveMode(event) {
+      event.stopPropagation();
+      movingPlant = true;
+    }
+
+    function shrinkSticker(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerWidth = Math.max(20, (editingPlant.stickerWidth || 120) - 5);
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function growSticker(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerWidth = (editingPlant.stickerWidth || 120) + 5;
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function rotateStickerLeft(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) - 5;
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function rotateStickerRight(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) return;
+
+      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) + 5;
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+    }
+
+    function lockStickerEdits(event) {
+      event.stopPropagation();
+
+      movingPlant = false;
+      editingPlant = null;
+
+      if (editControls) {
+        editControls.style.display = "none";
+      }
+    }
 
 
   // ===== DATE + FORMAT HELPERS =====
@@ -2394,7 +2540,9 @@
             sticker.className = "plant-sticker";
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
-            sticker.addEventListener("mousedown", startDraggingSticker);
+            sticker.addEventListener("click", function(event) {
+              openStickerEditControls(event, plant);
+            });
 
             roomContainer.appendChild(sticker);
 
@@ -2512,8 +2660,11 @@
         const metrics = getImageMetrics();
 
         markers.forEach(({ marker, plant }) => {
-          const x = metrics.offsetX + (plant.x / 100) * metrics.displayedWidth;
-          const y = metrics.offsetY + (plant.y / 100) * metrics.displayedHeight;
+          const markerX = plant.markerX ?? plant.x;
+          const markerY = plant.markerY ?? plant.y;
+
+          const x = metrics.offsetX + (markerX / 100) * metrics.displayedWidth;
+          const y = metrics.offsetY + (markerY / 100) * metrics.displayedHeight;
 
           marker.style.left = x + "px";
           marker.style.top = y + "px";
@@ -2523,6 +2674,7 @@
           const stickerX = plant.stickerX ?? plant.x;
           const stickerY = plant.stickerY ?? plant.y;
           const stickerWidth = plant.stickerWidth || 120;
+          const stickerRotation = plant.stickerRotation || 0;
 
           const x = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
           const y = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
@@ -2530,6 +2682,7 @@
           sticker.style.left = x + "px";
           sticker.style.top = y + "px";
           sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
+          sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg)`;
         });
 
         positionLegend();
@@ -3360,6 +3513,27 @@
         }
     });
 
+    document.addEventListener("mousemove", function(event) {
+      if (!movingPlant || !editingPlant) {
+        return;
+      }
+
+      const metrics = getImageMetrics();
+
+      const x = event.clientX - metrics.containerRect.left;
+      const y = event.clientY - metrics.containerRect.top;
+
+      const newX = ((x - metrics.offsetX) / metrics.displayedWidth) * 100;
+      const newY = ((y - metrics.offsetY) / metrics.displayedHeight) * 100;
+
+      editingPlant.stickerX = Number(newX.toFixed(1));
+      editingPlant.stickerY = Number(newY.toFixed(1));
+      editingPlant.markerX = Number(newX.toFixed(1));
+      editingPlant.markerY = Number(newY.toFixed(1));
+
+      positionMarkers();
+    });
+
     document.addEventListener("click", function(event) {
         const calendarWrapper = document.getElementById("calendarWrapper");
         const duePanel = document.getElementById("duePanel");
@@ -3370,6 +3544,16 @@
         const clickedInsideDuePanel = duePanel.contains(event.target);
         const clickedCalendarButton = calendarButton.contains(event.target);
         const clickedInsideModal = plantModal.contains(event.target);
+
+        if (movingPlant && editingPlant) {
+          event.stopPropagation();
+
+          movingPlant = false;
+          savePlantToFirebase(editingPlant);
+          positionMarkers();
+
+          return;
+        }
 
         if (
           calendarWrapper.classList.contains("open") &&
@@ -3409,6 +3593,7 @@
   // ===== STARTUP / PAGE LOAD =====
 
     preloadPlantImages();
+    createStickerEditControls();
 
     const roomImage = document.getElementById("roomImage");
 
