@@ -672,6 +672,11 @@
       transform: scale(1.05);
     }
 
+    .sticker-edit-controls button.active-edit-button {
+      background: #d2819f;
+      transform: scale(1.05);
+    }
+
 
   /* ===== ROOM IMAGE + PLANT DOTS ===== */
 
@@ -2034,6 +2039,7 @@
       let editingPlant = null;
       let movingPlant = false;
       let editControls = null;
+      let moveReady = false;
       let moveOffsetX = 0;
       let moveOffsetY = 0;
 
@@ -2108,22 +2114,10 @@
         return;
       }
 
-      const metrics = getImageMetrics();
+      moveReady = true;
+      movingPlant = false;
 
-      const stickerX = editingPlant.stickerX ?? editingPlant.x;
-      const stickerY = editingPlant.stickerY ?? editingPlant.y;
-
-      const plantPixelX = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
-      const plantPixelY = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
-
-      moveOffsetX = event.clientX - plantPixelX;
-      moveOffsetY = event.clientY - plantPixelY;
-
-      movingPlant = true;
-
-      if (editControls) {
-        editControls.style.display = "none";
-      }
+      document.getElementById("moveStickerButton").classList.add("active-edit-button");
     }
 
     function shrinkSticker(event) {
@@ -2173,7 +2167,16 @@
         savePlantToFirebase(editingPlant);
       }
 
+      moveReady = false;
       movingPlant = false;
+
+      const moveButton = document.getElementById("moveStickerButton");
+      if (moveButton) {
+        moveButton.classList.remove("active-edit-button");
+      }
+
+      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+
       editingPlant = null;
 
       if (editControls) {
@@ -2625,6 +2628,28 @@
             sticker.alt = plant.name;
             sticker.addEventListener("dblclick", function(event) {
               openStickerEditControls(event, plant);
+            });
+
+            sticker.addEventListener("mousedown", function(event) {
+              if (!moveReady || editingPlant !== plant) {
+                return;
+              }
+
+              event.preventDefault();
+              event.stopPropagation();
+
+              const metrics = getImageMetrics();
+
+              const stickerX = plant.stickerX ?? plant.x;
+              const stickerY = plant.stickerY ?? plant.y;
+
+              const plantPixelX = metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+              const plantPixelY = metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+              moveOffsetX = event.clientX - plantPixelX;
+              moveOffsetY = event.clientY - plantPixelY;
+
+              movingPlant = true;
             });
 
             roomContainer.appendChild(sticker);
@@ -3581,6 +3606,17 @@
         editControls.style.top = event.clientY + 18 + "px";
       }
 
+    });
+
+    document.addEventListener("mouseup", function() {
+      if (!movingPlant || !editingPlant) {
+        return;
+      }
+
+      movingPlant = false;
+      savePlantToFirebase(editingPlant);
+      positionMarkers();
+      positionEditControlsAbovePlant(editingPlant);
     });
 
     document.addEventListener("click", function(event) {
