@@ -2045,6 +2045,10 @@
     function startMoveMode(event) {
       event.stopPropagation();
       movingPlant = true;
+
+      if (editControls) {
+        editControls.style.display = "none";
+      }
     }
 
     function shrinkSticker(event) {
@@ -2089,6 +2093,10 @@
 
     function lockStickerEdits(event) {
       event.stopPropagation();
+
+      if (editingPlant) {
+        savePlantToFirebase(editingPlant);
+      }
 
       movingPlant = false;
       editingPlant = null;
@@ -2562,7 +2570,15 @@
 
         marker.title = plant.name;
 
-        marker.addEventListener("click", () => openPlantDetails(index));
+        marker.addEventListener("click", function(event) {
+          if (movingPlant) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
+
+          openPlantDetails(index);
+        });
 
         roomContainer.appendChild(marker);
 
@@ -3532,6 +3548,12 @@
       editingPlant.markerY = Number(newY.toFixed(1));
 
       positionMarkers();
+
+      if (editControls) {
+        editControls.style.left = event.clientX + 18 + "px";
+        editControls.style.top = event.clientY + 18 + "px";
+      }
+
     });
 
     document.addEventListener("click", function(event) {
@@ -3551,6 +3573,12 @@
           movingPlant = false;
           savePlantToFirebase(editingPlant);
           positionMarkers();
+
+          if (editControls) {
+            editControls.style.left = event.clientX + 18 + "px";
+            editControls.style.top = event.clientY + 18 + "px";
+            editControls.style.display = "flex";
+          }
 
           return;
         }
