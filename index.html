@@ -637,8 +637,8 @@
       position: fixed;
       z-index: 30;
       display: none;
-      width: 210px;
-      height: 210px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       background: transparent;
       transform: translate(-50%, -50%);
@@ -651,83 +651,80 @@
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      background: rgba(245, 241, 233, 0.42);
+      background: rgba(245, 241, 233, 0.36);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      -webkit-mask: radial-gradient(circle, transparent 0 57%, black 58% 100%);
-      mask: radial-gradient(circle, transparent 0 57%, black 58% 100%);
-      box-shadow: 0 0 14px rgba(0, 0, 0, 0.18);
+      -webkit-mask: radial-gradient(circle, transparent 0 61%, black 62% 100%);
+      mask: radial-gradient(circle, transparent 0 61%, black 62% 100%);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.16);
       pointer-events: none;
     }
 
     .sticker-edit-controls button {
       position: absolute;
       border: none;
-      background: rgba(94, 96, 96, 0.82);
+      background: rgba(84, 87, 87, 0.84);
       color: white;
       cursor: pointer;
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 800;
-      font-size: 16px;
       pointer-events: auto;
     }
 
     #moveStickerButton,
     #lockStickerButton {
-      width: 68px;
-      height: 38px;
+      width: 58px;
+      height: 32px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     #growStickerButton,
     #shrinkStickerButton,
     #rotateLeftStickerButton,
     #rotateRightStickerButton {
-      width: 42px;
-      height: 42px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
+      font-size: 24px;
+      line-height: 1;
+      padding: 0;
     }
 
     #moveStickerButton {
-      top: -18px;
+      top: -16px;
       left: 50%;
       transform: translateX(-50%);
     }
 
     #lockStickerButton {
-      bottom: -18px;
+      bottom: -16px;
       left: 50%;
       transform: translateX(-50%);
     }
 
     #growStickerButton {
-      right: -16px;
+      right: -18px;
       top: 30%;
       transform: translateY(-50%);
     }
 
     #shrinkStickerButton {
-      right: -16px;
+      right: -18px;
       top: 70%;
       transform: translateY(-50%);
     }
 
     #rotateLeftStickerButton {
-      left: -16px;
+      left: -18px;
       top: 30%;
       transform: translateY(-50%);
     }
 
     #rotateRightStickerButton {
-      left: -16px;
+      left: -18px;
       top: 70%;
       transform: translateY(-50%);
-    }
-
-    .sticker-edit-controls button:hover {
-      filter: brightness(1.08);
-      transform: scale(1.05);
     }
 
     .sticker-edit-controls button.active-edit-button {
@@ -2133,13 +2130,9 @@
       const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
       const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
 
+      editControls.style.left = plantPixelX + "px";
+      editControls.style.top = plantPixelY + "px";
       editControls.style.display = "block";
-
-      const menuWidth = editControls.offsetWidth;
-      const menuHeight = editControls.offsetHeight;
-
-      editControls.style.left = plantPixelX - menuWidth / 2 + "px";
-      editControls.style.top = plantPixelY - menuHeight / 2 + "px";
     }
 
     function openStickerEditControls(event, plant) {
@@ -2703,6 +2696,10 @@
               moveOffsetY = event.clientY - plantPixelY;
 
               movingPlant = true;
+
+              if (editControls) {
+                editControls.style.display = "none";
+              }
             });
 
             roomContainer.appendChild(sticker);
@@ -3653,10 +3650,6 @@
       editingPlant.markerY = Number(newY.toFixed(1));
 
       positionMarkers();
-
-      if (editControls && editingPlant) {
-        positionEditControlsAbovePlant(editingPlant);
-      }
 
     });
 
