@@ -2034,15 +2034,39 @@
       document.getElementById("lockStickerButton").addEventListener("click", lockStickerEdits);
     }
 
+    function positionEditControlsAbovePlant(plant) {
+      if (!editControls || !plant) return;
+
+      const metrics = getImageMetrics();
+      const stickerX = plant.stickerX ?? plant.x;
+      const stickerY = plant.stickerY ?? plant.y;
+
+      const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
+      const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+
+      editControls.style.display = "flex";
+
+      const menuWidth = editControls.offsetWidth;
+      const menuHeight = editControls.offsetHeight;
+      const margin = 10;
+
+      let left = plantPixelX - menuWidth / 2;
+      let top = plantPixelY - menuHeight - 18;
+
+      left = Math.max(margin, Math.min(left, window.innerWidth - menuWidth - margin));
+      top = Math.max(margin, top);
+
+      editControls.style.left = left + "px";
+      editControls.style.top = top + "px";
+    }
+
     function openStickerEditControls(event, plant) {
       event.stopPropagation();
 
       editingPlant = plant;
       movingPlant = false;
 
-      editControls.style.left = event.clientX + "px";
-      editControls.style.top = event.clientY + "px";
-      editControls.style.display = "flex";
+      positionEditControlsAbovePlant(plant);
     }
 
     function startMoveMode(event) {
@@ -3546,16 +3570,7 @@
           positionMarkers();
 
           if (editControls && editingPlant) {
-            const metrics = getImageMetrics();
-            const stickerX = editingPlant.stickerX ?? editingPlant.x;
-            const stickerY = editingPlant.stickerY ?? editingPlant.y;
-
-            const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
-            const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
-
-            editControls.style.left = plantPixelX + 18 + "px";
-            editControls.style.top = plantPixelY + 18 + "px";
-            editControls.style.display = "flex";
+            positionEditControlsAbovePlant(editingPlant);
           }
 
           return;
