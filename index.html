@@ -120,23 +120,13 @@
     }
 
     .delay-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      padding: 0;
+      display: inline-block;
     }
 
     .delay-button span {
-      width: 50%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .delay-button span:first-child {
-      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      user-select: none;
+      padding: 0 2px;
     }
 
     .watered-button:hover,
@@ -1304,6 +1294,7 @@
             <button class="fertilized-button" onclick="markFertilizedToday()">Fertilized!</button>
             <button class="delay-button" type="button">
               <span onclick="moveActivePlantBackOneDay(event)">-1</span>
+              /
               <span onclick="delayActivePlantOneDay(event)">+1</span>
             </button>
             <button class="watered-button" onclick="markWateredToday()">Watered!</button>
@@ -3337,7 +3328,7 @@
     
     function delayActivePlantOneDay(event) {
       event.stopPropagation();
-      
+
         if (activePlantIndex === null) {
           return;
         }
