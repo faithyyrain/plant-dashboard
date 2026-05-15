@@ -3269,11 +3269,11 @@
 
       if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
         delayButton.style.display = "none";
-        delayButton.innerHTML = `<span>-1</span><span>+1</span>`;
+        delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
         delayButton.classList.remove("delay-active");
       } else {
-        delayButton.style.display = "inline-flex";
-        delayButton.innerHTML = `<span>-1</span><span>+1</span>`;
+        delayButton.style.display = "inline-block";
+        delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
         delayButton.classList.remove("delay-active");
       }
 
