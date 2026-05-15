@@ -119,8 +119,24 @@
       background: #dab668;
     }
 
-    .delay-back-button {
-      background: #bf9a65;
+    .delay-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .delay-button span {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .delay-button span:first-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
     }
 
     .watered-button:hover,
@@ -879,7 +895,7 @@
     }
 
     .plant-marker:hover {
-      transform: translate(-50%, -50%) scale(1.0);
+      transform: translate(-50%, -50%) scale(1.2);
       box-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
     }
 
@@ -1286,7 +1302,10 @@
           <div class="button-row">
             <button class="close-button" onclick="closeModal()">Close</button>
             <button class="fertilized-button" onclick="markFertilizedToday()">Fertilized!</button>
-            <button class="delay-button" onclick="delayActivePlantOneDay()">+1 Day</button>
+            <button class="delay-button" type="button">
+              <span onclick="moveActivePlantBackOneDay(event)">-1</span>
+              <span onclick="delayActivePlantOneDay(event)">+1</span>
+            </button>
             <button class="watered-button" onclick="markWateredToday()">Watered!</button>
           </div>
         </div>
@@ -3259,18 +3278,12 @@
 
       if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
         delayButton.style.display = "none";
-        delayButton.textContent = "+1 Day";
+        delayButton.innerHTML = `<span>-1</span><span>+1</span>`;
         delayButton.classList.remove("delay-active");
       } else {
-        delayButton.style.display = "inline-block";
-
-        if (plant.delayUntil && plant.delayUntil > todayString) {
-          delayButton.textContent = "Delayed!";
-          delayButton.classList.add("delay-active");
-        } else {
-          delayButton.textContent = "+1 Day";
-          delayButton.classList.remove("delay-active");
-        }
+        delayButton.style.display = "inline-flex";
+        delayButton.innerHTML = `<span>-1</span><span>+1</span>`;
+        delayButton.classList.remove("delay-active");
       }
 
       const fertilizedButton = document.querySelector(".fertilized-button");
@@ -3295,7 +3308,36 @@
 
   // ===== WATER + FERTILIZER BUTTON LOGIC =====
 
-    function delayActivePlantOneDay() {
+    function moveActivePlantBackOneDay(event) {
+      event.stopPropagation();
+
+      if (activePlantIndex === null) {
+        return;
+      }
+
+      const plant = plants[activePlantIndex];
+      const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+      if (!nextWaterDate) {
+        return;
+      }
+
+      const movedDate = new Date(nextWaterDate);
+      movedDate.setDate(nextWaterDate.getDate() - 1);
+
+      plant.delayUntil = dateToString(movedDate);
+
+      savePlantToFirebase(plant);
+
+      updateMarkerColors();
+      renderCalendar();
+      renderUpcomingChecks();
+      openPlantDetails(activePlantIndex);
+    }
+    
+    function delayActivePlantOneDay(event) {
+      event.stopPropagation();
+      
         if (activePlantIndex === null) {
           return;
         }
