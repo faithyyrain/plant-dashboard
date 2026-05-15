@@ -126,16 +126,32 @@
     .delay-button span {
       cursor: pointer;
       user-select: none;
-      padding: 0 2px;
+    }
+
+    .delay-button span:first-child {
+      padding-right: 10px;
+    }
+
+    .delay-button span:last-child {
+      padding-left: 10px;
     }
 
     .watered-button:hover,
     .fertilized-button:hover,
-    .delay-button:hover,
     .delay-back-button:hover,
     .close-button:hover {
       filter: brightness(1.08);
       transform: scale(1.05);
+    }
+
+    .delay-button span:hover {
+      filter: brightness(1.15);
+      transform: scale(1.12);
+    }
+
+    .delay-button span {
+      display: inline-block;
+      transition: filter 0.15s ease, transform 0.15s ease;
     }
 
     .size-line {
