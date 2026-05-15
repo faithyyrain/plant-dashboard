@@ -2228,6 +2228,19 @@
             fertilizerBufferDays: 3,
             lastRepot: "2026-05-10",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
+          },
+          {
+            name: "Coffee Table",
+            decorative: true,
+            x: 72,
+            y: 82,
+            sticker: "plant-stickers/table.png",
+            stickerX: 72,
+            stickerY: 82,
+            stickerWidth: 180,
+            stickerRotation: 0,
+            stickerScaleX: 1,
+            stickerScaleY: 1
           }
           ];
 
@@ -2942,6 +2955,11 @@
               plant
             });
           }
+        
+        if (plant.decorative) {
+          return;
+        }
+
         const status = getPlantStatus(plant);
 
         const marker = document.createElement("button");
