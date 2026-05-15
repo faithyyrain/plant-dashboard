@@ -692,6 +692,7 @@
     }
 
     #moveStickerButton,
+    #moveDotButton,
     #lockStickerButton {
       width: 58px;
       height: 32px;
@@ -720,7 +721,13 @@
 
     #moveStickerButton {
       top: 14px;
-      left: 50%;
+      left: 34%;
+      transform: translate(-50%, -50%);
+    }
+
+    #moveDotButton {
+      top: 14px;
+      left: 66%;
       transform: translate(-50%, -50%);
     }
 
@@ -1295,6 +1302,8 @@
         stickerY: plant.stickerY ?? null,
         markerX: plant.markerX ?? null,
         markerY: plant.markerY ?? null,
+        markerOffsetX: plant.markerOffsetX ?? null,
+        markerOffsetY: plant.markerOffsetY ?? null,
         stickerWidth: plant.stickerWidth ?? null,
         stickerRotation: plant.stickerRotation ?? null,
         stickerScaleX: plant.stickerScaleX ?? null,
@@ -1404,6 +1413,14 @@
 
               if (savedPlant.markerY !== undefined) {
                 plant.markerY = savedPlant.markerY;
+              }
+
+              if (savedPlant.markerOffsetX !== undefined) {
+                plant.markerOffsetX = savedPlant.markerOffsetX;
+              }
+
+              if (savedPlant.markerOffsetY !== undefined) {
+                plant.markerOffsetY = savedPlant.markerOffsetY;
               }
 
               if (savedPlant.stickerWidth !== undefined) {
@@ -2232,6 +2249,8 @@
       let movingPlant = false;
       let editControls = null;
       let moveReady = false;
+      let dotMoveReady = false;
+      let movingDot = false;
       let moveOffsetX = 0;
       let moveOffsetY = 0;
 
@@ -2241,6 +2260,7 @@
 
       editControls.innerHTML = `
         <button id="moveStickerButton" title="Move plant">Move</button>
+        <button id="moveDotButton" title="Move dot">Dot</button>
         <button id="shrinkStickerButton" title="Make smaller">−</button>
         <button id="growStickerButton" title="Make bigger">+</button>
         <button id="rotateLeftStickerButton" title="Rotate left">⟲</button>
@@ -2254,6 +2274,7 @@
 
       document.body.appendChild(editControls);
       document.getElementById("moveStickerButton").addEventListener("click", startMoveMode);
+      document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
       document.getElementById("shrinkStickerButton").addEventListener("click", shrinkSticker);
       document.getElementById("growStickerButton").addEventListener("click", growSticker);
       document.getElementById("rotateLeftStickerButton").addEventListener("click", rotateStickerLeft);
@@ -2306,9 +2327,28 @@
       }
 
       moveReady = true;
+      dotMoveReady = false;
       movingPlant = false;
+      movingDot = false;
 
       document.getElementById("moveStickerButton").classList.add("active-edit-button");
+      document.getElementById("moveDotButton").classList.remove("active-edit-button");
+    }
+
+    function startDotMoveMode(event) {
+      event.stopPropagation();
+
+      if (!editingPlant) {
+        return;
+      }
+
+      dotMoveReady = true;
+      moveReady = false;
+      movingPlant = false;
+      movingDot = false;
+
+      document.getElementById("moveDotButton").classList.add("active-edit-button");
+      document.getElementById("moveStickerButton").classList.remove("active-edit-button");
     }
 
     function shrinkSticker(event) {
@@ -2399,11 +2439,18 @@
       }
 
       moveReady = false;
+      dotMoveReady = false;
       movingPlant = false;
+      movingDot = false;
 
       const moveButton = document.getElementById("moveStickerButton");
       if (moveButton) {
         moveButton.classList.remove("active-edit-button");
+      }
+
+      const dotButton = document.getElementById("moveDotButton");
+      if (dotButton) {
+        dotButton.classList.remove("active-edit-button");
       }
 
       stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
@@ -2905,8 +2952,26 @@
 
         marker.title = plant.name;
 
+        marker.addEventListener("mousedown", function(event) {
+          if (!dotMoveReady || editingPlant !== plant) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          moveOffsetX = 0;
+          moveOffsetY = 0;
+
+          movingDot = true;
+
+          if (editControls) {
+            editControls.style.display = "none";
+          }
+        });
+
         marker.addEventListener("click", function(event) {
-          if (movingPlant) {
+          if (movingPlant || movingDot) {
             event.preventDefault();
             event.stopPropagation();
             return;
@@ -3824,7 +3889,7 @@
     });
 
     document.addEventListener("mousemove", function(event) {
-      if (!movingPlant || !editingPlant) {
+      if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
       }
 
@@ -3836,21 +3901,29 @@
       const newX = ((x - moveOffsetX - metrics.offsetX) / metrics.displayedWidth) * 100;
       const newY = ((y - moveOffsetY - metrics.offsetY) / metrics.displayedHeight) * 100;
 
-      editingPlant.stickerX = Number(newX.toFixed(1));
-      editingPlant.stickerY = Number(newY.toFixed(1));
-      editingPlant.markerX = Number(newX.toFixed(1));
-      editingPlant.markerY = Number(newY.toFixed(1));
+      if (movingDot) {
+        const stickerX = editingPlant.stickerX ?? editingPlant.x;
+        const stickerY = editingPlant.stickerY ?? editingPlant.y;
+
+        editingPlant.markerOffsetX = Number((newX - stickerX).toFixed(1));
+        editingPlant.markerOffsetY = Number((newY - stickerY).toFixed(1));
+      } else {
+        editingPlant.stickerX = Number(newX.toFixed(1));
+        editingPlant.stickerY = Number(newY.toFixed(1));
+      }
 
       positionMarkers();
 
     });
 
     document.addEventListener("mouseup", function() {
-      if (!movingPlant || !editingPlant) {
+      if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
       }
 
       movingPlant = false;
+      movingDot = false;
+
       savePlantToFirebase(editingPlant);
       positionMarkers();
       positionEditControlsAbovePlant(editingPlant);
@@ -3867,10 +3940,11 @@
         const clickedCalendarButton = calendarButton.contains(event.target);
         const clickedInsideModal = plantModal.contains(event.target);
 
-        if (movingPlant && editingPlant) {
+        if ((movingPlant || movingDot) && editingPlant) {
           event.stopPropagation();
 
           movingPlant = false;
+          movingDot = false;
           savePlantToFirebase(editingPlant);
           positionMarkers();
 
