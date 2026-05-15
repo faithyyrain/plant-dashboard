@@ -659,6 +659,32 @@
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
+    .sticker-edit-controls button::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+      background: rgba(232, 222, 204, 0.96);
+      color: #3f392f;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: 'Nunito', Arial, sans-serif;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.22);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      z-index: 7000;
+    }
+
+.sticker-edit-controls button:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
     .squish-icon {
       position: relative;
       width: 22px;
@@ -2273,17 +2299,17 @@
       editControls.className = "sticker-edit-controls";
 
       editControls.innerHTML = `
-        <button id="moveStickerButton" title="Move plant">Move</button>
-        <button id="moveDotButton" title="Move dot">Dot</button>
-        <button id="shrinkStickerButton" title="Make smaller">−</button>
-        <button id="growStickerButton" title="Make bigger">+</button>
-        <button id="rotateLeftStickerButton" title="Rotate left">⟲</button>
-        <button id="rotateRightStickerButton" title="Rotate right">⟳</button>
-        <button id="stretchWideStickerButton" title="Stretch horizontal">↔</button>
-        <button id="squishNarrowStickerButton" title="Squish horizontal">→←</button>
-        <button id="stretchTallStickerButton" title="Stretch vertical">↕</button>
-        <button id="squishShortStickerButton" title="Squish vertical">↕−</button>
-        <button id="lockStickerButton" title="Lock edits">Lock</button>
+        <button id="moveStickerButton" data-tooltip="Move plant">Move</button>
+        <button id="moveDotButton" data-tooltip="Move dot">Dot</button>
+        <button id="shrinkStickerButton" data-tooltip="Make smaller">−</button>
+        <button id="growStickerButton" data-tooltip="Make bigger">+</button>
+        <button id="rotateLeftStickerButton" data-tooltip="Rotate left">⟲</button>
+        <button id="rotateRightStickerButton" data-tooltip="Rotate right">⟳</button>
+        <button id="stretchWideStickerButton" data-tooltip="Stretch horizontal">↔</button>
+        <button id="squishNarrowStickerButton" data-tooltip="Squish horizontal">→←</button>
+        <button id="stretchTallStickerButton" data-tooltip="Stretch vertical">↕</button>
+        <button id="squishShortStickerButton" data-tooltip="Squish vertical">↕−</button>
+        <button id="lockStickerButton" data-tooltip="Lock edits">Lock</button>
       `;
 
       document.body.appendChild(editControls);
