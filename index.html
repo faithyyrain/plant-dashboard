@@ -2251,6 +2251,7 @@
       let moveReady = false;
       let dotMoveReady = false;
       let movingDot = false;
+      let ignoreNextMarkerClick = false;
       let moveOffsetX = 0;
       let moveOffsetY = 0;
 
@@ -2971,9 +2972,10 @@
         });
 
         marker.addEventListener("click", function(event) {
-          if (movingPlant || movingDot) {
+          if (movingPlant || movingDot || ignoreNextMarkerClick) {
             event.preventDefault();
             event.stopPropagation();
+            ignoreNextMarkerClick = false;
             return;
           }
 
@@ -3919,6 +3921,10 @@
     document.addEventListener("mouseup", function() {
       if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
+      }
+
+      if (movingDot) {
+        ignoreNextMarkerClick = true;
       }
 
       movingPlant = false;
