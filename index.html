@@ -145,7 +145,22 @@
     }
 
     .delay-button {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      padding: 0;
       position: relative;
+    }
+
+    .delay-half {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      padding: 10px 0;
+      cursor: pointer;
+      user-select: none;
+      transition: filter 0.15s ease, background 0.15s ease;
     }
 
     .delay-button::after {
