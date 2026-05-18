@@ -128,23 +128,6 @@
     }
 
     .delay-button {
-      display: inline-flex;
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .delay-half {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 12px;
-      min-width: 26px;
-      cursor: pointer;
-      user-select: none;
-      transition: filter 0.15s ease, transform 0.15s ease, background 0.15s ease;
-    }
-
-    .delay-button {
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
       overflow: hidden;
@@ -160,12 +143,8 @@
       padding: 10px 0;
       cursor: pointer;
       user-select: none;
-      transition: filter 0.15s ease, background 0.15s ease;
       box-sizing: border-box;
-    }
-
-    .delay-forward-half {
-      margin-left: -1px;
+      transition: filter 0.15s ease, background 0.15s ease, font-size 0.15s ease;
     }
 
     .delay-button::after {
@@ -184,6 +163,7 @@
     .delay-half:hover {
       filter: brightness(1.12);
       background: rgba(255, 255, 255, 0.14);
+      font-size: 16px;
     }
 
     .delay-half.delay-half-active {
@@ -193,21 +173,9 @@
 
     .watered-button:hover,
     .fertilized-button:hover,
-    .delay-back-button:hover,
     .close-button:hover {
       filter: brightness(1.08);
       transform: scale(1.05);
-    }
-
-    .delay-button .delay-half:hover {
-      filter: brightness(1.12);
-      background: rgba(255, 255, 255, 0.14);
-      transform: none;
-      font-size: 16px;
-    }
-
-    .delay-button .delay-half {
-      transition: filter 0.15s ease, background 0.15s ease, font-size 0.15s ease;
     }
 
     .size-line {
@@ -3350,7 +3318,7 @@
         `;
         delayButton.classList.remove("delay-active");
       } else {
-        delayButton.style.display = "inline-block";
+        delayButton.style.display = "inline-grid";
         buttonRow.classList.remove("even-buttons");
         delayButton.innerHTML = `
           <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)">-1</span>
