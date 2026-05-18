@@ -161,18 +161,20 @@
       cursor: pointer;
       user-select: none;
       transition: filter 0.15s ease, background 0.15s ease;
+      box-sizing: border-box;
     }
 
     .delay-button::after {
       content: "";
       position: absolute;
-      top: 20%;
-      bottom: 20%;
+      top: 0;
+      bottom: 0;
       left: 50%;
       width: 1px;
       background: rgba(255, 255, 255, 0.55);
       transform: translateX(-50%);
       pointer-events: none;
+      z-index: 2;
     }
 
     .delay-half:hover {
@@ -182,6 +184,7 @@
 
     .delay-half.delay-half-active {
       background: #dab668;
+      box-shadow: inset 0 0 0 999px #dab668;
     }
 
     .watered-button:hover,
