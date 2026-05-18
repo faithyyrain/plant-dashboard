@@ -128,20 +128,33 @@
     }
 
     .delay-button {
-      display: inline-block;
+      display: inline-flex;
+      overflow: hidden;
+      padding: 0;
     }
 
-    .delay-button span {
+    .delay-half {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      min-width: 26px;
       cursor: pointer;
       user-select: none;
+      transition: filter 0.15s ease, transform 0.15s ease, background 0.15s ease;
     }
 
-    .delay-button span:first-child {
-      padding-right: 2px;
+    .delay-half:first-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.55);
     }
 
-    .delay-button span:last-child {
-      padding-left: 2px;
+    .delay-half:hover {
+      filter: brightness(1.12);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .delay-half.delay-half-active {
+      background: #dab668;
     }
 
     .watered-button:hover,
@@ -3296,13 +3309,34 @@
       if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
         delayButton.style.display = "none";
         buttonRow.classList.add("even-buttons");
-        delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
+        delayButton.innerHTML = `
+          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)">-1</span>
+          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)">+1</span>
+        `;
         delayButton.classList.remove("delay-active");
       } else {
         delayButton.style.display = "inline-block";
         buttonRow.classList.remove("even-buttons");
-        delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
+        delayButton.innerHTML = `
+          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)">-1</span>
+          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)">+1</span>
+        `;
         delayButton.classList.remove("delay-active");
+        const nextWaterDate = getEffectiveNextWaterDate(plant);
+        const baseNextWaterDate = getBaseNextWaterDate(plant);
+
+        if (plant.delayUntil && nextWaterDate && baseNextWaterDate) {
+          const nextTime = nextWaterDate.getTime();
+          const baseTime = baseNextWaterDate.getTime();
+
+          if (nextTime < baseTime) {
+            delayButton.querySelector(".delay-back-half").classList.add("delay-half-active");
+          }
+
+          if (nextTime > baseTime) {
+            delayButton.querySelector(".delay-forward-half").classList.add("delay-half-active");
+          }
+        }
       }
 
       const fertilizedButton = document.querySelector(".fertilized-button");
