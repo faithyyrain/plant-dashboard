@@ -163,7 +163,11 @@
     .delay-half:hover {
       filter: brightness(1.12);
       background: rgba(255, 255, 255, 0.14);
-      font-size: 16px;
+      transform: none;
+    }
+
+    .delay-half:hover span {
+      transform: scale(1.08);
     }
 
     .delay-half.delay-half-active {
@@ -3313,17 +3317,16 @@
         delayButton.style.display = "none";
         buttonRow.classList.add("even-buttons");
         delayButton.innerHTML = `
-          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)">-1</span>
-          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)">+1</span>
+          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
+          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>
         `;
         delayButton.classList.remove("delay-active");
       } else {
         delayButton.style.display = "inline-grid";
         buttonRow.classList.remove("even-buttons");
         delayButton.innerHTML = `
-          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)">-1</span>
-          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)">+1</span>
-        `;
+          <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
+          <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>        `;
         delayButton.classList.remove("delay-active");
         const nextWaterDate = getEffectiveNextWaterDate(plant);
         const baseNextWaterDate = getBaseNextWaterDate(plant);
