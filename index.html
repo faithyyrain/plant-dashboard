@@ -81,6 +81,12 @@
       gap: 6px;
       align-items: center;
       margin-top: 18px;
+      width: 100%;
+    }
+
+    .button-row.even-buttons {
+      justify-content: space-evenly;
+      gap: 0;
     }
 
     .close-button,
@@ -3248,7 +3254,8 @@
 
       if (hasFertilizerSchedule(plant)) {
         document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
-        document.getElementById("fertilizerStatus").textContent = fertilizerStatus.label;
+        document.getElementById("fertilizerStatus").textContent =
+          fertilizerStatus.readySoon || fertilizerStatus.due ? "Due" : fertilizerStatus.label;
         fertilizerGroup.style.display = "block";
       } else {
         fertilizerGroup.style.display = "none";
@@ -3281,15 +3288,18 @@
         wateredButton.textContent = "Water";
         wateredButton.classList.remove("undo-watered");
       }
-
+      
+      const buttonRow = document.querySelector(".button-row"); 
       const delayButton = document.querySelector(".delay-button");
 
       if (!plant.lastWatered || !plant.intervalDays || plant.lastWatered === todayString) {
         delayButton.style.display = "none";
+        buttonRow.classList.add("even-buttons");
         delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
         delayButton.classList.remove("delay-active");
       } else {
         delayButton.style.display = "inline-block";
+        buttonRow.classList.remove("even-buttons");
         delayButton.innerHTML = `<span onclick="moveActivePlantBackOneDay(event)">-1</span> / <span onclick="delayActivePlantOneDay(event)">+1</span>`;
         delayButton.classList.remove("delay-active");
       }
