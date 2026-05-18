@@ -144,8 +144,20 @@
       transition: filter 0.15s ease, transform 0.15s ease, background 0.15s ease;
     }
 
-    .delay-half:first-child {
-      border-right: 1px solid rgba(255, 255, 255, 0.55);
+    .delay-button {
+      position: relative;
+    }
+
+    .delay-button::after {
+      content: "";
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      left: 50%;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.55);
+      transform: translateX(-50%);
+      pointer-events: none;
     }
 
     .delay-half:hover {
