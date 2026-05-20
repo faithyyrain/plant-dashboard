@@ -1505,6 +1505,10 @@
     }
 
     function loadPlantsFromFirebase() {
+        if (firebaseDataLoaded) {
+      return;
+    }
+    
       database.ref("plants").once("value").then(snapshot => {
         const savedPlants = snapshot.val();
 
