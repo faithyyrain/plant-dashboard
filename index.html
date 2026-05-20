@@ -1508,7 +1508,7 @@
         if (firebaseDataLoaded) {
       return;
     }
-    
+
       database.ref("plants").once("value").then(snapshot => {
         const savedPlants = snapshot.val();
 
@@ -3349,7 +3349,7 @@
 
       const zoomView = document.getElementById("zoomView");
 
-      if (plant.image) {
+      if (plant.image && !/iPhone|iPad|iPod/.test(navigator.userAgent)) {
         zoomView.style.backgroundImage = `url("${plant.image}")`;
         zoomView.style.backgroundSize = "cover";
         zoomView.style.backgroundPosition = "center";
