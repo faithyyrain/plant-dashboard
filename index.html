@@ -3977,12 +3977,6 @@
             });
 
             actionButtons.appendChild(delayButton);
-
-            if (hasFertilizerSchedule(plant) && shouldShowCalendarFertilizerRing(plant, dateString)) {
-              const fertilizerDot = document.createElement("div");
-              fertilizerDot.className = "due-plant-fertilizer-dot";
-              actionButtons.appendChild(fertilizerDot);
-            }
           }
 
           const plantMain = document.createElement("div");
