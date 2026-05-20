@@ -982,6 +982,17 @@
         0 0 10px rgba(255, 255, 255, 0.35);
     }
 
+    @media (hover: none) and (pointer: coarse) {
+      .plant-marker {
+        cursor: default;
+      }
+
+      .plant-marker:hover,
+      .plant-marker.fertilizer-ring:hover {
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
     .blue {
       background: #5dd1e0;
     }
