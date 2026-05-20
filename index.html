@@ -1263,7 +1263,7 @@
       <input id="loginEmail" type="email" placeholder="Email">
       <input id="loginPassword" type="password" placeholder="Password">
 
-      <button onclick="signInWithGoogle()">Sign in</button>
+      <button onclick="signInWithEmail()">Sign in</button>
     </div>
   </div>
 
@@ -1458,7 +1458,7 @@
         user.email.toLowerCase().trim() === allowedEmail;
     }
 
-    function signInWithGoogle() {
+    function signInWithEmail() {
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
 
@@ -1491,9 +1491,6 @@
     function checkAuthStatus() {
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => {
-          return auth.getRedirectResult();
-        })
-        .then(() => {
           auth.onAuthStateChanged(user => {
             if (isAllowedUser(user)) {
               document.getElementById("loginScreen").style.display = "none";
@@ -1507,15 +1504,15 @@
           });
         })
         .catch(error => {
-          console.error("Auth redirect/persistence error:", error);
+          console.error("Auth persistence error:", error);
           alert("Sign-in failed. Please try again.");
         });
     }
 
     function loadPlantsFromFirebase() {
         if (firebaseDataLoaded) {
-      return;
-    }
+          return;
+        }
 
       database.ref("plants").once("value").then(snapshot => {
         const savedPlants = snapshot.val();
@@ -2412,8 +2409,6 @@
       let selectedDueDate = null;
       let selectedDuePlants = [];
       let selectedCalendarDate = null;
-      let draggingSticker = null;
-      let draggingPlant = null;
       let editingPlant = null;
       let movingPlant = false;
       let editControls = null;
@@ -2809,45 +2804,6 @@
 
         return `Plants Watered ${month} ${day}${suffix}`;
     }
-
-
-  // ===== WATERING + FERTILIZER STORAGE =====
-
-    function plantStorageKey(plant) {
-        return `lastWatered-${plant.name}-${plant.x}-${plant.y}`;
-    }
-
-    function fertilizerStorageKey(plant) {
-        return `lastFertilized-${plant.name}-${plant.x}-${plant.y}`;
-    }
-
-    function delayStorageKey(plant) {
-        return `delayUntil-${plant.name}-${plant.x}-${plant.y}`;
-    }
-
-    function loadSavedWateringDates() {
-        plants.forEach(plant => {
-          plant.originalLastWatered = plant.lastWatered;
-          plant.originalLastFertilized = plant.lastFertilized;
-
-          const savedWateredDate = localStorage.getItem(plantStorageKey(plant));
-          const savedFertilizedDate = localStorage.getItem(fertilizerStorageKey(plant));
-          const savedDelayDate = localStorage.getItem(delayStorageKey(plant));
-
-          if (savedWateredDate) {
-            plant.lastWatered = savedWateredDate;
-          }
-
-          if (savedFertilizedDate) {
-            plant.lastFertilized = savedFertilizedDate;
-          }
-
-          if (savedDelayDate) {
-            plant.delayUntil = savedDelayDate;
-          }
-        });
-    }
-
 
   // ===== WATERING STATUS LOGIC =====
 
@@ -4206,29 +4162,8 @@
     window.addEventListener("resize", positionMarkers);
 
 
-  // ===== IMAGE PRELOADING =====
-
-    const preloadedPlantImages = [];
-
-    function preloadPlantImages() {
-        plants.forEach(plant => {
-          if (plant.image) {
-            const img = new Image();
-            img.src = plant.image;
-
-            if (img.decode) {
-              img.decode().catch(() => {});
-            }
-
-            preloadedPlantImages.push(img);
-          }
-        });
-    }
-
-
   // ===== STARTUP / PAGE LOAD =====
 
-    // preloadPlantImages();
     createStickerEditControls();
 
     const roomImage = document.getElementById("roomImage");
