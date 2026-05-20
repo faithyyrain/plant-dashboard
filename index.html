@@ -1464,17 +1464,23 @@
     function checkAuthStatus() {
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => {
+          return auth.getRedirectResult();
+        })
+        .then(() => {
           auth.onAuthStateChanged(user => {
             if (isAllowedUser(user)) {
               document.getElementById("loginScreen").style.display = "none";
-              loadPlantsFromFirebase();
+
+              if (!firebaseDataLoaded) {
+                loadPlantsFromFirebase();
+              }
             } else {
               document.getElementById("loginScreen").style.display = "flex";
             }
           });
         })
         .catch(error => {
-          console.error("Auth persistence error:", error);
+          console.error("Auth redirect/persistence error:", error);
           alert("Sign-in failed. Please try again.");
         });
     }
