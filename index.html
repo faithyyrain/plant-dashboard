@@ -1431,23 +1431,7 @@
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
-      auth.signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-
-          if (!isAllowedUser(user)) {
-            alert("This Google account is not authorized to use this plant dashboard.");
-            auth.signOut();
-            return;
-          }
-
-          document.getElementById("loginScreen").style.display = "none";
-          loadPlantsFromFirebase();
-        })
-        .catch(error => {
-          console.error("Google sign-in error:", error);
-          alert("Sign-in failed. Please try again.");
-        });
+      auth.signInWithRedirect(provider);
     }
 
     function signOutOfDashboard() {
@@ -1457,6 +1441,9 @@
     function checkAuthStatus() {
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => {
+          return auth.getRedirectResult();
+        })
+        .then(result => {
           auth.onAuthStateChanged(user => {
             if (isAllowedUser(user)) {
               document.getElementById("loginScreen").style.display = "none";
@@ -1467,7 +1454,7 @@
           });
         })
         .catch(error => {
-          console.error("Auth persistence error:", error);
+          console.error("Auth redirect error:", error);
           alert("Sign-in failed. Please try again.");
         });
     }
