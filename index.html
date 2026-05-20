@@ -985,11 +985,19 @@
     @media (hover: none) and (pointer: coarse) {
       .plant-marker {
         cursor: default;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
       }
 
       .plant-marker:hover,
-      .plant-marker.fertilizer-ring:hover {
+      .plant-marker:active,
+      .plant-marker:focus,
+      .plant-marker.fertilizer-ring:hover,
+      .plant-marker.fertilizer-ring:active,
+      .plant-marker.fertilizer-ring:focus {
         transform: translate(-50%, -50%) scale(1);
+        filter: none;
+        outline: none;
       }
     }
 
