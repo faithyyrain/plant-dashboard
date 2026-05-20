@@ -3354,7 +3354,7 @@
         const nextWaterDate = getEffectiveNextWaterDate(plant);
         const baseNextWaterDate = getBaseNextWaterDate(plant);
 
-        if (plant.delayUntil && nextWaterDate && baseNextWaterDate) {
+        if (plant.delayUntil && plant.delayUntil > todayString && nextWaterDate && baseNextWaterDate) {
           const nextTime = nextWaterDate.getTime();
           const baseTime = baseNextWaterDate.getTime();
 
