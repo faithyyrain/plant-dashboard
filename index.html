@@ -1431,7 +1431,11 @@
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
-      auth.signInWithRedirect(provider);
+      auth.signInWithRedirect(provider)
+        .catch(error => {
+          console.error("Google redirect sign-in error:", error);
+          alert("Google sign-in failed. Please try again.");
+        });
     }
 
     function signOutOfDashboard() {
