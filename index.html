@@ -1431,6 +1431,13 @@
     function signInWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
 
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+      if (isIOS) {
+        auth.signInWithRedirect(provider);
+        return;
+      }
+
       auth.signInWithPopup(provider)
         .then(result => {
           const user = result.user;
