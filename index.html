@@ -3884,7 +3884,28 @@
             });
 
             actionButtons.appendChild(waterButton);
+            if (
+              hasFertilizerSchedule(plant) &&
+              (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+            ) {
+              const fertilizeButton = document.createElement("button");
+              fertilizeButton.className = "due-mini-button";
+              fertilizeButton.textContent = "Fertilize";
+
+              if (plant.lastFertilized === dateString) {
+                fertilizeButton.textContent = "Fertilized!";
+                fertilizeButton.classList.add("fertilized-active");
+            }
+
+            fertilizeButton.addEventListener("click", function(event) {
+              event.stopPropagation();
+              toggleFertilizedForPlant(plant);
+              refreshCalendarViews();
+            });
+
+            actionButtons.appendChild(fertilizeButton);
           }
+          }  
 
           if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
             const delayBackButton = document.createElement("button");
@@ -3968,29 +3989,6 @@
             }
           }
 
-          if (
-            isTodayPanel &&
-            hasFertilizerSchedule(plant) &&
-            (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
-          ) {
-            const fertilizeButton = document.createElement("button");
-            fertilizeButton.className = "due-mini-button";
-            fertilizeButton.textContent = "Fertilize";
-
-          if (plant.lastFertilized === dateString) {
-            fertilizeButton.textContent = "Fertilized!";
-            fertilizeButton.classList.add("fertilized-active");
-          }
-
-          fertilizeButton.addEventListener("click", function(event) {
-            event.stopPropagation();
-            toggleFertilizedForPlant(plant);
-            refreshCalendarViews();
-          });
-
-          actionButtons.appendChild(fertilizeButton);
-          }
-
           const plantMain = document.createElement("div");
           plantMain.className = "due-plant-main";
 
@@ -4007,7 +4005,7 @@
 
           duePlantList.appendChild(plantItem);
         });
-    }
+        }
 
 
   // ===== UPCOMING CHECKS FUNCTIONS =====
