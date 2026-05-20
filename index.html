@@ -2397,6 +2397,7 @@
   // ===== GLOBAL VARIABLES =====
 
       const roomContainer = document.getElementById("roomContainer");
+      const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
       let activePlantIndex = null;
       let reopenCalendarDate = null;
@@ -3135,6 +3136,12 @@
         });
 
         marker.addEventListener("click", function(event) {
+          if (isIOS) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
+
           if (movingPlant || movingDot || ignoreNextMarkerClick) {
             event.preventDefault();
             event.stopPropagation();
@@ -3151,7 +3158,7 @@
           marker,
           plant
         });
-      });
+        });
 
         positionMarkers();
     }
@@ -3249,6 +3256,11 @@
         const metrics = getImageMetrics();
 
         const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
+        if (isIOS) {
+          calendarButton.style.display = "none";
+          calendarWrapper.classList.remove("open");
+          return;
+        }   
 
         calendarButton.style.left = "auto";
         calendarButton.style.right = "70px";
@@ -3286,7 +3298,7 @@
     }
 
     function showDashboardOverlays() {
-        document.querySelector(".calendar-button").style.display = "block";
+        document.querySelector(".calendar-button").style.display = isIOS ? "none" : "block";
         document.querySelector(".legend").style.display = "block";
     }
 
@@ -4208,7 +4220,7 @@
 
   // ===== STARTUP / PAGE LOAD =====
 
-    preloadPlantImages();
+    // preloadPlantImages();
     createStickerEditControls();
 
     const roomImage = document.getElementById("roomImage");
