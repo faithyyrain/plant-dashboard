@@ -3154,33 +3154,33 @@
   // ===== IMAGE POSITIONING FUNCTIONS =====
 
     function getImageMetrics() {
-        const roomImage = document.getElementById("roomImage");
-        const containerRect = roomContainer.getBoundingClientRect();
+      const roomImage = document.getElementById("roomImage");
+      const containerRect = roomContainer.getBoundingClientRect();
 
-        const imageWidth = roomImage.naturalWidth;
-        const imageHeight = roomImage.naturalHeight;
+      const imageWidth = roomImage.naturalWidth;
+      const imageHeight = roomImage.naturalHeight;
 
-        const containerWidth = containerRect.width;
-        const containerHeight = containerRect.height;
+      const containerWidth = isIOS ? roomContainer.clientWidth : containerRect.width;
+      const containerHeight = isIOS ? roomContainer.clientHeight : containerRect.height;
 
-        const scale = Math.max(
-          containerWidth / imageWidth,
-          containerHeight / imageHeight
-        );
+      const scale = Math.max(
+        containerWidth / imageWidth,
+        containerHeight / imageHeight
+      );
 
-        const displayedWidth = imageWidth * scale;
-        const displayedHeight = imageHeight * scale;
+      const displayedWidth = imageWidth * scale;
+      const displayedHeight = imageHeight * scale;
 
-        const offsetX = (containerWidth - displayedWidth) / 2;
-        const offsetY = (containerHeight - displayedHeight) / 2;
+      const offsetX = (containerWidth - displayedWidth) / 2;
+      const offsetY = (containerHeight - displayedHeight) / 2;
 
-        return {
-          containerRect,
-          displayedWidth,
-          displayedHeight,
-          offsetX,
-          offsetY
-        };
+      return {
+        containerRect,
+        displayedWidth,
+        displayedHeight,
+        offsetX,
+        offsetY
+      };
     }
 
     function positionMarkers() {
