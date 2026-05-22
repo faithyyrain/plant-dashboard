@@ -489,7 +489,7 @@
       right: calc(100% + 14px);
       top: 0;
       flex-direction: column;
-      width: 300px;
+      width: 310px;
       max-height: 470px;
       overflow-y: auto;
       border-radius: 22px;
@@ -1244,7 +1244,7 @@
         left: 50dvw;
         width: 100dvh;
         height: 100dvw;
-        transform: translate(-50%, -50%) rotate(90deg);
+        transform: translate(calc(-50% + 8dvw), calc(-50% - 6dvh)) rotate(90deg) scale(1.17);
         transform-origin: center center;
       }
 
@@ -1461,6 +1461,8 @@
         lastFertilized: plant.lastFertilized || null,
         delayUntil: plant.delayUntil || null,
         lastRepot: plant.lastRepot || null,
+        intervalDays: plant.intervalDays || null,
+        intervalAdjustedToday: plant.intervalAdjustedToday || null,
         previousLastWatered: plant.previousLastWatered || null,
         previousLastFertilized: plant.previousLastFertilized || null,
         previousLastRepot: plant.previousLastRepot || null,
@@ -1562,6 +1564,14 @@
 
               if (savedPlant.lastRepot !== undefined) {
                 plant.lastRepot = savedPlant.lastRepot;
+              }
+
+              if (savedPlant.intervalDays !== undefined) {
+                plant.intervalDays = savedPlant.intervalDays;
+              }
+
+              if (savedPlant.intervalAdjustedToday !== undefined) {
+                plant.intervalAdjustedToday = savedPlant.intervalAdjustedToday;
               }
 
               if (savedPlant.previousLastWatered !== undefined) {
@@ -2748,19 +2758,27 @@
     }
 
     function getEffectiveNextWaterDate(plant) {
-        const baseNextWaterDate = getBaseNextWaterDate(plant);
+      const baseNextWaterDate = getBaseNextWaterDate(plant);
 
-        if (!baseNextWaterDate) {
-          return null;
-        }
+      if (!baseNextWaterDate) {
+        return null;
+      }
 
-        if (plant.delayUntil) {
-          const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
-          adjustedDate.setHours(0, 0, 0, 0);
-          return adjustedDate;
-        }
+      const todayString = getTodayString();
 
-        return baseNextWaterDate;
+      if (plant.intervalAdjustedToday === todayString && plant.lastWatered !== todayString) {
+        const todayDate = new Date(todayString + "T00:00:00");
+        todayDate.setHours(0, 0, 0, 0);
+        return todayDate;
+      }
+
+      if (plant.delayUntil) {
+        const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
+        adjustedDate.setHours(0, 0, 0, 0);
+        return adjustedDate;
+      }
+
+      return baseNextWaterDate;
     }
 
     function getPlantsDueOnDate(dateString) {
@@ -3319,10 +3337,7 @@
       }
 
       document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
-
-      const effectiveIntervalDays = getEffectiveIntervalDays(plant);
-
-      document.getElementById("intervalDays").textContent = effectiveIntervalDays ? `${effectiveIntervalDays} days` : "N/A";
+      document.getElementById("intervalDays").textContent = plant.intervalDays ? `${plant.intervalDays} days` : "N/A";
       document.getElementById("nextCheck").textContent = status.nextCheck;
 
       const fertilizerStatus = getFertilizerStatus(
@@ -3435,16 +3450,38 @@
       }
 
       const plant = plants[activePlantIndex];
-      const nextWaterDate = getEffectiveNextWaterDate(plant);
 
-      if (!nextWaterDate) {
+      if (!plant.intervalDays || plant.intervalDays <= 1) {
+        return;
+          }
+
+          plant.intervalDays = plant.intervalDays - 1;
+          plant.intervalAdjustedToday = getTodayString();
+          plant.delayUntil = null;
+
+          savePlantToFirebase(plant);
+
+          updateMarkerColors();
+          renderCalendar();
+          renderUpcomingChecks();
+          openPlantDetails(activePlantIndex);
+    }
+
+    function delayActivePlantOneDay(event) {
+      event.stopPropagation();
+
+      if (activePlantIndex === null) {
         return;
       }
 
-      const movedDate = new Date(nextWaterDate);
-      movedDate.setDate(nextWaterDate.getDate() - 1);
+      const plant = plants[activePlantIndex];
 
-      plant.delayUntil = dateToString(movedDate);
+      if (!plant.intervalDays) {
+        return;
+      }
+
+      plant.intervalDays = plant.intervalDays + 1;
+      plant.delayUntil = null;
 
       savePlantToFirebase(plant);
 
@@ -3452,44 +3489,6 @@
       renderCalendar();
       renderUpcomingChecks();
       openPlantDetails(activePlantIndex);
-    }
-    
-    function delayActivePlantOneDay(event) {
-      event.stopPropagation();
-
-        if (activePlantIndex === null) {
-          return;
-        }
-
-        const plant = plants[activePlantIndex];
-
-        if (plant.lastWatered === getTodayString()) {
-          return;
-        }
-
-        const nextWaterDate = getEffectiveNextWaterDate(plant);
-
-        if (!nextWaterDate) {
-          return;
-        }
-
-        const delayedDate = new Date(nextWaterDate);
-        delayedDate.setDate(nextWaterDate.getDate() + 1);
-
-        const delayedDateString = dateToString(delayedDate);
-
-        if (plant.delayUntil === delayedDateString) {
-          plant.delayUntil = null;
-        } else {
-          plant.delayUntil = delayedDateString;
-        }
-
-        savePlantToFirebase(plant);
-
-        updateMarkerColors();
-        renderCalendar();
-        renderUpcomingChecks();
-        openPlantDetails(activePlantIndex);
     }
 
     function toggleDelayWateringOneDayForPlant(plant, dateString) {
@@ -3514,18 +3513,14 @@
     }
 
     function moveWateringBackOneDayForPlant(plant, dateString) {
+      if (!plant.intervalDays || plant.intervalDays <= 1) {
+        return;
+      }
 
-        const clickedDate = new Date(dateString + "T00:00:00");
-        clickedDate.setHours(0, 0, 0, 0);
+      plant.intervalDays = plant.intervalDays - 1;
+      plant.delayUntil = null;
 
-        const movedDate = new Date(clickedDate);
-        movedDate.setDate(clickedDate.getDate() - 1);
-
-        const movedDateString = dateToString(movedDate);
-
-        plant.delayUntil = movedDateString;
-
-        savePlantToFirebase(plant);
+      savePlantToFirebase(plant);
     }
 
     function toggleWateredForPlant(plant) {
@@ -3542,6 +3537,7 @@
         plant.previousLastWatered = plant.lastWatered || null;
         plant.lastWatered = today;
         plant.delayUntil = null;
+        plant.intervalAdjustedToday = null;
       }
 
       savePlantToFirebase(plant);
@@ -3884,7 +3880,28 @@
             });
 
             actionButtons.appendChild(waterButton);
+            if (
+              hasFertilizerSchedule(plant) &&
+              (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
+            ) {
+              const fertilizeButton = document.createElement("button");
+              fertilizeButton.className = "due-mini-button";
+              fertilizeButton.textContent = "Fertilize";
+
+              if (plant.lastFertilized === dateString) {
+                fertilizeButton.textContent = "Fertilized!";
+                fertilizeButton.classList.add("fertilized-active");
+            }
+
+            fertilizeButton.addEventListener("click", function(event) {
+              event.stopPropagation();
+              toggleFertilizedForPlant(plant);
+              refreshCalendarViews();
+            });
+
+            actionButtons.appendChild(fertilizeButton);
           }
+          }  
 
           if (plant.lastWatered !== dateString && (dateString !== getTodayString() || plant.lastWatered !== getTodayString())) {
             const delayBackButton = document.createElement("button");
@@ -3897,9 +3914,7 @@
             const movedEarlierDate = new Date(clickedDateForBackButton);
             movedEarlierDate.setDate(clickedDateForBackButton.getDate() - 1);
 
-            const movedEarlierDateString = dateToString(movedEarlierDate);
-
-            if (plant.delayUntil === movedEarlierDateString) {
+            if (plant.intervalAdjustedToday === dateString) {
               delayBackButton.textContent = "Earlier!";
               delayBackButton.classList.add("earlier-active");
             }
@@ -3911,6 +3926,8 @@
               const savedScrollTop = duePanel.scrollTop;
 
               moveWateringBackOneDayForPlant(plant, dateString);
+              plant.intervalAdjustedToday = dateString;
+              savePlantToFirebase(plant);
 
               delayBackButton.textContent = "Earlier!";
               delayBackButton.classList.add("earlier-active");
@@ -3961,34 +3978,11 @@
 
             actionButtons.appendChild(delayButton);
 
-            if (hasFertilizerSchedule(plant) && shouldShowCalendarFertilizerRing(plant, dateString)) {
+            if (!isTodayPanel && hasFertilizerSchedule(plant) && shouldShowCalendarFertilizerRing(plant, dateString)) {
               const fertilizerDot = document.createElement("div");
               fertilizerDot.className = "due-plant-fertilizer-dot";
               actionButtons.appendChild(fertilizerDot);
             }
-          }
-
-          if (
-            isTodayPanel &&
-            hasFertilizerSchedule(plant) &&
-            (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
-          ) {
-            const fertilizeButton = document.createElement("button");
-            fertilizeButton.className = "due-mini-button";
-            fertilizeButton.textContent = "Fertilize";
-
-          if (plant.lastFertilized === dateString) {
-            fertilizeButton.textContent = "Fertilized!";
-            fertilizeButton.classList.add("fertilized-active");
-          }
-
-          fertilizeButton.addEventListener("click", function(event) {
-            event.stopPropagation();
-            toggleFertilizedForPlant(plant);
-            refreshCalendarViews();
-          });
-
-          actionButtons.appendChild(fertilizeButton);
           }
 
           const plantMain = document.createElement("div");
@@ -4007,7 +4001,7 @@
 
           duePlantList.appendChild(plantItem);
         });
-    }
+        }
 
 
   // ===== UPCOMING CHECKS FUNCTIONS =====
