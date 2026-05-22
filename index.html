@@ -2766,12 +2766,6 @@
 
       const todayString = getTodayString();
 
-      if (plant.intervalAdjustedToday === todayString && plant.lastWatered !== todayString) {
-        const todayDate = new Date(todayString + "T00:00:00");
-        todayDate.setHours(0, 0, 0, 0);
-        return todayDate;
-      }
-
       if (plant.delayUntil) {
         const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
         adjustedDate.setHours(0, 0, 0, 0);
