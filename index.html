@@ -4177,7 +4177,22 @@
 
   // ===== STARTUP / PAGE LOAD =====
 
+    function preloadPlantImages() {
+      plants.forEach(plant => {
+        if (plant.image) {
+          const photo = new Image();
+          photo.src = plant.image;
+        }
+
+        if (plant.sticker) {
+          const sticker = new Image();
+          sticker.src = plant.sticker;
+        }
+      });
+    }
+
     createStickerEditControls();
+    preloadPlantImages();
 
     const roomImage = document.getElementById("roomImage");
 
