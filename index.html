@@ -780,6 +780,14 @@
       line-height: 1;
     }
 
+    .sticker-edit-controls button img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+    }
+
     .sticker-edit-controls button:hover {
       filter: brightness(1.12);
       scale: 1.08;
@@ -2461,14 +2469,39 @@
       editControls.innerHTML = `
         <button id="moveStickerButton" data-tooltip="Move plant">Move</button>
         <button id="moveDotButton" data-tooltip="Move dot">Dot</button>
-        <button id="shrinkStickerButton" data-tooltip="Make smaller">−</button>
-        <button id="growStickerButton" data-tooltip="Make bigger">+</button>
-        <button id="rotateLeftStickerButton" data-tooltip="Rotate left">⟲</button>
-        <button id="rotateRightStickerButton" data-tooltip="Rotate right">⟳</button>
-        <button id="stretchWideStickerButton" data-tooltip="Stretch horizontal">↔</button>
-        <button id="squishNarrowStickerButton" data-tooltip="Squish horizontal">→←</button>
-        <button id="stretchTallStickerButton" data-tooltip="Stretch vertical">↕</button>
-        <button id="squishShortStickerButton" data-tooltip="Squish vertical">↕−</button>
+
+        <button id="shrinkStickerButton" data-tooltip="Make smaller">
+          <img src="icons/smaller.png" alt="Make smaller">
+        </button>
+
+        <button id="growStickerButton" data-tooltip="Make bigger">
+          <img src="icons/bigger.png" alt="Make bigger">
+        </button>
+
+        <button id="rotateLeftStickerButton" data-tooltip="Rotate left">
+          <img src="icons/tilt-left.png" alt="Rotate left">
+        </button>
+
+        <button id="rotateRightStickerButton" data-tooltip="Rotate right">
+          <img src="icons/tilt-right.png" alt="Rotate right">
+        </button>
+
+        <button id="stretchWideStickerButton" data-tooltip="Stretch horizontal">
+          <img src="icons/stretch-horizontal.png" alt="Stretch horizontal">
+        </button>
+
+        <button id="squishNarrowStickerButton" data-tooltip="Squish horizontal">
+          <img src="icons/squish-horizontal.png" alt="Squish horizontal">
+        </button>
+
+        <button id="stretchTallStickerButton" data-tooltip="Stretch vertical">
+          <img src="icons/stretch-vertical.png" alt="Stretch vertical">
+        </button>
+
+        <button id="squishShortStickerButton" data-tooltip="Squish vertical">
+          <img src="icons/squish-vertical.png" alt="Squish vertical">
+        </button>
+
         <button id="lockStickerButton" data-tooltip="Lock edits">Lock</button>
       `;
 
