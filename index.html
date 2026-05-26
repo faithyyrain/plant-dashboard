@@ -802,24 +802,24 @@
 
     .move-control {
       position: absolute;
-      top: 18px;
+      top: 14px;
       left: 50%;
-      width: 92px;
-      height: 58px;
+      width: 68px;
+      height: 42px;
       transform: translate(-50%, -50%);
-      border-radius: 18px;
+      border-radius: 14px;
       overflow: hidden;
       background: rgba(84, 87, 87, 0.84);
       pointer-events: auto;
     }
 
     .move-control-title {
-      height: 24px;
+      height: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 17px;
+      font-size: 12px;
       font-weight: 800;
       background: rgba(84, 87, 87, 0.95);
       pointer-events: none;
@@ -828,26 +828,32 @@
     .move-control-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      height: 34px;
+      height: 25px;
       background: rgba(160, 160, 160, 0.78);
     }
 
     .move-control-button {
       position: static !important;
-      width: 100%;
-      height: 100%;
+      width: 100% !important;
+      height: 100% !important;
+      min-width: 0 !important;
       border-radius: 0 !important;
       background: transparent !important;
       transform: none !important;
-      padding: 5px;
+      padding: 0 !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .move-control-button img {
-      width: 30px;
-      height: 30px;
+      width: 18px !important;
+      height: 18px !important;
+      max-width: 18px !important;
+      max-height: 18px !important;
       object-fit: contain;
       display: block;
-      margin: auto;
       pointer-events: none;
       transition: transform 0.15s ease, filter 0.15s ease;
     }
