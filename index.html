@@ -827,7 +827,7 @@
 
     .move-control-buttons {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       height: 30px;
       background: rgba(160, 160, 160, 0.78);
     }
@@ -856,13 +856,6 @@
       display: block;
       pointer-events: none;
       transition: transform 0.15s ease, filter 0.15s ease;
-    }
-
-    #moveStickerButton img {
-      width: 26px !important;
-      height: 26px !important;
-      max-width: 26px !important;
-      max-height: 26px !important;
     }
 
     .move-control-button:hover img {
@@ -2526,11 +2519,7 @@
         <div class="move-control">
           <div class="move-control-title">Move</div>
 
-          <div class="move-control-buttons">
-            <button id="moveStickerButton" class="move-control-button" data-tooltip="Move plant">
-              <img src="icons/move-plant.png" alt="Move plant">
-            </button>
-
+          <div class="move-control-buttons move-dot-only">
             <button id="moveDotButton" class="move-control-button" data-tooltip="Move dot">
               <img src="icons/move-dot.png" alt="Move dot">
             </button>
@@ -2573,7 +2562,6 @@
       `;
 
       document.body.appendChild(editControls);
-      document.getElementById("moveStickerButton").addEventListener("click", startMoveMode);
       document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
       document.getElementById("shrinkStickerButton").addEventListener("click", shrinkSticker);
       document.getElementById("growStickerButton").addEventListener("click", growSticker);
@@ -2605,7 +2593,17 @@
       event.stopPropagation();
 
       editingPlant = plant;
+      moveReady = true;
+      dotMoveReady = false;
       movingPlant = false;
+      movingDot = false;
+
+      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+
+      const activeStickerItem = stickers.find(item => item.plant === plant);
+      if (activeStickerItem) {
+        activeStickerItem.sticker.classList.add("editing-sticker");
+      }
 
       const metrics = getImageMetrics();
       const stickerX = plant.stickerX ?? plant.x;
@@ -2648,7 +2646,11 @@
       movingDot = false;
 
       document.getElementById("moveDotButton").classList.add("active-edit-button");
-      document.getElementById("moveStickerButton").classList.remove("active-edit-button");
+      
+      const moveButton = document.getElementById("moveStickerButton");
+      if (moveButton) {
+        moveButton.classList.remove("active-edit-button");
+      }
     }
 
     function shrinkSticker(event) {
