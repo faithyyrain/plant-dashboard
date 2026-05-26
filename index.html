@@ -801,70 +801,13 @@
       font-size: 14px;
     }
 
-    .move-control {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      width: 62px;
-      height: 50px;
-      transform: translate(-50%, -50%);
-      border-radius: 17px;
-      overflow: hidden;
-      background: rgba(84, 87, 87, 0.84);
-      pointer-events: auto;
-    }
-
-    .move-control-title {
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 14px;
-      font-weight: 800;
-      background: rgba(84, 87, 87, 0.95);
-      pointer-events: none;
-    }
-
-    .move-control-buttons {
-      display: grid;
-      grid-template-columns: 1fr;
-      height: 30px;
-      background: rgba(160, 160, 160, 0.78);
-    }
-
-    .move-control-button {
-      position: static !important;
-      width: 100% !important;
-      height: 100% !important;
-      min-width: 0 !important;
-      border-radius: 0 !important;
-      background: transparent !important;
-      transform: none !important;
-      padding: 0 !important;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .move-control-button img {
-      width: 18px !important;
-      height: 18px !important;
-      max-width: 18px !important;
-      max-height: 18px !important;
-      object-fit: contain;
-      display: block;
-      pointer-events: none;
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-
     .sticker-edit-controls button:hover {
       filter: brightness(1.12);
       scale: 1.08;
       z-index: 8000;
     }
 
+    #moveDotButton,
     #growStickerButton,
     #shrinkStickerButton,
     #rotateLeftStickerButton,
@@ -882,6 +825,12 @@
       align-items: center;
       justify-content: center;
       padding: 0;
+    }
+
+    #moveDotButton {
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     #lockStickerButton {
@@ -2518,15 +2467,9 @@
       editControls.className = "sticker-edit-controls";
 
       editControls.innerHTML = `
-        <div class="move-control">
-          <div class="move-control-title">Move</div>
-
-          <div class="move-control-buttons move-dot-only">
-            <button id="moveDotButton" class="move-control-button" data-tooltip="Move dot">
-              <img src="icons/move-dot.png" alt="Move dot">
-            </button>
-          </div>
-        </div>
+        <button id="moveDotButton" data-tooltip="Move dot">
+          <img src="icons/move-dot.png" alt="Move dot">
+        </button>
 
         <button id="shrinkStickerButton" data-tooltip="Make smaller">
           <img src="icons/smaller.png" alt="Make smaller">
