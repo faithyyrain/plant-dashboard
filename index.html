@@ -751,6 +751,7 @@
     .sticker-edit-controls button:hover::after {
       opacity: 1;
       transform: translateX(-50%) scale(1);
+      z-index: 9000;
     }
 
     .squish-icon {
@@ -858,9 +859,10 @@
       transition: transform 0.15s ease, filter 0.15s ease;
     }
 
-    .move-control-button:hover img {
-      transform: scale(1.14);
-      filter: brightness(1.15);
+    .sticker-edit-controls button:hover {
+      filter: brightness(1.12);
+      scale: 1.08;
+      z-index: 8000;
     }
 
     #growStickerButton,
