@@ -910,6 +910,10 @@
       display: block;
     }
 
+    .plant-sticker.locked-sticker {
+      pointer-events: none;
+    }
+
     .plant-sticker {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -2407,6 +2411,7 @@
           {
             name: "Couch",
             decorative: true,
+            locked: false,
             x: 50,
             y: 75,
             sticker: "plant-stickers/couch.png",
@@ -2420,6 +2425,7 @@
           {
             name: "Tables",
             decorative: true,
+            locked: false,
             x: 50,
             y: 75,
             sticker: "plant-stickers/tables.png",
@@ -2433,6 +2439,7 @@
           {
             name: "Coffee Table",
             decorative: true,
+            locked: false,
             x: 72,
             y: 82,
             sticker: "plant-stickers/table.png",
@@ -3118,6 +3125,10 @@
             const sticker = document.createElement("img");
 
             sticker.className = "plant-sticker";
+            if (plant.locked) {
+              sticker.classList.add("locked-sticker");
+            }
+
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
             sticker.addEventListener("dblclick", function(event) {
