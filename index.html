@@ -296,6 +296,35 @@
 
   /* ===== CALENDAR BUTTON + PANELS ===== */
 
+    .hide-plants-button {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      z-index: 6000;
+      padding: 7px 18px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(215, 211, 202, 0.694);
+      color: #333;
+      cursor: pointer;
+      font-size: 18px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      transition: filter 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .hide-plants-button:hover {
+      filter: brightness(1.08);
+      transform: scale(1.06);
+    }
+
+    .hide-plants-button.plants-hidden {
+      background: rgba(161, 181, 117, 0.82);
+    }
+
     .calendar-button {
       position: fixed;
       top: 90px;
@@ -910,7 +939,7 @@
       display: block;
     }
 
-    .plant-sticker.locked-sticker {
+    .plant-sticker.locked-sticker:not(.decor-editable) {
       pointer-events: none;
     }
 
@@ -1306,6 +1335,8 @@
 
 
   <!-- ===== CALENDAR BUTTON ===== -->
+
+    <button class="hide-plants-button" onclick="togglePlantVisibility()">Hide Plants</button>
 
     <button class="calendar-button" onclick="toggleCalendar()">Calendar</button>
 
@@ -2474,6 +2505,39 @@
       let ignoreNextMarkerClick = false;
       let moveOffsetX = 0;
       let moveOffsetY = 0;
+      let plantsHidden = false;
+    
+    function togglePlantVisibility() {
+      plantsHidden = !plantsHidden;
+
+      const hideButton = document.querySelector(".hide-plants-button");
+
+      markers.forEach(({ marker }) => {
+        marker.style.display = plantsHidden ? "none" : "block";
+      });
+
+      stickers.forEach(({ sticker, plant }) => {
+        if (plant.decorative) {
+          sticker.classList.toggle("decor-editable", plantsHidden);
+        } else {
+          sticker.style.display = plantsHidden ? "none" : "block";
+        }
+      });
+
+      if (!plantsHidden) {
+        stickers.forEach(({ plant }) => {
+          if (plant.decorative) {
+            plant.locked = true;
+            savePlantToFirebase(plant);
+          }
+        });
+      }
+
+      hideButton.textContent = plantsHidden ? "Show Plants" : "Hide Plants";
+      hideButton.classList.toggle("plants-hidden", plantsHidden);
+
+      lockStickerEdits(new Event("click"));
+    }
 
     function createStickerEditControls() {
       editControls = document.createElement("div");
@@ -2548,7 +2612,19 @@
     }
 
     function openStickerEditControls(event, plant) {
+      if (plant.decorative && !plantsHidden) {
+        return;
+      }
+
+      if (!plant.decorative && plantsHidden) {
+        return;
+      }
+
       event.stopPropagation();
+
+      if (plant.decorative) {
+        plant.locked = false;
+      }
 
       editingPlant = plant;
       moveReady = true;
@@ -3127,6 +3203,10 @@
             sticker.className = "plant-sticker";
             if (plant.locked) {
               sticker.classList.add("locked-sticker");
+            }
+
+            if (plant.decorative) {
+              sticker.classList.add("decor-sticker");
             }
 
             sticker.src = plant.sticker;
