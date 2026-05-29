@@ -396,7 +396,16 @@
 
     .edit-slider-panel input {
       flex: 1;
-      accent-color: #889a74;
+      accent-color: #94a37d;
+    }
+
+    .edit-slider-panel input::-webkit-slider-thumb {
+      cursor: pointer;
+    }
+
+    .edit-slider-panel input::-webkit-slider-thumb:hover {
+      filter: brightness(1.18);
+      transform: scale(1.08);
     }
 
     .sticker-select-popup {
