@@ -1263,8 +1263,37 @@
 
   /* ===== LEGEND ===== */
 
+    .legend-tab {
+      position: fixed;
+      left: 24px;
+      bottom: 18px;
+      z-index: 5500;
+      width: 92px;
+      height: 34px;
+      padding: 0;
+      border: 3px solid rgba(167, 154, 129, 0.694);
+      border-radius: 999px;
+      background: rgb(197, 190, 174);
+      color: #333;
+      cursor: pointer;
+      font-size: 15px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .legend-tab:hover {
+      filter: brightness(1.08);
+      transform: scale(1.025);
+    }
+
     .legend {
-      position: absolute;
+      position: fixed;
+      left: 24px;
+      bottom: 58px;
+      display: none;
+      cursor: default;
       background: rgba(224, 221, 215, 0.694);
       padding: 7px 10px;
       border-radius: 18px;
@@ -1433,6 +1462,8 @@
       <img src="livingroom.jpg?v=room4" class="room-image">
 
         <!-- Color legend -->
+
+        <button class="legend-tab" onclick="toggleLegend()">Legend</button>
 
         <div class="legend">
           <div class="legend-row"><span class="legend-dot blue"></span> Watered today</div>
@@ -2751,11 +2782,6 @@
       let moveOffsetY = 0;
       let editMode = null;
       let activeSliderControl = null;
-      let movingLegend = false;
-      let legendMoveOffsetX = 0;
-      let legendMoveOffsetY = 0;
-      let legendCustomX = null;
-      let legendCustomY = null;
     
     function toggleEditModeMenu() {
       const editModeButton = document.getElementById("editModeButton");
@@ -3564,22 +3590,6 @@
 
   // ===== ROOM CLICK + COORDINATE FINDER =====
 
-        document.querySelector(".legend").addEventListener("mousedown", function(event) {
-          if (editMode !== "decor") {
-            return;
-          }
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          const legend = document.querySelector(".legend");
-          const rect = legend.getBoundingClientRect();
-
-          movingLegend = true;
-          legendMoveOffsetX = event.clientX - rect.left;
-          legendMoveOffsetY = event.clientY - rect.top;
-        });
-
         roomContainer.addEventListener("click", function(event) {
 
         if (event.target.classList.contains("plant-marker")) {
@@ -3810,7 +3820,6 @@
           sticker.style.transform = `translate(-50%, -50%) rotate(${stickerRotation}deg) scale(${stickerScaleX}, ${stickerScaleY})`;
         });
 
-        positionLegend();
         positionCalendar();
     }
 
@@ -4627,6 +4636,16 @@
 
   // ===== CALENDAR OPEN / CLOSE FUNCTIONS =====
 
+    function toggleLegend() {
+      const legend = document.querySelector(".legend");
+
+      if (legend.style.display === "block") {
+        legend.style.display = "none";
+      } else {
+        legend.style.display = "block";
+      }
+    }
+
     function toggleCalendar() {
         const calendarWrapper = document.getElementById("calendarWrapper");
 
@@ -4658,17 +4677,6 @@
     });
 
     document.addEventListener("mousemove", function(event) {
-      if (movingLegend) {
-        const legend = document.querySelector(".legend");
-
-        legendCustomX = event.clientX - legendMoveOffsetX;
-        legendCustomY = event.clientY - legendMoveOffsetY;
-
-        legend.style.left = legendCustomX + "px";
-        legend.style.top = legendCustomY + "px";
-
-        return;
-      }
 
       if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
@@ -4698,14 +4706,6 @@
     });
 
     document.addEventListener("mouseup", function() {
-      if (movingLegend) {
-        movingLegend = false;
-
-        localStorage.setItem("legendCustomX", legendCustomX);
-        localStorage.setItem("legendCustomY", legendCustomY);
-
-        return;
-      }
 
       if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
@@ -4873,14 +4873,6 @@
           sticker.src = plant.sticker;
         }
       });
-    }
-
-    const savedLegendX = localStorage.getItem("legendCustomX");
-    const savedLegendY = localStorage.getItem("legendCustomY");
-
-    if (savedLegendX !== null && savedLegendY !== null) {
-      legendCustomX = Number(savedLegendX);
-      legendCustomY = Number(savedLegendY);
     }
 
     createStickerEditControls();
