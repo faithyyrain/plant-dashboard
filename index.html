@@ -2856,6 +2856,14 @@
         editControls.style.display = "flex";
       }
 
+      const sliderPanel = document.getElementById("editSliderPanel");
+
+      if (sliderPanel) {
+        sliderPanel.classList.remove("open");
+      }
+
+      activeSliderControl = null;
+
       const moveDotButton = document.getElementById("moveDotButton");
 
       if (moveDotButton) {
@@ -3123,9 +3131,11 @@
       const slider = document.getElementById("editSlider");
 
       sliderLabel.textContent = "Size";
-      slider.min = "20";
-      slider.max = "300";
-      slider.value = editingPlant.stickerWidth || 120;
+      const currentSize = editingPlant.stickerWidth || 120;
+
+      slider.min = editMode === "plants" ? "20" : "40";
+      slider.max = editMode === "plants" ? "140" : Math.max(240, currentSize + 40);
+      slider.value = currentSize;
 
       sliderPanel.classList.add("open");
     }
