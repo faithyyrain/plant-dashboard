@@ -1263,48 +1263,54 @@
 
   /* ===== LEGEND ===== */
 
-    .legend-tab {
+    .legend-drawer {
       position: fixed;
       left: 24px;
-      bottom: 18px;
+      bottom: 0;
       z-index: 5500;
+      transform: translateY(calc(100% - 34px));
+      transition: transform 0.22s ease;
+    }
+
+    .legend-drawer.open {
+      transform: translateY(0);
+    }
+
+    .legend-tab {
+      position: relative;
       width: 92px;
       height: 34px;
       padding: 0;
-      border: 3px solid rgba(167, 154, 129, 0.694);
-      border-radius: 999px;
-      background: rgb(197, 190, 174);
+      border: 3px solid rgba(175, 163, 141, 0.738);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      background: rgba(214, 207, 191, 0.842);
       color: #333;
       cursor: pointer;
       font-size: 15px;
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 800;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
-      transition: filter 0.15s ease, transform 0.15s ease;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+      transition: filter 0.15s ease;
     }
 
     .legend-tab:hover {
       filter: brightness(1.08);
-      transform: scale(1.025);
     }
 
     .legend {
-      position: fixed;
-      left: 24px;
-      bottom: 58px;
-      display: none;
+      display: block;
       cursor: default;
-      background: rgba(224, 221, 215, 0.694);
+      background: rgba(224, 221, 215, 0.96);
       padding: 7px 10px;
-      border-radius: 18px;
+      border: 3px solid rgba(167, 154, 129, 0.694);
+      border-radius: 0 18px 18px 18px;
       font-size: 12px;
       font-family: 'Nunito', Arial, sans-serif;
       font-weight: 700;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      transform-origin: left top;
-      z-index: 5500;
     }
 
     .legend-row {
@@ -1463,9 +1469,10 @@
 
         <!-- Color legend -->
 
-        <button class="legend-tab" onclick="toggleLegend()">Legend</button>
+        <div class="legend-drawer" id="legendDrawer">
+          <button class="legend-tab" onclick="toggleLegend()">Legend</button>
 
-        <div class="legend">
+          <div class="legend">
           <div class="legend-row"><span class="legend-dot blue"></span> Watered today</div>
           <div class="legend-row"><span class="legend-dot green"></span> Not due yet</div>
           <div class="legend-row"><span class="legend-dot yellow"></span> Due in 2 days</div>
@@ -1473,9 +1480,9 @@
           <div class="legend-row"><span class="legend-dot red"></span> Due today</div>
           <div class="legend-row"><span class="legend-dot darkred"></span> Overdue</div>
           <div class="legend-row"><span class="legend-dot fertilizer-ring-legend"></span> Fertilizer due</div>
+        </div>
       </div>
     </div>
-
 
   <!-- ===== PLANT CARD MODAL ===== -->
 
@@ -4637,13 +4644,9 @@
   // ===== CALENDAR OPEN / CLOSE FUNCTIONS =====
 
     function toggleLegend() {
-      const legend = document.querySelector(".legend");
+      const legendDrawer = document.getElementById("legendDrawer");
 
-      if (legend.style.display === "block") {
-        legend.style.display = "none";
-      } else {
-        legend.style.display = "block";
-      }
+      legendDrawer.classList.toggle("open");
     }
 
     function toggleCalendar() {
