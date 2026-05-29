@@ -395,6 +395,53 @@
       width: 220px;
     }
 
+    .sticker-select-popup {
+      display: none;
+      position: fixed;
+      z-index: 8000;
+      min-width: 170px;
+      max-width: 240px;
+      padding: 10px;
+      border-radius: 16px;
+      background: rgba(224, 221, 215, 0.82);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .sticker-select-popup.open {
+      display: block;
+    }
+
+    .sticker-select-popup-title {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #333;
+      text-align: center;
+    }
+
+    .sticker-select-popup button {
+      display: block;
+      width: 100%;
+      margin: 5px 0;
+      padding: 7px 10px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(84, 87, 87, 0.84);
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .sticker-select-popup button:hover {
+      filter: brightness(1.12);
+      transform: scale(1.02);
+    }
+
     .calendar-button {
       position: fixed;
       top: 90px;
@@ -3004,6 +3051,11 @@
       `;
 
       document.body.appendChild(editControls);
+
+      const stickerSelectPopup = document.createElement("div");
+      stickerSelectPopup.id = "stickerSelectPopup";
+      stickerSelectPopup.className = "sticker-select-popup";
+      document.body.appendChild(stickerSelectPopup);
       document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
       document.getElementById("sizeStickerButton").addEventListener("click", openSizeSlider);
       document.getElementById("rotateSliderButton").addEventListener("click", openRotateSlider);
@@ -3032,6 +3084,75 @@
       if (moveDotButton) {
         moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
       }
+    }
+
+    function isStickerEditableInCurrentMode(plant) {
+      if (!editMode) return false;
+
+      if (editMode === "decor") {
+        return plant.decorative;
+      }
+
+      if (editMode === "plants") {
+        return !plant.decorative;
+      }
+
+      return false;
+    }
+
+    function getStickerCandidatesAtPoint(event) {
+      return stickers.filter(({ sticker, plant }) => {
+        if (!isStickerEditableInCurrentMode(plant)) {
+          return false;
+        }
+
+        if (sticker.style.display === "none") {
+          return false;
+        }
+
+        const rect = sticker.getBoundingClientRect();
+
+        return (
+          event.clientX >= rect.left &&
+          event.clientX <= rect.right &&
+          event.clientY >= rect.top &&
+          event.clientY <= rect.bottom
+        );
+      });
+    }
+
+    function closeStickerSelectPopup() {
+      const popup = document.getElementById("stickerSelectPopup");
+
+      if (popup) {
+        popup.classList.remove("open");
+        popup.innerHTML = "";
+      }
+    }
+
+    function showStickerSelectPopup(event, candidates) {
+      const popup = document.getElementById("stickerSelectPopup");
+
+      if (!popup) return;
+
+      popup.innerHTML = `<div class="sticker-select-popup-title">Select sticker</div>`;
+
+      candidates.forEach(({ plant }) => {
+        const button = document.createElement("button");
+        button.textContent = plant.name;
+
+        button.addEventListener("click", function(popupEvent) {
+          popupEvent.stopPropagation();
+          closeStickerSelectPopup();
+          openStickerEditControls(event, plant);
+        });
+
+        popup.appendChild(button);
+      });
+
+      popup.style.left = event.clientX + 12 + "px";
+      popup.style.top = event.clientY + 12 + "px";
+      popup.classList.add("open");
     }
 
     function openStickerEditControls(event, plant) {
@@ -3278,6 +3399,7 @@
       }
 
       activeSliderControl = null;
+      closeStickerSelectPopup();
 
     }
 
@@ -3696,7 +3818,21 @@
             sticker.alt = plant.name;
             sticker.draggable = false;
             sticker.addEventListener("click", function(event) {
-              openStickerEditControls(event, plant);
+              if (!editMode) {
+                return;
+              }
+
+              event.preventDefault();
+              event.stopPropagation();
+
+              const candidates = getStickerCandidatesAtPoint(event);
+
+              if (candidates.length <= 1) {
+                openStickerEditControls(event, plant);
+                return;
+              }
+
+              showStickerSelectPopup(event, candidates);
             });
 
             sticker.addEventListener("mousedown", function(event) {
@@ -4803,6 +4939,8 @@
         const clickedInsideEditControls = editControls && editControls.contains(event.target);
         const sliderPanel = document.getElementById("editSliderPanel");
         const clickedInsideSliderPanel = sliderPanel && sliderPanel.contains(event.target);
+        const stickerSelectPopup = document.getElementById("stickerSelectPopup");
+        const clickedInsideStickerSelectPopup = stickerSelectPopup && stickerSelectPopup.contains(event.target);
         const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
         const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
         const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
@@ -4812,9 +4950,11 @@
           !clickedSticker &&
           !clickedInsideEditControls &&
           !clickedInsideSliderPanel &&
+          !clickedInsideStickerSelectPopup &&
           !clickedEditModeMenu &&
           !clickedEditModeButton
         ) {
+          closeStickerSelectPopup();
           lockStickerEdits(event);
         }
 
