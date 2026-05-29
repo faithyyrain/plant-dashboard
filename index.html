@@ -4760,7 +4760,31 @@
           !clickedEditModeButton
         ) {
           closeStickerSelectPopup();
-          lockStickerEdits(event);
+
+          if (editingPlant) {
+            savePlantToFirebase(editingPlant);
+          }
+
+          movingPlant = false;
+          movingDot = false;
+          dotMoveReady = false;
+
+          const dotButton = document.getElementById("moveDotButton");
+          if (dotButton) {
+            dotButton.classList.remove("active-edit-button");
+          }
+
+          const sliderPanel = document.getElementById("editSliderPanel");
+          if (sliderPanel) {
+            sliderPanel.classList.remove("open");
+            sliderPanel.style.display = "none";
+          }
+
+          activeSliderControl = null;
+
+          if (editControls) {
+            editControls.style.display = "flex";
+          }
         }
 
         if (
