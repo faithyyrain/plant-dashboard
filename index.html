@@ -4691,6 +4691,10 @@
     document.addEventListener("mouseup", function() {
       if (movingLegend) {
         movingLegend = false;
+
+        localStorage.setItem("legendCustomX", legendCustomX);
+        localStorage.setItem("legendCustomY", legendCustomY);
+
         return;
       }
 
@@ -4836,6 +4840,14 @@
           sticker.src = plant.sticker;
         }
       });
+    }
+
+    const savedLegendX = localStorage.getItem("legendCustomX");
+    const savedLegendY = localStorage.getItem("legendCustomY");
+
+    if (savedLegendX !== null && savedLegendY !== null) {
+      legendCustomX = Number(savedLegendX);
+      legendCustomY = Number(savedLegendY);
     }
 
     createStickerEditControls();
