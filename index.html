@@ -1093,15 +1093,6 @@
       z-index: 2;
       object-fit: contain;
       user-select: none;
-      filter:
-        drop-shadow(0.5px 0 0 rgba(30, 25, 20, 0.75))
-        drop-shadow(-0.5px 0 0 rgba(30, 25, 20, 0.75))
-        drop-shadow(0 0.5px 0 rgba(30, 25, 20, 0.75))
-        drop-shadow(0 -0.5px 0 rgba(30, 25, 20, 0.75));
-    }
-
-    .decor-sticker {
-      filter: none;
     }
 
     .plant-sticker.editing-sticker {
@@ -1486,8 +1477,8 @@
     <button class="hide-plants-button" id="editModeButton" onclick="toggleEditModeMenu()">Edit Mode</button>
     <button class="calendar-button" onclick="toggleCalendar()">Calendar</button>
     <div id="editModeMenu" class="edit-mode-menu">
-      <button onclick="startEditMode('plants')">Edit Plants</button>
-      <button onclick="startEditMode('decor')">Edit Decor</button>
+      <button onclick="startEditMode('plants')">Plants</button>
+      <button onclick="startEditMode('decor')">Decor</button>
     </div>
     <div id="editSliderPanel" class="edit-slider-panel">
       <span id="editSliderLabel">Size</span>
