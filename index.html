@@ -366,7 +366,7 @@
     .edit-slider-panel {
       display: none;
       position: fixed;
-      top: 84px;
+      top: 96px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 7000;
@@ -2978,58 +2978,39 @@
           <img src="icons/move-dot.png" alt="Move dot">
         </button>
 
-        <button id="shrinkStickerButton" data-tooltip="Make smaller">
-          <img src="icons/smaller.png" alt="Make smaller">
+        <button id="sizeStickerButton" data-tooltip="Size">
+          <img src="icons/size.png" alt="Size">
         </button>
 
-        <button id="growStickerButton" data-tooltip="Make bigger">
-          <img src="icons/bigger.png" alt="Make bigger">
+        <button id="rotateSliderButton" data-tooltip="Rotate">
+          <img src="icons/rotate.png" alt="Rotate">
         </button>
 
-        <button id="rotateLeftStickerButton" data-tooltip="Rotate left">
-          <img src="icons/tilt-left.png" alt="Rotate left">
+        <button id="widthSliderButton" data-tooltip="Width">
+          <img src="icons/width.png" alt="Width">
         </button>
 
-        <button id="rotateRightStickerButton" data-tooltip="Rotate right">
-          <img src="icons/tilt-right.png" alt="Rotate right">
+        <button id="heightSliderButton" data-tooltip="Height">
+          <img src="icons/height.png" alt="Height">
         </button>
 
-        <button id="stretchWideStickerButton" data-tooltip="Stretch horizontal">
-          <img src="icons/stretch-horizontal.png" alt="Stretch horizontal">
+        <button id="sendBackwardStickerButton" data-tooltip="Move back">
+          <img src="icons/back.png" alt="Back">
         </button>
 
-        <button id="squishNarrowStickerButton" data-tooltip="Squish horizontal">
-          <img src="icons/squish-horizontal.png" alt="Squish horizontal">
+        <button id="bringForwardStickerButton" data-tooltip="Move front">
+          <img src="icons/front.png" alt="Front">
         </button>
-
-        <button id="stretchTallStickerButton" data-tooltip="Stretch vertical">
-          <img src="icons/stretch-vertical.png" alt="Stretch vertical">
-        </button>
-
-        <button id="squishShortStickerButton" data-tooltip="Squish vertical">
-          <img src="icons/squish-vertical.png" alt="Squish vertical">
-        </button>
-
-        <button id="sendBackwardStickerButton" data-tooltip="Send backward">⬇</button>
-
-        <button id="bringForwardStickerButton" data-tooltip="Bring forward">⬆</button>
-
-        <button id="lockStickerButton" data-tooltip="Lock edits">Lock</button>
       `;
 
       document.body.appendChild(editControls);
       document.getElementById("moveDotButton").addEventListener("click", startDotMoveMode);
-      document.getElementById("shrinkStickerButton").addEventListener("click", shrinkSticker);
-      document.getElementById("growStickerButton").addEventListener("click", growSticker);
-      document.getElementById("rotateLeftStickerButton").addEventListener("click", rotateStickerLeft);
-      document.getElementById("rotateRightStickerButton").addEventListener("click", rotateStickerRight);
-      document.getElementById("stretchWideStickerButton").addEventListener("click", stretchStickerWide);
-      document.getElementById("squishNarrowStickerButton").addEventListener("click", squishStickerNarrow);
-      document.getElementById("stretchTallStickerButton").addEventListener("click", stretchStickerTall);
-      document.getElementById("squishShortStickerButton").addEventListener("click", squishStickerShort);
+      document.getElementById("sizeStickerButton").addEventListener("click", openSizeSlider);
+      document.getElementById("rotateSliderButton").addEventListener("click", openRotateSlider);
+      document.getElementById("widthSliderButton").addEventListener("click", openWidthSlider);
+      document.getElementById("heightSliderButton").addEventListener("click", openHeightSlider);
       document.getElementById("sendBackwardStickerButton").addEventListener("click", sendStickerBackward);
       document.getElementById("bringForwardStickerButton").addEventListener("click", bringStickerForward);
-      document.getElementById("lockStickerButton").addEventListener("click", lockStickerEdits);
     }
 
     function positionEditControlsAbovePlant(plant) {
@@ -3119,26 +3100,69 @@
       positionMarkers();
     }
 
-    function growSticker(event) {
+    function openStickerSlider(event, controlType) {
       event.stopPropagation();
 
       if (!editingPlant) return;
 
-      activeSliderControl = "size";
+      activeSliderControl = controlType;
 
       const sliderPanel = document.getElementById("editSliderPanel");
       const sliderLabel = document.getElementById("editSliderLabel");
       const slider = document.getElementById("editSlider");
 
-      sliderLabel.textContent = "Size";
-      const currentSize = editingPlant.stickerWidth || 120;
+      if (controlType === "size") {
+        const currentSize = editingPlant.stickerWidth || 120;
 
-      slider.min = editMode === "plants" ? "20" : "40";
-      slider.max = editMode === "plants" ? "140" : Math.max(240, currentSize + 40);
-      slider.value = currentSize;
+        sliderLabel.textContent = "Size";
+        slider.min = editMode === "plants" ? "20" : "40";
+        slider.max = editMode === "plants" ? "140" : Math.max(240, currentSize + 40);
+        slider.step = "1";
+        slider.value = currentSize;
+      }
+
+      if (controlType === "rotate") {
+        sliderLabel.textContent = "Rotate";
+        slider.min = "-180";
+        slider.max = "180";
+        slider.step = "1";
+        slider.value = editingPlant.stickerRotation || 0;
+      }
+
+      if (controlType === "width") {
+        sliderLabel.textContent = "Width";
+        slider.min = "0.3";
+        slider.max = "2";
+            slider.step = "0.01";
+            slider.value = editingPlant.stickerScaleX || 1;
+      }
+
+      if (controlType === "height") {
+        sliderLabel.textContent = "Height";
+        slider.min = "0.3";
+        slider.max = "2";
+        slider.step = "0.01";
+        slider.value = editingPlant.stickerScaleY || 1;
+      }
 
       sliderPanel.classList.add("open");
       sliderPanel.style.display = "flex";
+    }
+
+    function openSizeSlider(event) {
+      openStickerSlider(event, "size");
+    }
+
+    function openRotateSlider(event) {
+      openStickerSlider(event, "rotate");
+    }
+
+    function openWidthSlider(event) {
+      openStickerSlider(event, "width");
+    }
+
+    function openHeightSlider(event) {
+      openStickerSlider(event, "height");
     }
 
     function rotateStickerLeft(event) {
@@ -4823,13 +4847,31 @@
     }
 
     document.getElementById("editSlider").addEventListener("input", function(event) {
-      if (!editingPlant || activeSliderControl !== "size") {
+      if (!editingPlant || !activeSliderControl) {
         return;
       }
 
-      editingPlant.stickerWidth = Number(event.target.value);
+      const sliderValue = Number(event.target.value);
+
+      if (activeSliderControl === "size") {
+        editingPlant.stickerWidth = sliderValue;
+      }
+
+      if (activeSliderControl === "rotate") {
+        editingPlant.stickerRotation = sliderValue;
+      }
+
+      if (activeSliderControl === "width") {
+        editingPlant.stickerScaleX = sliderValue;
+      }
+
+      if (activeSliderControl === "height") {
+        editingPlant.stickerScaleY = sliderValue;
+      }
+
       positionMarkers();
     });
+
     document.getElementById("editSlider").addEventListener("change", function() {
       if (!editingPlant) {
         return;
