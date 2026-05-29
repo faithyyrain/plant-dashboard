@@ -325,6 +325,44 @@
       background: rgba(161, 181, 117, 0.82);
     }
 
+    .edit-mode-menu {
+      display: none;
+      position: fixed;
+      top: 76px;
+      left: 30px;
+      z-index: 7000;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(224, 221, 215, 0.78);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .edit-mode-menu.open {
+      display: flex;
+    }
+
+    .edit-mode-menu button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 16px;
+      background: rgba(84, 87, 87, 0.84);
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .edit-mode-menu button:hover {
+      filter: brightness(1.12);
+      transform: scale(1.04);
+    }
+
     .calendar-button {
       position: fixed;
       top: 90px;
@@ -732,19 +770,28 @@
 
     .sticker-edit-controls {
       position: fixed;
-      z-index: 5000;
+      top: 30px !important;
+      left: 50% !important;
+      z-index: 7000;
       display: none;
-      width: 250px;
-      height: 250px;
-      border-radius: 50%;
-      background: transparent;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      width: auto;
+      height: auto;
+      border-radius: 999px;
+      background: rgba(224, 221, 215, 0.78);
+      transform: translateX(-50%);
+      pointer-events: auto;
       box-sizing: border-box;
+      padding: 8px 10px;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.38);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .sticker-edit-controls button {
-      position: absolute;
+      position: static;
       border: none;
       background: rgba(84, 87, 87, 0.84);
       color: white;
@@ -1352,9 +1399,12 @@
 
   <!-- ===== CALENDAR BUTTON ===== -->
 
-    <button class="hide-plants-button" onclick="togglePlantVisibility()">Hide Plants</button>
-
+    <button class="hide-plants-button" id="editModeButton" onclick="toggleEditModeMenu()">Edit Mode</button>
     <button class="calendar-button" onclick="toggleCalendar()">Calendar</button>
+    <div id="editModeMenu" class="edit-mode-menu">
+      <button onclick="startEditMode('plants')">Edit Plants</button>
+      <button onclick="startEditMode('decor')">Edit Decor</button>
+    </div>
 
 
   <!-- ===== CALENDAR + PANELS ===== -->
@@ -2740,7 +2790,97 @@
       let moveOffsetX = 0;
       let moveOffsetY = 0;
       let plantsHidden = false;
+      let editMode = null;
     
+    function toggleEditModeMenu() {
+      const editModeButton = document.getElementById("editModeButton");
+      const editModeMenu = document.getElementById("editModeMenu");
+
+      if (editMode) {
+        exitEditMode();
+        return;
+      }
+
+      editModeMenu.classList.toggle("open");
+    }
+
+    function startEditMode(mode) {
+      editMode = mode;
+
+      const editModeButton = document.getElementById("editModeButton");
+      const editModeMenu = document.getElementById("editModeMenu");
+
+      editModeMenu.classList.remove("open");
+      editModeButton.textContent = "Done";
+      editModeButton.classList.add("plants-hidden");
+
+      applyEditModeView();
+    }
+
+    function exitEditMode() {
+      editMode = null;
+      plantsHidden = false;
+
+      const editModeButton = document.getElementById("editModeButton");
+      const editModeMenu = document.getElementById("editModeMenu");
+
+      editModeMenu.classList.remove("open");
+      editModeButton.textContent = "Edit Mode";
+      editModeButton.classList.remove("plants-hidden");
+
+      lockStickerEdits(new Event("click"));
+
+      if (editControls) {
+        editControls.style.display = "none";
+      }
+
+      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+
+      applyEditModeView();
+    }
+
+    function applyEditModeView() {
+      stickers.forEach(({ sticker, plant }) => {
+        if (editMode === "decor") {
+          plantsHidden = true;
+
+          if (plant.decorative) {
+            sticker.style.display = "block";
+            sticker.classList.add("decor-editable");
+            sticker.style.pointerEvents = "auto";
+          } else {
+            sticker.style.display = "none";
+            sticker.style.pointerEvents = "none";
+          }
+        } else if (editMode === "plants") {
+          plantsHidden = false;
+
+          if (plant.decorative) {
+            sticker.style.display = "block";
+            sticker.classList.remove("decor-editable");
+            sticker.style.pointerEvents = "none";
+          } else {
+            sticker.style.display = "block";
+            sticker.style.pointerEvents = "auto";
+          }
+        } else {
+          plantsHidden = false;
+          sticker.style.display = "block";
+
+          if (plant.decorative) {
+            sticker.classList.remove("decor-editable");
+            sticker.style.pointerEvents = "auto";
+          } else {
+            sticker.style.pointerEvents = "auto";
+          }
+        }
+      });
+
+      markers.forEach(({ marker }) => {
+        marker.style.display = editMode === "decor" ? "none" : "block";
+      });
+    }
+
     function togglePlantVisibility() {
       plantsHidden = !plantsHidden;
 
@@ -2848,15 +2988,25 @@
 
       editControls.style.left = plantPixelX + "px";
       editControls.style.top = plantPixelY + "px";
-      editControls.style.display = "block";
+      editControls.style.display = "flex";
+
+      const moveDotButton = document.getElementById("moveDotButton");
+
+      if (moveDotButton) {
+        moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
+      }
     }
 
     function openStickerEditControls(event, plant) {
-      if (plant.decorative && !plantsHidden) {
+      if (!editMode) {
         return;
       }
 
-      if (!plant.decorative && plantsHidden) {
+      if (editMode === "decor" && !plant.decorative) {
+        return;
+      }
+
+      if (editMode === "plants" && plant.decorative) {
         return;
       }
 
@@ -2867,7 +3017,7 @@
       }
 
       editingPlant = plant;
-      moveReady = true;
+      moveReady = false;
       dotMoveReady = false;
       movingPlant = false;
       movingDot = false;
@@ -2879,32 +3029,13 @@
         activeStickerItem.sticker.classList.add("editing-sticker");
       }
 
-      const metrics = getImageMetrics();
-      const stickerX = plant.stickerX ?? plant.x;
-      const stickerY = plant.stickerY ?? plant.y;
+      editControls.style.display = "flex";
 
-      const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
-      const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
+      const moveDotButton = document.getElementById("moveDotButton");
 
-      editControls.style.left = plantPixelX + "px";
-      editControls.style.top = plantPixelY + "px";
-      editControls.style.display = "block";
-    }
-
-    function startMoveMode(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) {
-        return;
+      if (moveDotButton) {
+        moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
       }
-
-      moveReady = true;
-      dotMoveReady = false;
-      movingPlant = false;
-      movingDot = false;
-
-      document.getElementById("moveStickerButton").classList.add("active-edit-button");
-      document.getElementById("moveDotButton").classList.remove("active-edit-button");
     }
 
     function startDotMoveMode(event) {
@@ -2920,11 +3051,6 @@
       movingDot = false;
 
       document.getElementById("moveDotButton").classList.add("active-edit-button");
-      
-      const moveButton = document.getElementById("moveStickerButton");
-      if (moveButton) {
-        moveButton.classList.remove("active-edit-button");
-      }
     }
 
     function shrinkSticker(event) {
@@ -3038,11 +3164,6 @@
       dotMoveReady = false;
       movingPlant = false;
       movingDot = false;
-
-      const moveButton = document.getElementById("moveStickerButton");
-      if (moveButton) {
-        moveButton.classList.remove("active-edit-button");
-      }
 
       const dotButton = document.getElementById("moveDotButton");
       if (dotButton) {
@@ -3471,13 +3592,17 @@
 
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
-            sticker.addEventListener("dblclick", function(event) {
+            sticker.addEventListener("click", function(event) {
               openStickerEditControls(event, plant);
             });
 
             sticker.addEventListener("mousedown", function(event) {
-              if (!moveReady || editingPlant !== plant) {
+              if (!editMode) {
                 return;
+              }
+
+              if (editingPlant !== plant) {
+                openStickerEditControls(event, plant);
               }
 
               event.preventDefault();
@@ -4571,6 +4696,21 @@
           }
 
           return;
+        }
+
+        const clickedInsideEditControls = editControls && editControls.contains(event.target);
+        const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
+        const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
+        const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
+
+        if (
+          editMode &&
+          !clickedSticker &&
+          !clickedInsideEditControls &&
+          !clickedEditModeMenu &&
+          !clickedEditModeButton
+        ) {
+          lockStickerEdits(event);
         }
 
         if (
