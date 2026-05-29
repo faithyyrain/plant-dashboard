@@ -2732,6 +2732,11 @@
       let moveOffsetY = 0;
       let editMode = null;
       let activeSliderControl = null;
+      let movingLegend = false;
+      let legendMoveOffsetX = 0;
+      let legendMoveOffsetY = 0;
+      let legendCustomX = null;
+      let legendCustomY = null;
     
     function toggleEditModeMenu() {
       const editModeButton = document.getElementById("editModeButton");
@@ -3540,6 +3545,22 @@
 
   // ===== ROOM CLICK + COORDINATE FINDER =====
 
+        document.querySelector(".legend").addEventListener("mousedown", function(event) {
+          if (editMode !== "decor") {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          const legend = document.querySelector(".legend");
+          const rect = legend.getBoundingClientRect();
+
+          movingLegend = true;
+          legendMoveOffsetX = event.clientX - rect.left;
+          legendMoveOffsetY = event.clientY - rect.top;
+        });
+
         roomContainer.addEventListener("click", function(event) {
 
         if (event.target.classList.contains("plant-marker")) {
@@ -3783,8 +3804,14 @@
 
         const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
 
-        legend.style.left = x + "px";
-        legend.style.top = y + "px";
+        if (legendCustomX !== null && legendCustomY !== null) {
+          legend.style.left = legendCustomX + "px";
+          legend.style.top = legendCustomY + "px";
+        } else {
+          legend.style.left = x + "px";
+          legend.style.top = y + "px";
+        }
+
         legend.style.transform = `scale(${scale})`;
     }
 
@@ -4612,6 +4639,18 @@
     });
 
     document.addEventListener("mousemove", function(event) {
+      if (movingLegend) {
+        const legend = document.querySelector(".legend");
+
+        legendCustomX = event.clientX - legendMoveOffsetX;
+        legendCustomY = event.clientY - legendMoveOffsetY;
+
+        legend.style.left = legendCustomX + "px";
+        legend.style.top = legendCustomY + "px";
+
+        return;
+      }
+
       if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
       }
@@ -4640,6 +4679,11 @@
     });
 
     document.addEventListener("mouseup", function() {
+      if (movingLegend) {
+        movingLegend = false;
+        return;
+      }
+
       if ((!movingPlant && !movingDot) || !editingPlant) {
         return;
       }
@@ -4686,12 +4730,14 @@
         const stickerSelectPopup = document.getElementById("stickerSelectPopup");
         const clickedInsideStickerSelectPopup = stickerSelectPopup && stickerSelectPopup.contains(event.target);
         const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
+        const clickedLegend = event.target.closest(".legend");
         const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
         const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
 
         if (
           editMode &&
           !clickedSticker &&
+          !clickedLegend &&
           !clickedInsideEditControls &&
           !clickedInsideSliderPanel &&
           !clickedInsideStickerSelectPopup &&
