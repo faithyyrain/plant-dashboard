@@ -792,6 +792,7 @@
 
     .sticker-edit-controls button {
       position: static;
+      transform: none !important;
       border: none;
       background: rgba(84, 87, 87, 0.84);
       color: white;
@@ -2814,6 +2815,16 @@
       editModeButton.textContent = "Done";
       editModeButton.classList.add("plants-hidden");
 
+      if (editControls) {
+        editControls.style.display = "flex";
+      }
+
+      const moveDotButton = document.getElementById("moveDotButton");
+
+      if (moveDotButton) {
+        moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
+      }
+
       applyEditModeView();
     }
 
@@ -3620,10 +3631,6 @@
               moveOffsetY = event.clientY - plantPixelY;
 
               movingPlant = true;
-
-              if (editControls) {
-                editControls.style.display = "none";
-              }
             });
 
             roomContainer.appendChild(sticker);
