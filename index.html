@@ -141,10 +141,6 @@
       background: #8e847b;
     }
 
-    .delay-button.delay-active {
-      background: #dab668;
-    }
-
     .delay-button {
       display: inline-grid;
       grid-template-columns: 1fr 1fr;
@@ -917,51 +913,12 @@
       z-index: 9000;
     }
 
-    .squish-icon {
-      position: relative;
-      width: 22px;
-      height: 22px;
-      display: block;
-    }
-
-    .squish-icon::before {
-      content: "↓";
-      position: absolute;
-      top: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .squish-icon::after {
-      content: "↑";
-      position: absolute;
-      bottom: -4px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 18px;
-      line-height: 1;
-    }
-
     .sticker-edit-controls button img {
       width: 72%;
       height: 72%;
       object-fit: contain;
       display: block;
       pointer-events: none;
-    }
-
-    .sticker-edit-controls button:hover {
-      filter: brightness(1.12);
-      scale: 1.08;
-    }
-
-    #lockStickerButton {
-      width: 72px;
-      height: 40px;
-      border-radius: 999px;
-      font-size: 14px;
     }
 
     .sticker-edit-controls button:hover {
@@ -986,80 +943,6 @@
       align-items: center;
       justify-content: center;
       padding: 0;
-    }
-
-    #moveDotButton {
-      top: 8%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    #sendBackwardStickerButton {
-      top: 104%;
-      left: 32%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-    }
-
-    #bringForwardStickerButton {
-      top: 104%;
-      left: 68%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-    }
-
-    #lockStickerButton {
-      top: calc(100% - -2px);
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    #rotateLeftStickerButton {
-      top: 18%;
-      left: 12%;
-      transform: translate(-50%, -50%);
-    }
-
-    #rotateRightStickerButton {
-      top: 42%;
-      left: 0;
-      transform: translate(-50%, -50%);
-    }
-
-    #stretchTallStickerButton {
-      top: 66%;
-      left: 0;
-      transform: translate(-50%, -50%);
-    }
-
-    #squishShortStickerButton {
-      top: 90%;
-      left: 12%;
-      transform: translate(-50%, -50%);
-    }
-
-    #growStickerButton {
-      top: 18%;
-      left: 88%;
-      transform: translate(-50%, -50%);
-    }
-
-    #shrinkStickerButton {
-      top: 42%;
-      left: 100%;
-      transform: translate(-50%, -50%);
-    }
-
-    #stretchWideStickerButton {
-      top: 66%;
-      left: 100%;
-      transform: translate(-50%, -50%);
-    }
-
-    #squishNarrowStickerButton {
-      top: 90%;
-      left: 88%;
-      transform: translate(-50%, -50%);
     }
 
     .sticker-edit-controls button.active-edit-button {
@@ -2875,13 +2758,11 @@
       let editingPlant = null;
       let movingPlant = false;
       let editControls = null;
-      let moveReady = false;
       let dotMoveReady = false;
       let movingDot = false;
       let ignoreNextMarkerClick = false;
       let moveOffsetX = 0;
       let moveOffsetY = 0;
-      let plantsHidden = false;
       let editMode = null;
       let activeSliderControl = null;
     
@@ -2930,7 +2811,6 @@
 
     function exitEditMode() {
       editMode = null;
-      plantsHidden = false;
 
       const editModeButton = document.getElementById("editModeButton");
       const editModeMenu = document.getElementById("editModeMenu");
@@ -2953,7 +2833,6 @@
     function applyEditModeView() {
       stickers.forEach(({ sticker, plant }) => {
         if (editMode === "decor") {
-          plantsHidden = true;
 
           if (plant.decorative) {
             sticker.style.display = "block";
@@ -2964,7 +2843,6 @@
             sticker.style.pointerEvents = "none";
           }
         } else if (editMode === "plants") {
-          plantsHidden = false;
 
           if (plant.decorative) {
             sticker.style.display = "block";
@@ -2975,7 +2853,6 @@
             sticker.style.pointerEvents = "auto";
           }
         } else {
-          plantsHidden = false;
           sticker.style.display = "block";
 
           if (plant.decorative) {
@@ -2990,38 +2867,6 @@
       markers.forEach(({ marker }) => {
         marker.style.display = editMode === "decor" ? "none" : "block";
       });
-    }
-
-    function togglePlantVisibility() {
-      plantsHidden = !plantsHidden;
-
-      const hideButton = document.querySelector(".hide-plants-button");
-
-      markers.forEach(({ marker }) => {
-        marker.style.display = plantsHidden ? "none" : "block";
-      });
-
-      stickers.forEach(({ sticker, plant }) => {
-        if (plant.decorative) {
-          sticker.classList.toggle("decor-editable", plantsHidden);
-        } else {
-          sticker.style.display = plantsHidden ? "none" : "block";
-        }
-      });
-
-      if (!plantsHidden) {
-        stickers.forEach(({ plant }) => {
-          if (plant.decorative) {
-            plant.locked = true;
-            savePlantToFirebase(plant);
-          }
-        });
-      }
-
-      hideButton.textContent = plantsHidden ? "Show Plants" : "Hide Plants";
-      hideButton.classList.toggle("plants-hidden", plantsHidden);
-
-      lockStickerEdits(new Event("click"));
     }
 
     function createStickerEditControls() {
@@ -3239,7 +3084,6 @@
       }
 
       editingPlant = plant;
-      moveReady = false;
       dotMoveReady = false;
       movingPlant = false;
       movingDot = false;
@@ -3268,21 +3112,10 @@
       }
 
       dotMoveReady = true;
-      moveReady = false;
       movingPlant = false;
       movingDot = false;
 
       document.getElementById("moveDotButton").classList.add("active-edit-button");
-    }
-
-    function shrinkSticker(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerWidth = Math.max(20, (editingPlant.stickerWidth || 120) - 1);
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
     }
 
     function openStickerSlider(event, controlType) {
@@ -3350,66 +3183,6 @@
       openStickerSlider(event, "height");
     }
 
-    function rotateStickerLeft(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) - 1;
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function rotateStickerRight(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerRotation = (editingPlant.stickerRotation || 0) + 1;
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function stretchStickerWide(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerScaleX = Number(((editingPlant.stickerScaleX || 1) + 0.01).toFixed(2));
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function stretchStickerTall(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerScaleY = Number(((editingPlant.stickerScaleY || 1) + 0.01).toFixed(2));
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function squishStickerNarrow(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerScaleX = Math.max(0.3, Number(((editingPlant.stickerScaleX || 1) - 0.01).toFixed(2)));
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
-    function squishStickerShort(event) {
-      event.stopPropagation();
-
-      if (!editingPlant) return;
-
-      editingPlant.stickerScaleY = Math.max(0.3, Number(((editingPlant.stickerScaleY || 1) - 0.01).toFixed(2)));
-      savePlantToFirebase(editingPlant);
-      positionMarkers();
-    }
-
     function sendStickerBackward(event) {
       event.stopPropagation();
 
@@ -3437,7 +3210,6 @@
         savePlantToFirebase(editingPlant);
       }
 
-      moveReady = false;
       dotMoveReady = false;
       movingPlant = false;
       movingDot = false;
@@ -3568,8 +3340,6 @@
       if (!baseNextWaterDate) {
         return null;
       }
-
-      const todayString = getTodayString();
 
       if (plant.delayUntil) {
         const adjustedDate = new Date(plant.delayUntil + "T00:00:00");
@@ -4229,14 +3999,12 @@
           <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
           <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>
         `;
-        delayButton.classList.remove("delay-active");
       } else {
         delayButton.style.display = "inline-grid";
         buttonRow.classList.remove("even-buttons");
         delayButton.innerHTML = `
           <span class="delay-half delay-back-half" onclick="moveActivePlantBackOneDay(event)"><span>-1</span></span>
           <span class="delay-half delay-forward-half" onclick="delayActivePlantOneDay(event)"><span>+1</span></span>        `;
-        delayButton.classList.remove("delay-active");
         const nextWaterDate = getEffectiveNextWaterDate(plant);
         const baseNextWaterDate = getBaseNextWaterDate(plant);
 
@@ -4633,11 +4401,6 @@
         } else {
           duePanelTitle.textContent = formatDuePanelTitle(dateString);
         }
-
-        const hasAnyFertilizerButton = plantsDue.some(plant =>
-          hasFertilizerSchedule(plant) &&
-          (shouldShowCalendarFertilizerRing(plant, dateString) || plant.lastFertilized === dateString)
-        );
 
         const isTodayPanel = dateString === getTodayString();
         const isWateredOnlyPanel = !hasDuePlants && hasWateredPlants;
