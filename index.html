@@ -3138,6 +3138,7 @@
       slider.value = currentSize;
 
       sliderPanel.classList.add("open");
+      sliderPanel.style.display = "flex";
     }
 
     function rotateStickerLeft(event) {
@@ -3249,6 +3250,7 @@
 
       if (sliderPanel) {
         sliderPanel.classList.remove("open");
+        sliderPanel.style.display = "none";
       }
 
       activeSliderControl = null;
@@ -4775,6 +4777,8 @@
         }
 
         const clickedInsideEditControls = editControls && editControls.contains(event.target);
+        const sliderPanel = document.getElementById("editSliderPanel");
+        const clickedInsideSliderPanel = sliderPanel && sliderPanel.contains(event.target);
         const clickedSticker = event.target.classList && event.target.classList.contains("plant-sticker");
         const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
         const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
@@ -4783,6 +4787,7 @@
           editMode &&
           !clickedSticker &&
           !clickedInsideEditControls &&
+          !clickedInsideSliderPanel &&
           !clickedEditModeMenu &&
           !clickedEditModeButton
         ) {
@@ -4800,6 +4805,22 @@
           closeDuePanel();
         }
   });
+
+    const editSliderPanel = document.getElementById("editSliderPanel");
+
+    if (editSliderPanel) {
+      editSliderPanel.addEventListener("mousedown", function(event) {
+        event.stopPropagation();
+      });
+
+      editSliderPanel.addEventListener("mouseup", function(event) {
+        event.stopPropagation();
+      });
+
+      editSliderPanel.addEventListener("click", function(event) {
+        event.stopPropagation();
+      });
+    }
 
     document.getElementById("editSlider").addEventListener("input", function(event) {
       if (!editingPlant || activeSliderControl !== "size") {
