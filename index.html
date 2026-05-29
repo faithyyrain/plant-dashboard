@@ -318,7 +318,7 @@
       transform: scale(1.06);
     }
 
-    .edit-mode-button.plants-hidden {
+    .edit-mode-button.edit-mode-active {
       background: rgba(161, 181, 117, 0.82);
     }
 
@@ -944,7 +944,7 @@
 
     .sticker-edit-controls button.active-edit-button {
       background: #a1b575;
-      transform: scale(1.05);
+      scale: 1.08;
     }
 
 
@@ -1411,7 +1411,7 @@
   <!-- ===== ROOM IMAGE + LEGEND ===== -->
 
     <div class="room-container" id="roomContainer">
-      <img src="livingroom.jpg?v=room4" class="room-image" id="roomImage">
+      <img src="livingroom.jpg?v=room4" class="room-image">
 
         <!-- Color legend -->
 
@@ -2753,7 +2753,7 @@
 
       editModeMenu.classList.remove("open");
       editModeButton.textContent = "Done";
-      editModeButton.classList.add("plants-hidden");
+      editModeButton.classList.add("edit-mode-active");
 
       if (editControls) {
         editControls.style.display = "flex";
@@ -2784,7 +2784,7 @@
 
       editModeMenu.classList.remove("open");
       editModeButton.textContent = "Edit Mode";
-      editModeButton.classList.remove("plants-hidden");
+      editModeButton.classList.remove("edit-mode-active");
 
       lockStickerEdits(new Event("click"));
 
@@ -2888,15 +2888,6 @@
     function positionEditControlsAbovePlant(plant) {
       if (!editControls || !plant) return;
 
-      const metrics = getImageMetrics();
-      const stickerX = plant.stickerX ?? plant.x;
-      const stickerY = plant.stickerY ?? plant.y;
-
-      const plantPixelX = metrics.containerRect.left + metrics.offsetX + (stickerX / 100) * metrics.displayedWidth;
-      const plantPixelY = metrics.containerRect.top + metrics.offsetY + (stickerY / 100) * metrics.displayedHeight;
-
-      editControls.style.left = plantPixelX + "px";
-      editControls.style.top = plantPixelY + "px";
       editControls.style.display = "flex";
 
       const moveDotButton = document.getElementById("moveDotButton");
@@ -3562,16 +3553,6 @@
           closeDuePanel();
           return;
         }
-
-        const metrics = getImageMetrics();
-
-        const clickX = event.clientX - metrics.containerRect.left;
-        const clickY = event.clientY - metrics.containerRect.top;
-
-        const x = ((clickX - metrics.offsetX) / metrics.displayedWidth) * 100;
-        const y = ((clickY - metrics.offsetY) / metrics.displayedHeight) * 100;
-
-        // alert(`x: ${x.toFixed(1)}, y: ${y.toFixed(1)}`);
     });
 
 
@@ -3712,7 +3693,7 @@
   // ===== IMAGE POSITIONING FUNCTIONS =====
 
     function getImageMetrics() {
-      const roomImage = document.getElementById("roomImage");
+      const roomImage = document.querySelector(".room-image");
       const containerRect = roomContainer.getBoundingClientRect();
 
       const imageWidth = roomImage.naturalWidth;
@@ -3915,7 +3896,7 @@
 
       const zoomView = document.getElementById("zoomView");
 
-      if (plant.image && !/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+      if (plant.image && !isIOS) {
         zoomView.style.backgroundImage = `url("${plant.image}")`;
         zoomView.style.backgroundSize = "cover";
         zoomView.style.backgroundPosition = "center";
@@ -4378,8 +4359,6 @@
         duePanel.classList.add("open");
 
         plantsDue.forEach(plant => {
-          const isTodayPanel = dateString === getTodayString();
-
           const plantItem = document.createElement("div");
           plantItem.className = "due-plant-item";
 
@@ -4450,12 +4429,6 @@
             const delayBackButton = document.createElement("button");
             delayBackButton.className = "due-mini-button delay-back-button";
             delayBackButton.textContent = "-1 Day";
-
-            const clickedDateForBackButton = new Date(dateString + "T00:00:00");
-            clickedDateForBackButton.setHours(0, 0, 0, 0);
-
-            const movedEarlierDate = new Date(clickedDateForBackButton);
-            movedEarlierDate.setDate(clickedDateForBackButton.getDate() - 1);
 
             if (plant.intervalAdjustedToday === dateString) {
               delayBackButton.textContent = "Earlier!";
@@ -4812,7 +4785,7 @@
     createStickerEditControls();
     preloadPlantImages();
 
-    const roomImage = document.getElementById("roomImage");
+    const roomImage = document.querySelector(".room-image");
 
     if (roomImage.complete) {
       createMarkers();
