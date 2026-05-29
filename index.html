@@ -3603,6 +3603,7 @@
 
             sticker.src = plant.sticker;
             sticker.alt = plant.name;
+            sticker.draggable = false;
             sticker.addEventListener("click", function(event) {
               openStickerEditControls(event, plant);
             });
