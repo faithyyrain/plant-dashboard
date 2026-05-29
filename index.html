@@ -3100,6 +3100,57 @@
       return false;
     }
 
+    function clickedVisibleStickerPixel(sticker, plant, event) {
+      if (!sticker.complete || !sticker.naturalWidth || !sticker.naturalHeight) {
+        return true;
+      }
+
+      const rect = sticker.getBoundingClientRect();
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const clickX = event.clientX - centerX;
+      const clickY = event.clientY - centerY;
+
+      const rotation = (plant.stickerRotation || 0) * Math.PI / 180;
+      const scaleX = plant.stickerScaleX || 1;
+      const scaleY = plant.stickerScaleY || 1;
+
+      const unrotatedX = clickX * Math.cos(rotation) + clickY * Math.sin(rotation);
+      const unrotatedY = -clickX * Math.sin(rotation) + clickY * Math.cos(rotation);
+
+      const baseWidth = sticker.offsetWidth;
+      const baseHeight = sticker.offsetHeight;
+
+      const imageX = (unrotatedX / scaleX) + baseWidth / 2;
+      const imageY = (unrotatedY / scaleY) + baseHeight / 2;
+
+      if (
+        imageX < 0 ||
+        imageX > baseWidth ||
+        imageY < 0 ||
+        imageY > baseHeight
+      ) {
+        return false;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = sticker.naturalWidth;
+      canvas.height = sticker.naturalHeight;
+
+      const context = canvas.getContext("2d");
+      context.drawImage(sticker, 0, 0);
+
+      const sampleX = Math.floor((imageX / baseWidth) * sticker.naturalWidth);
+      const sampleY = Math.floor((imageY / baseHeight) * sticker.naturalHeight);
+
+      const pixel = context.getImageData(sampleX, sampleY, 1, 1).data;
+      const alpha = pixel[3];
+
+      return alpha > 20;
+    }
+
     function getStickerCandidatesAtPoint(event) {
       return stickers.filter(({ sticker, plant }) => {
         if (!isStickerEditableInCurrentMode(plant)) {
@@ -3112,12 +3163,17 @@
 
         const rect = sticker.getBoundingClientRect();
 
-        return (
+        const insideRectangle =
           event.clientX >= rect.left &&
           event.clientX <= rect.right &&
           event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        );
+          event.clientY <= rect.bottom;
+
+        if (!insideRectangle) {
+          return false;
+        }
+
+        return clickedVisibleStickerPixel(sticker, plant, event);
       });
     }
 
