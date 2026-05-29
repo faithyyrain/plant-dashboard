@@ -3830,26 +3830,6 @@
         positionCalendar();
     }
 
-    function positionLegend() {
-        const legend = document.querySelector(".legend");
-        const metrics = getImageMetrics();
-
-        const x = metrics.offsetX + 5 / 100 * metrics.displayedWidth;
-        const y = metrics.offsetY + 62 / 100 * metrics.displayedHeight;
-
-        const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
-
-        if (legendCustomX !== null && legendCustomY !== null) {
-          legend.style.left = legendCustomX + "px";
-          legend.style.top = legendCustomY + "px";
-        } else {
-          legend.style.left = x + "px";
-          legend.style.top = y + "px";
-        }
-
-        legend.style.transform = `scale(${scale})`;
-    }
-
     function positionCalendar() {
         const calendarButton = document.querySelector(".calendar-button");
         const calendarWrapper = document.getElementById("calendarWrapper");
