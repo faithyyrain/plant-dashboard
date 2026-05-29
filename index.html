@@ -3244,6 +3244,15 @@
       if (editControls) {
         editControls.style.display = "none";
       }
+
+      const sliderPanel = document.getElementById("editSliderPanel");
+
+      if (sliderPanel) {
+        sliderPanel.classList.remove("open");
+      }
+
+      activeSliderControl = null;
+
     }
 
 
