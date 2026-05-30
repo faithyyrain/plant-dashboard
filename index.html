@@ -2780,8 +2780,7 @@
             stickerScaleX: 1,
             stickerScaleY: 1,
             opacity: 1,
-            blendMode: "screen",
-            brightness: 1.03
+            blendMode: "screen"
           }         
           ];
 
@@ -3832,7 +3831,6 @@
           sticker.style.width = (stickerWidth / 1000) * metrics.displayedWidth + "px";
           sticker.style.opacity = plant.opacity ?? 1;
           sticker.style.mixBlendMode = plant.blendMode || "normal";
-          sticker.style.filter = plant.brightness ? `brightness(${plant.brightness})` : "";
 
           const zOffset = plant.zOffset || 0;
           let stickerZ;
