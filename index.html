@@ -1387,7 +1387,7 @@
       overflow-y: auto;
       cursor: default;
       background: rgba(224, 221, 215, 0.96);
-      padding: 8px 10px;
+      padding: 0 10px;
       border: 3px solid rgba(167, 154, 129, 0.694);
       border-radius: 0 18px 18px 18px;
       font-size: 12px;
@@ -1406,11 +1406,13 @@
 
     .out-of-view-row {
       display: grid;
-      grid-template-columns: 44px 1fr 18px;
+      grid-template-columns: 70px 1fr 28px;
       align-items: center;
       gap: 10px;
-      padding: 7px 0;
+      min-height: 96px;
+      padding: 0;
       border-bottom: 1px solid rgba(50, 50, 50, 0.12);
+      box-sizing: border-box;
     }
 
     .out-of-view-row:last-child {
