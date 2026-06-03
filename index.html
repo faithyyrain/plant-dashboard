@@ -1346,6 +1346,103 @@
         0 0 10px rgba(254, 219, 105, 0.75);
     }
 
+    .out-of-view-drawer {
+      position: fixed;
+      left: 126px;
+      bottom: 0;
+      z-index: 5500;
+      transform: translateY(calc(100% - 34px));
+      transition: transform 0.22s ease;
+    }
+
+    .out-of-view-drawer.open {
+      transform: translateY(0);
+    }
+
+    .out-of-view-tab {
+      position: relative;
+      width: 112px;
+      height: 34px;
+      padding: 0;
+      border: 3px solid rgba(175, 163, 141, 0.738);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+      background: rgba(214, 207, 191, 0.842);
+      color: #333;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+      transition: filter 0.15s ease;
+    }
+
+    .out-of-view-tab:hover {
+      filter: brightness(1.08);
+    }
+
+    .out-of-view-panel {
+      width: 280px;
+      max-height: 300px;
+      overflow-y: auto;
+      cursor: default;
+      background: rgba(224, 221, 215, 0.96);
+      padding: 8px 10px;
+      border: 3px solid rgba(167, 154, 129, 0.694);
+      border-radius: 0 18px 18px 18px;
+      font-size: 12px;
+      font-family: 'Nunito', Arial, sans-serif;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      scrollbar-width: none;
+      box-sizing: border-box;
+    }
+
+    .out-of-view-panel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .out-of-view-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 18px;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(50, 50, 50, 0.12);
+    }
+
+    .out-of-view-row:last-child {
+      border-bottom: none;
+    }
+
+    .out-of-view-photo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .out-of-view-name {
+      color: #333;
+      line-height: 1.2;
+    }
+
+    .out-of-view-dot {
+      position: static;
+      width: 15px;
+      height: 15px;
+      transform: none;
+      z-index: auto;
+      flex-shrink: 0;
+    }
+
+    .out-of-view-dot:hover {
+      transform: scale(1.12);
+    }
+
   /* ===== IPHONE FAKE LANDSCAPE VIEW ===== */
 
     @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
@@ -1481,6 +1578,10 @@
           <div class="legend-row"><span class="legend-dot red"></span> Due today</div>
           <div class="legend-row"><span class="legend-dot darkred"></span> Overdue</div>
           <div class="legend-row"><span class="legend-dot fertilizer-ring-legend"></span> Fertilizer due</div>
+        </div>
+        <div class="out-of-view-drawer" id="outOfViewDrawer">
+          <button class="out-of-view-tab" onclick="toggleOutOfView()">Out of view</button>
+          <div class="out-of-view-panel" id="outOfViewPanel"></div>
         </div>
       </div>
     </div>
@@ -2202,6 +2303,7 @@
             x: 53.9,
             y: 60.6,
             image: "plant-photos/begonia.jpeg",
+            outOfView: true,  
             sticker: "plant-stickers/begonia.png",
             stickerX: 53.9,
             stickerY: 60.6,
@@ -2422,6 +2524,7 @@
             x: 88.9,
             y: 87.2,
             image: "plant-photos/graces-plant.jpeg",
+            outOfView: true,
             lastWatered: "2026-05-06",
             intervalDays: 11,
             lastFertilized: "2026-05-06",
@@ -3638,6 +3741,10 @@
 
     function createMarkers() {
         plants.forEach((plant, index) => {
+          if (plant.outOfView) {
+            return;
+          }
+
           if (plant.sticker) {
             const sticker = document.createElement("img");
 
@@ -3885,6 +3992,8 @@
             marker.classList.add("fertilizer-ring");
           }
         });
+        
+        renderOutOfViewPlants();
     }
 
 
@@ -3893,6 +4002,7 @@
     function hideDashboardOverlays() {
         document.querySelector(".calendar-button").style.display = "none";
         document.querySelector(".legend").style.display = "none";
+        document.querySelector(".out-of-view-panel").style.display = "none";
         document.getElementById("calendarWrapper").classList.remove("open");
         closeDuePanel();
     }
@@ -4649,6 +4759,64 @@
       legendDrawer.classList.toggle("open");
     }
 
+    function toggleOutOfView() {
+      const outOfViewDrawer = document.getElementById("outOfViewDrawer");
+
+      outOfViewDrawer.classList.toggle("open");
+    }
+
+    function renderOutOfViewPlants() {
+      const outOfViewPanel = document.getElementById("outOfViewPanel");
+
+      if (!outOfViewPanel) {
+        return;
+      }
+
+      outOfViewPanel.innerHTML = "";
+
+      const outOfViewPlants = plants.filter(plant => plant.outOfView);
+
+      if (outOfViewPlants.length === 0) {
+        outOfViewPanel.innerHTML = `<div class="out-of-view-row">No out of view plants yet.</div>`;
+        return;
+      }
+
+      outOfViewPlants.forEach(plant => {
+        const plantIndex = plants.indexOf(plant);
+        const status = getPlantStatus(plant);
+
+        const plantRow = document.createElement("div");
+        plantRow.className = "out-of-view-row";
+
+        const plantPhoto = document.createElement("img");
+        plantPhoto.className = "out-of-view-photo";
+        plantPhoto.src = plant.image || "livingroom.jpg";
+        plantPhoto.alt = plant.name;
+
+        const plantName = document.createElement("div");
+        plantName.className = "out-of-view-name";
+        plantName.textContent = plant.name;
+
+        const plantDot = document.createElement("button");
+        plantDot.className = `plant-marker out-of-view-dot ${status.color}`;
+
+        if (shouldShowFertilizerRing(plant)) {
+          plantDot.classList.add("fertilizer-ring");
+        }
+
+        plantDot.addEventListener("click", function(event) {
+          event.stopPropagation();
+          openPlantDetails(plantIndex);
+        });
+
+        plantRow.appendChild(plantPhoto);
+        plantRow.appendChild(plantName);
+        plantRow.appendChild(plantDot);
+
+        outOfViewPanel.appendChild(plantRow);
+      });
+    }    
+
     function toggleCalendar() {
         const calendarWrapper = document.getElementById("calendarWrapper");
 
@@ -4879,6 +5047,7 @@
     }
 
     createStickerEditControls();
+    renderOutOfViewPlants();
     preloadPlantImages();
 
     const roomImage = document.querySelector(".room-image");
