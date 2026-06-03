@@ -3290,10 +3290,11 @@
 
       if (controlType === "size") {
         const currentSize = editingPlant.stickerWidth || 120;
+        const sizeRange = editMode === "plants" ? 90 : 350;
 
         sliderLabel.textContent = "Size";
-        slider.min = editMode === "plants" ? "20" : "40";
-        slider.max = editMode === "plants" ? "140" : Math.max(240, currentSize + 40);
+        slider.min = Math.max(1, currentSize - sizeRange);
+        slider.max = currentSize + sizeRange;
         slider.step = "1";
         slider.value = currentSize;
       }
