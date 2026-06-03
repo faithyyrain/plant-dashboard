@@ -1571,20 +1571,21 @@
           <button class="legend-tab" onclick="toggleLegend()">Legend</button>
 
           <div class="legend">
-          <div class="legend-row"><span class="legend-dot blue"></span> Watered today</div>
-          <div class="legend-row"><span class="legend-dot green"></span> Not due yet</div>
-          <div class="legend-row"><span class="legend-dot yellow"></span> Due in 2 days</div>
-          <div class="legend-row"><span class="legend-dot orange"></span> Due tomorrow</div>
-          <div class="legend-row"><span class="legend-dot red"></span> Due today</div>
-          <div class="legend-row"><span class="legend-dot darkred"></span> Overdue</div>
-          <div class="legend-row"><span class="legend-dot fertilizer-ring-legend"></span> Fertilizer due</div>
+            <div class="legend-row"><span class="legend-dot blue"></span> Watered today</div>
+            <div class="legend-row"><span class="legend-dot green"></span> Not due yet</div>
+            <div class="legend-row"><span class="legend-dot yellow"></span> Due in 2 days</div>
+            <div class="legend-row"><span class="legend-dot orange"></span> Due tomorrow</div>
+            <div class="legend-row"><span class="legend-dot red"></span> Due today</div>
+            <div class="legend-row"><span class="legend-dot darkred"></span> Overdue</div>
+            <div class="legend-row"><span class="legend-dot fertilizer-ring-legend"></span> Fertilizer due</div>
+          </div>
         </div>
+
         <div class="out-of-view-drawer" id="outOfViewDrawer">
           <button class="out-of-view-tab" onclick="toggleOutOfView()">Out of view</button>
           <div class="out-of-view-panel" id="outOfViewPanel"></div>
         </div>
       </div>
-    </div>
 
   <!-- ===== PLANT CARD MODAL ===== -->
 
@@ -4010,6 +4011,8 @@
     function showDashboardOverlays() {
         document.querySelector(".calendar-button").style.display = isIOS ? "none" : "block";
         document.querySelector(".legend").style.display = "block";
+        document.querySelector(".out-of-view-panel").style.display = "block";
+
     }
 
     function openPlantDetails(index) {
