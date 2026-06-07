@@ -1881,6 +1881,9 @@
 
   // ===== PLANT DATA =====
 
+      const defaultFertilizerIntervalDays = 21;
+      const defaultFertilizerBufferDays = 1;
+
         const plants = [
           {
             name: "Monstera Thai Constellation",
@@ -1897,8 +1900,6 @@
             lastWatered: "2026-04-30",
             intervalDays: 11,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-14",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -1917,8 +1918,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-14",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -1937,8 +1936,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 10,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-14",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -1957,8 +1954,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-05-01",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-24",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -1977,8 +1972,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-01-26",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -1997,8 +1990,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2025-12-11",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2017,8 +2008,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2025-12-18",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2037,8 +2026,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2025-12-18",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2057,8 +2044,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-24",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2077,8 +2062,6 @@
             lastWatered: "2026-05-06",
             intervalDays: 9,
             lastFertilized: "2026-04-26",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-01-26",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2097,8 +2080,6 @@
             lastWatered: "2026-05-08",
             intervalDays: 8,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2025-12-11",
             notes: "Allow top 1-2 inches of soil to dry before watering!."
           },
@@ -2117,8 +2098,6 @@
             lastWatered: "2026-05-08",
             intervalDays: 8,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-01-26",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           }, 
@@ -2137,8 +2116,6 @@
             lastWatered: "2026-05-06",
             intervalDays: 9,
             lastFertilized: "2026-04-26",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2197,8 +2174,6 @@
             lastWatered: "2026-05-07",
             intervalDays: 6,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-12",
             notes: "Soil should be consistently moist, but not waterlogged!"
           },
@@ -2217,8 +2192,6 @@
             lastWatered: "2026-05-07",
             intervalDays: 6,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-12",
             notes: "Soil should be consistently moist, but not waterlogged!"
           },
@@ -2237,8 +2210,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-12",
             notes: "Soil should be consistently moist, but not waterlogged!"
           },
@@ -2257,8 +2228,6 @@
             lastWatered: "2026-04-30",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-24",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2277,8 +2246,6 @@
             lastWatered: "2026-05-06",
             intervalDays: 8,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-24",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2297,8 +2264,6 @@
             lastWatered: "2026-05-11",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-11",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2317,8 +2282,6 @@
             lastWatered: "2026-05-11",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-11",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2338,8 +2301,6 @@
             lastWatered: "2026-05-07",
             intervalDays: 6,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-02-24",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2358,8 +2319,6 @@
             lastWatered: "2026-05-08",
             intervalDays: 8,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-03-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2378,8 +2337,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-03-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2418,8 +2375,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-03-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2438,8 +2393,6 @@
             lastWatered: "2026-05-08",
             intervalDays: 8,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-03-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2458,8 +2411,6 @@
             lastWatered: "2026-05-22",
             intervalDays: 6,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-22",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2478,8 +2429,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-04-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2498,8 +2447,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-02-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2518,8 +2465,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 9,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-03-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2538,8 +2483,6 @@
             lastWatered: "2026-04-25",
             intervalDays: 14,
             lastFertilized: "2026-04-25",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2025-12-12",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2553,8 +2496,6 @@
             lastWatered: "2026-05-06",
             intervalDays: 11,
             lastFertilized: "2026-05-06",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-02",
             notes: "Allow top 1–2 inches of soil to dry before watering!"
           },
@@ -2613,8 +2554,6 @@
             lastWatered: "2026-05-11",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-11",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -2633,8 +2572,6 @@
             lastWatered: "2026-05-10",
             intervalDays: 5,
             lastFertilized: "2026-04-30",
-            fertilizerIntervalDays: 20,
-            fertilizerBufferDays: 3,
             lastRepot: "2026-05-10",
             notes: "Allow top 1-2 inches of soil to dry before watering!"
           },
@@ -3632,10 +3569,10 @@
   // ===== FERTILIZER STATUS LOGIC =====
 
     function hasFertilizerSchedule(plant) {
-        return plant.lastFertilized && plant.fertilizerIntervalDays;
+        return plant.lastFertilized;
     }
 
-    function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBeforeBufferDays = 0, fertilizerAfterBufferDays = 7) {
+    function getFertilizerStatus(lastFertilized, fertilizerIntervalDays, fertilizerBeforeBufferDays = 0) {
       if (!lastFertilized || !fertilizerIntervalDays) {
         return {
           due: false,
@@ -3684,19 +3621,10 @@
         };
       }
 
-      if (Math.abs(daysUntilFertilizer) <= fertilizerAfterBufferDays) {
-        return {
-          due: true,
-          readySoon: true,
-          label: `${Math.abs(daysUntilFertilizer)} day(s) overdue for fertilizer`,
-          nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
-        };
-      }
-
       return {
         due: true,
-        readySoon: false,
-        label: `${Math.abs(daysUntilFertilizer)} day(s) past fertilizer window`,
+        readySoon: true,
+        label: `${Math.abs(daysUntilFertilizer)} day(s) overdue for fertilizer`,
         nextFertilizer: formatDate(nextFertilizerDate.toISOString().split("T")[0])
       };
     }
@@ -3705,8 +3633,8 @@
         const waterStatus = getPlantStatus(plant);
         const fertilizerStatus = getFertilizerStatus(
           plant.lastFertilized,
-          plant.fertilizerIntervalDays,
-          plant.fertilizerBufferDays
+          plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays,
+          plant.fertilizerBufferDays ?? defaultFertilizerBufferDays
         );
 
         const wateringWindow = ["orange", "red", "darkred", "blue"].includes(waterStatus.color);
@@ -3715,7 +3643,7 @@
     }
 
     function shouldShowCalendarFertilizerRing(plant, dateString) {
-      if (!plant.lastFertilized || !plant.fertilizerIntervalDays) {
+      if (!plant.lastFertilized) {
         return false;
       }
 
@@ -3726,19 +3654,15 @@
       fertilizedDate.setHours(0, 0, 0, 0);
 
       const idealFertilizerDate = new Date(fertilizedDate);
-      idealFertilizerDate.setDate(fertilizedDate.getDate() + plant.fertilizerIntervalDays);
+      idealFertilizerDate.setDate(fertilizedDate.getDate() + (plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays));
       idealFertilizerDate.setHours(0, 0, 0, 0);
 
-      const beforeBufferDays = plant.fertilizerBufferDays || 0;
-      const afterBufferDays = plant.fertilizerAfterBufferDays || 7;
+      const beforeBufferDays = plant.fertilizerBufferDays ?? defaultFertilizerBufferDays;
 
       const bufferStartDate = new Date(idealFertilizerDate);
       bufferStartDate.setDate(idealFertilizerDate.getDate() - beforeBufferDays);
 
-      const bufferEndDate = new Date(idealFertilizerDate);
-      bufferEndDate.setDate(idealFertilizerDate.getDate() + afterBufferDays);
-
-      return targetDate >= bufferStartDate && targetDate <= bufferEndDate;
+      return targetDate >= bufferStartDate;
     }
 
 
@@ -4073,8 +3997,8 @@
 
       const fertilizerStatus = getFertilizerStatus(
         plant.lastFertilized,
-        plant.fertilizerIntervalDays,
-        plant.fertilizerBufferDays
+        plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays,
+        plant.fertilizerBufferDays ?? defaultFertilizerBufferDays
       );
 
       const fertilizerGroup = document.getElementById("fertilizerGroup");
