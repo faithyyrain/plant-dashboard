@@ -1379,21 +1379,6 @@
       transition: filter 0.15s ease;
     }
 
-    .out-of-view-alert-dot {
-      display: none;
-      width: 9px;
-      height: 9px;
-      margin-left: 6px;
-      border-radius: 50%;
-      background: #f05c7c;
-      box-shadow: 0 0 6px rgba(240, 92, 124, 0.75);
-      vertical-align: middle;
-    }
-
-    .out-of-view-alert-dot.show {
-      display: inline-block;
-    }
-
     .out-of-view-tab:hover {
       filter: brightness(1.08);
     }
@@ -1605,7 +1590,6 @@
         <div class="out-of-view-drawer" id="outOfViewDrawer">
           <button class="out-of-view-tab" onclick="toggleOutOfView()">
             Out of view
-            <span class="out-of-view-alert-dot" id="outOfViewAlertDot"></span>
           </button>
           <div class="out-of-view-panel" id="outOfViewPanel"></div>
         </div>
@@ -4727,15 +4711,15 @@
       outOfViewPanel.innerHTML = "";
 
       const outOfViewPlants = plants.filter(plant => plant.outOfView);
-      const alertDot = document.getElementById("outOfViewAlertDot");
+      const outOfViewTab = document.querySelector(".out-of-view-tab");
       const hasWaterDue = outOfViewPlants.some(plant => {
         const status = getPlantStatus(plant);
         return status.color === "red" || status.color === "darkred";
       });
 
-      if (alertDot) {
-        alertDot.classList.toggle("show", hasWaterDue);
-      }      
+      if (outOfViewTab) {
+        outOfViewTab.classList.toggle("out-of-view-alert", hasWaterDue);
+      }    
 
       if (outOfViewPlants.length === 0) {
         outOfViewPanel.innerHTML = `<div class="out-of-view-row">No out of view plants yet.</div>`;
