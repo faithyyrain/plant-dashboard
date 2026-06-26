@@ -3662,7 +3662,7 @@
 
         const wateringWindow = ["orange", "red", "darkred", "blue"].includes(waterStatus.color);
 
-        return wateringWindow && fertilizerStatus.readySoon;
+        return fertilizerStatus.due || (wateringWindow && fertilizerStatus.readySoon);
     }
 
     function shouldShowCalendarFertilizerRing(plant, dateString) {
