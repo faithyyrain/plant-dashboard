@@ -1785,7 +1785,7 @@
             const savedPlant = savedPlants[key];
 
             if (savedPlant) {
-              if (savedPlant.lastWatered !== undefined) {
+              if (plant.lastWatered !== null && savedPlant.lastWatered !== undefined) {
                 plant.lastWatered = savedPlant.lastWatered;
               }
 
@@ -1801,7 +1801,7 @@
                 plant.lastRepot = savedPlant.lastRepot;
               }
 
-              if (savedPlant.intervalDays !== undefined) {
+              if (plant.intervalDays !== null && savedPlant.intervalDays !== undefined) {
                 plant.intervalDays = savedPlant.intervalDays;
               }
 
