@@ -1872,6 +1872,13 @@
 
   // ===== PLANT DATA =====
 
+      const plantPhotoVersion = "20260713-1";
+
+      function versionedPlantPhoto(path) {
+        if (!path) return "livingroom.jpg?v=room4";
+        return `${path}${path.includes("?") ? "&" : "?"}v=${plantPhotoVersion}`;
+      }
+
       const defaultFertilizerIntervalDays = 21;
       const defaultFertilizerBufferDays = 1;
 
@@ -4108,7 +4115,7 @@
       const zoomView = document.getElementById("zoomView");
 
       if (plant.image && !isIOS) {
-        zoomView.style.backgroundImage = `url("${plant.image}")`;
+        zoomView.style.backgroundImage = `url("${versionedPlantPhoto(plant.image)}")`;
         zoomView.style.backgroundSize = "cover";
         zoomView.style.backgroundPosition = "center";
       } else {
@@ -4575,7 +4582,7 @@
 
           const plantPhoto = document.createElement("img");
           plantPhoto.className = "due-plant-photo";
-          plantPhoto.src = plant.image || "livingroom.jpg";
+          plantPhoto.src = versionedPlantPhoto(plant.image);
           plantPhoto.alt = plant.name;
 
           const plantName = document.createElement("button");
@@ -4838,7 +4845,7 @@
 
         const plantPhoto = document.createElement("img");
         plantPhoto.className = "out-of-view-photo";
-        plantPhoto.src = plant.image || "livingroom.jpg";
+        plantPhoto.src = versionedPlantPhoto(plant.image);
         plantPhoto.alt = plant.name;
 
         const plantName = document.createElement("div");
@@ -5084,7 +5091,7 @@
       plants.forEach(plant => {
         if (plant.image) {
           const photo = new Image();
-          photo.src = plant.image;
+          photo.src = versionedPlantPhoto(plant.image);
         }
 
         if (plant.sticker) {
