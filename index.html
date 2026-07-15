@@ -1462,7 +1462,7 @@
     background: transparent;
     color: #4b4641;
     padding: 0;
-    font-size: 15px;
+    font-size: inherit;
     font-family: 'Nunito', Arial, sans-serif;
   }
 
@@ -2385,6 +2385,12 @@
 .plant-card-footer.even-buttons {
   margin-top: auto;
   padding-top: 2px;
+}
+
+/* ===== NARROWER FINAL CARD WIDTH ===== */
+
+.modal-card.plant-card-redesign {
+  width: min(770px, calc(100vw - 70px));
 }
 
   /* ===== LEGEND ===== */
@@ -5407,7 +5413,7 @@
         plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays;
 
       document.getElementById("fertilizerStatus").textContent =
-        `${fertilizerIntervalDays} Days (${getFertilizerCountdownText(plant)})`;
+        `${fertilizerIntervalDays} Days`;
 
       fertilizerGroup.style.display = "grid";      } else {
         fertilizerGroup.style.display = "none";
