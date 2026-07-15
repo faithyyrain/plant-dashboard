@@ -2498,6 +2498,17 @@
   justify-self: stretch;
 }
 
+/* ===== PLANT CARD EDIT MODE STATE ===== */
+
+.plant-card-footer .plant-card-edit-button.card-edit-active {
+  background: #6f806e;
+  border-color: #566653;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 0 0 3px rgba(111, 128, 110, 0.24),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
   /* ===== LEGEND ===== */
 
     .legend-drawer {
@@ -4325,6 +4336,7 @@
       const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
       let activePlantIndex = null;
+      let plantCardEditMode = false;
       let reopenCalendarDate = null;
       let selectedDueDate = null;
       let selectedDuePlants = [];
@@ -4339,6 +4351,55 @@
       let moveOffsetY = 0;
       let editMode = null;
       let activeSliderControl = null;
+
+    function updatePlantCardEditButton() {
+      const button = document.getElementById("plantCardEditButton");
+
+      if (!button) {
+        return;
+      }
+
+      const label = button.querySelector("span");
+
+      if (label) {
+        label.textContent = plantCardEditMode ? "Done" : "Edit";
+      }
+
+      button.classList.toggle("card-edit-active", plantCardEditMode);
+      button.setAttribute(
+        "aria-pressed",
+        plantCardEditMode ? "true" : "false"
+      );
+    }
+
+    function exitPlantCardEditMode(saveChanges = true) {
+      if (
+        plantCardEditMode &&
+        saveChanges &&
+        activePlantIndex !== null
+      ) {
+        savePlantToFirebase(plants[activePlantIndex]);
+      }
+
+      plantCardEditMode = false;
+      updatePlantCardEditButton();
+    }
+
+    function togglePlantCardEditMode(event) {
+      event.stopPropagation();
+
+      if (plantCardEditMode) {
+        exitPlantCardEditMode(true);
+        return;
+      }
+
+      plantCardEditMode = true;
+      updatePlantCardEditButton();
+    }
+
+    document
+      .getElementById("plantCardEditButton")
+      .addEventListener("click", togglePlantCardEditMode);
     
     function toggleEditModeMenu() {
       const editModeButton = document.getElementById("editModeButton");
@@ -5475,6 +5536,16 @@
     }
 
     function openPlantDetails(index) {
+      const plantModal = document.getElementById("plantModal");
+
+      const openingFreshCard =
+        activePlantIndex !== index ||
+        plantModal.style.display !== "flex";
+
+      if (openingFreshCard) {
+        exitPlantCardEditMode(false);
+      }
+
       activePlantIndex = index;
       hideDashboardOverlays();
 
@@ -5815,6 +5886,7 @@
     }
 
     function closeModal() {
+      exitPlantCardEditMode(true);
       document.getElementById("plantModal").style.display = "none";
       showDashboardOverlays();
 
