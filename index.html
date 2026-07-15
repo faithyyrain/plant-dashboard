@@ -1792,6 +1792,15 @@
       0 0 0 3px rgba(154, 135, 102, 0.24);
   }
 
+.plant-card-footer .delay-button.date-adjust-mode .delay-half {
+  background: #6f806e;
+  border-color: #566653;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 0 0 3px rgba(111, 128, 110, 0.20),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
   .plant-card-redesign .status-blue {
     background: #76aeb5;
   }
@@ -4424,7 +4433,7 @@
       let editMode = null;
       let activeSliderControl = null;
 
-      function updatePlantCardDateSelection() {
+function updatePlantCardDateSelection() {
   const wateredButton =
     document.getElementById("lastWateredSelectButton");
 
@@ -4472,6 +4481,29 @@
       );
     }
   }
+  const delayButton =
+  document.querySelector(".plant-card-footer .delay-button");
+
+  const buttonRow =
+    document.querySelector(".button-row.plant-card-footer");
+
+  const dateAdjustMode =
+    plantCardEditMode && selectedPlantCardDate !== null;
+
+  if (delayButton) {
+    delayButton.classList.toggle(
+      "date-adjust-mode",
+      dateAdjustMode
+    );
+
+    if (dateAdjustMode) {
+      delayButton.style.display = "inline-grid";
+    }
+  }
+
+  if (buttonRow && dateAdjustMode) {
+    buttonRow.classList.remove("even-buttons");
+  }
 }
 
 function togglePlantCardDateSelection(type, event) {
@@ -4493,7 +4525,8 @@ function togglePlantCardDateSelection(type, event) {
   selectedPlantCardDate =
     selectedPlantCardDate === type ? null : type;
 
-  updatePlantCardDateSelection();
+  openPlantDetails(activePlantIndex);
+  updatePlantCardEditButton();
 }
 
     function updatePlantCardEditButton() {
@@ -6083,8 +6116,54 @@ function startPotSizeEdit(event) {
 
   // ===== WATER + FERTILIZER BUTTON LOGIC =====
 
+function adjustSelectedPlantCardDate(numberOfDays) {
+  if (
+    !plantCardEditMode ||
+    !selectedPlantCardDate ||
+    activePlantIndex === null
+  ) {
+    return false;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  const fieldName =
+    selectedPlantCardDate === "watered"
+      ? "lastWatered"
+      : "lastFertilized";
+
+  const currentDateString = plant[fieldName];
+
+  if (!currentDateString) {
+    return true;
+  }
+
+  const adjustedDate =
+    new Date(currentDateString + "T00:00:00");
+
+  adjustedDate.setDate(
+    adjustedDate.getDate() + numberOfDays
+  );
+
+  plant[fieldName] = dateToString(adjustedDate);
+
+  if (fieldName === "lastWatered") {
+    plant.delayUntil = null;
+    plant.intervalAdjustedToday = null;
+  }
+
+  savePlantToFirebase(plant);
+  refreshPlantCardDataViews();
+
+  return true;
+}
+
     function moveActivePlantBackOneDay(event) {
       event.stopPropagation();
+
+      if (adjustSelectedPlantCardDate(-1)) {
+        return;
+      }
 
       if (activePlantIndex === null) {
         return;
@@ -6110,6 +6189,10 @@ function startPotSizeEdit(event) {
 
     function delayActivePlantOneDay(event) {
       event.stopPropagation();
+
+      if (adjustSelectedPlantCardDate(1)) {
+        return;
+      }
 
       if (activePlantIndex === null) {
         return;
