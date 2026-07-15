@@ -1263,6 +1263,547 @@
       background: #af4949;
     }
 
+  /* ===== STITCHED PLANT CARD REDESIGN ===== */
+
+  .modal-card.plant-card-redesign {
+    position: relative;
+    display: block;
+    width: min(980px, calc(100vw - 80px));
+    max-height: calc(100vh - 60px);
+    padding: 26px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 3px solid #a99d8d;
+    border-radius: 30px;
+    background-color: #e8e0d4;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(89, 76, 62, 0.035) 0,
+        rgba(89, 76, 62, 0.035) 1px,
+        transparent 1px,
+        transparent 4px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.10) 0,
+        rgba(255, 255, 255, 0.10) 1px,
+        transparent 1px,
+        transparent 5px
+      );
+    box-shadow:
+      0 24px 55px rgba(34, 29, 25, 0.42),
+      inset 0 0 0 7px rgba(255, 255, 255, 0.20);
+  }
+
+  .modal-card.plant-card-redesign::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 2px dashed rgba(117, 101, 83, 0.48);
+    border-radius: 22px;
+    pointer-events: none;
+  }
+
+  .plant-card-header {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .plant-card-header::before {
+    content: "";
+  }
+
+  .plant-card-header h2 {
+    grid-column: 2;
+    margin: 0;
+    color: #45413d;
+    text-align: center;
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 800;
+  }
+
+  .plant-card-edit-button {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 98px;
+    padding: 9px 15px;
+    border: 2px solid #9e978f;
+    border-radius: 14px;
+    background: #c9c5bf;
+    color: #494642;
+    cursor: pointer;
+    font-family: 'Nunito', Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.28),
+      0 4px 8px rgba(68, 59, 51, 0.16);
+    transition:
+      transform 0.15s ease,
+      filter 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .plant-card-edit-button svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  .plant-card-edit-button:hover {
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.32),
+      0 7px 12px rgba(68, 59, 51, 0.20);
+  }
+
+  .plant-card-edit-button:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  .plant-card-redesign .plant-card-status {
+    position: relative;
+    z-index: 1;
+    margin: 15px auto 20px;
+    padding: 8px 20px;
+    border: 2px solid rgba(68, 92, 72, 0.30);
+    border-radius: 15px;
+    outline: 1px dashed rgba(255, 255, 255, 0.65);
+    outline-offset: -5px;
+    font-size: 17px;
+    font-weight: 800;
+    box-shadow: 0 5px 10px rgba(55, 49, 44, 0.15);
+  }
+
+  .plant-card-main {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
+    gap: 22px;
+    align-items: stretch;
+  }
+
+  .plant-photo-panel {
+    position: relative;
+    min-height: 450px;
+    padding: 11px;
+    border: 2px solid #b3a692;
+    border-radius: 25px;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.05)),
+      #d6cbbb;
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.24),
+      0 8px 18px rgba(72, 62, 53, 0.20);
+  }
+
+  .plant-card-redesign .zoom-view {
+    width: 100%;
+    min-height: 450px;
+    border-radius: 18px;
+    background-position: center;
+    background-size: cover;
+    box-shadow:
+      inset 0 0 0 2px rgba(65, 58, 51, 0.18),
+      0 3px 8px rgba(49, 43, 38, 0.18);
+  }
+
+  .photo-info-row {
+    position: absolute;
+    left: 23px;
+    right: 23px;
+    bottom: 23px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .photo-info-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 7px 12px;
+    box-sizing: border-box;
+    border: 2px solid rgba(126, 114, 100, 0.72);
+    border-radius: 14px;
+    outline: 1px dashed rgba(255, 255, 255, 0.78);
+    outline-offset: -5px;
+    background: rgba(238, 232, 220, 0.89);
+    color: #4d4843;
+    font-size: 15px;
+    box-shadow: 0 5px 12px rgba(45, 39, 34, 0.23);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  .photo-info-box strong,
+  .photo-info-box .repotted-label-button {
+    color: #4b4641;
+    font-weight: 800;
+  }
+
+  .plant-card-redesign .repotted-label-button {
+    border: none;
+    background: transparent;
+    color: #4b4641;
+    padding: 0;
+    font-size: 15px;
+    font-family: 'Nunito', Arial, sans-serif;
+  }
+
+  .plant-card-redesign .repotted-label-button:hover {
+    color: #657d69;
+    transform: translateY(-1px);
+  }
+
+  .repot-info-box {
+    position: relative;
+  }
+
+  .plant-card-redesign .repot-popup {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 9px);
+    transform: none;
+    padding: 5px;
+    background: rgba(235, 229, 217, 0.98);
+    border: 1px solid rgba(120, 108, 95, 0.35);
+  }
+
+  .plant-care-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .care-panel {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    min-height: 190px;
+    padding: 22px;
+    box-sizing: border-box;
+    border-radius: 24px;
+    outline: 2px dashed rgba(255, 255, 255, 0.72);
+    outline-offset: -9px;
+    box-shadow:
+      inset 0 0 0 2px rgba(74, 65, 58, 0.12),
+      0 8px 18px rgba(66, 56, 49, 0.16);
+  }
+
+  .water-care-panel {
+    border: 2px solid #8ea9ad;
+    background-color: #b9d1d4;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(51, 89, 96, 0.035) 0,
+        rgba(51, 89, 96, 0.035) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+  }
+
+  .fertilizer-care-panel {
+    border: 2px solid #9f8e7c;
+    background-color: #c5b19b;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        rgba(83, 63, 47, 0.04) 0,
+        rgba(83, 63, 47, 0.04) 1px,
+        transparent 1px,
+        transparent 5px
+      );
+  }
+
+  .care-action-button {
+    display: flex;
+    width: 108px;
+    height: 108px;
+    padding: 12px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 24px;
+    color: #fbfaf7;
+    cursor: pointer;
+    font-family: 'Nunito', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    box-sizing: border-box;
+    transition:
+      transform 0.15s ease,
+      filter 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .water-care-panel .care-action-button {
+    border: 2px solid #6f9196;
+    background: #82afb5;
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.24),
+      0 6px 11px rgba(55, 78, 81, 0.24);
+  }
+
+  .fertilizer-care-panel .care-action-button {
+    border: 2px solid #806f61;
+    background: #9b8574;
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.20),
+      0 6px 11px rgba(72, 55, 44, 0.24);
+  }
+
+  .care-action-button:hover {
+    filter: brightness(1.07);
+    transform: translateY(-3px) scale(1.025);
+  }
+
+  .care-action-button:active {
+    transform: translateY(1px) scale(0.97);
+  }
+
+  .care-action-icon {
+    width: 49px;
+    height: 49px;
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .watered-button .care-action-icon {
+    stroke-width: 0;
+  }
+
+  .watered-button .icon-highlight {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.68);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .watered-button.undo-watered {
+    background: #568f98;
+    border-color: #3f737b;
+    box-shadow:
+      inset 0 0 0 4px rgba(255, 255, 255, 0.30),
+      0 0 0 4px rgba(91, 147, 156, 0.28),
+      0 7px 13px rgba(48, 75, 79, 0.30);
+  }
+
+  .fertilized-button.undo-fertilized {
+    background: #766557;
+    border-color: #5f5146;
+    box-shadow:
+      inset 0 0 0 4px rgba(255, 255, 255, 0.24),
+      0 0 0 4px rgba(126, 105, 89, 0.28),
+      0 7px 13px rgba(64, 48, 38, 0.30);
+  }
+
+  .care-details h3 {
+    margin: 0 0 13px;
+    color: #46413c;
+    font-size: 21px;
+    font-weight: 800;
+  }
+
+  .care-row {
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    color: #48433f;
+    font-size: 16px;
+  }
+
+  .care-row strong {
+    font-weight: 800;
+  }
+
+  .care-date-row {
+    grid-template-columns: 128px 31px minmax(0, 1fr);
+  }
+
+  .date-edit-trigger {
+    display: flex;
+    width: 29px;
+    height: 29px;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(77, 72, 67, 0.28);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.30);
+    color: #56514c;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition:
+      transform 0.15s ease,
+      background 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .date-edit-trigger svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .date-edit-trigger:hover {
+    background: rgba(255, 255, 255, 0.52);
+    transform: translateY(-2px);
+  }
+
+  .date-edit-trigger:active {
+    transform: translateY(1px) scale(0.96);
+  }
+
+  .date-edit-trigger.date-selected {
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow:
+      0 0 0 3px rgba(91, 123, 129, 0.28),
+      inset 0 0 0 1px rgba(72, 92, 97, 0.26);
+  }
+
+  .plant-card-footer,
+  .plant-card-footer.even-buttons {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 14px;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .plant-card-footer .close-button {
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 2px solid #68645f;
+    border-radius: 15px;
+    background: #7c7872;
+    color: white;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.14),
+      0 5px 10px rgba(56, 51, 47, 0.20);
+  }
+
+  .plant-card-footer .close-button svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.3;
+    stroke-linecap: round;
+  }
+
+  .plant-card-footer .delay-button {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 0;
+    overflow: visible;
+    border: none;
+    background: transparent;
+  }
+
+  .plant-card-footer .delay-button::after {
+    display: none;
+  }
+
+  .plant-card-footer .delay-half {
+    display: flex;
+    width: auto;
+    min-height: 48px;
+    padding: 0 15px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #6d6964;
+    border-radius: 15px;
+    background: #827e78;
+    color: white;
+    font-size: 15px;
+    font-weight: 800;
+    box-sizing: border-box;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.13),
+      0 5px 10px rgba(56, 51, 47, 0.20);
+    transition:
+      transform 0.15s ease,
+      filter 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .plant-card-footer .delay-half:hover,
+  .plant-card-footer .close-button:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+  }
+
+  .plant-card-footer .delay-half:active,
+  .plant-card-footer .close-button:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  .plant-card-footer .delay-half.delay-half-active {
+    background: #9a8766;
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+      0 0 0 3px rgba(154, 135, 102, 0.24);
+  }
+
+  .plant-card-redesign .status-blue {
+    background: #76aeb5;
+  }
+
+  .plant-card-redesign .status-green {
+    background: #7d9e79;
+  }
+
+  .plant-card-redesign .status-yellow {
+    background: #a6b878;
+  }
+
+  .plant-card-redesign .status-orange {
+    background: #c39a5e;
+  }
+
+  .plant-card-redesign .status-red {
+    background: #bf7c86;
+  }
+
+  .plant-card-redesign .status-darkred {
+    background: #9c5c5c;
+  }
 
   /* ===== LEGEND ===== */
 
@@ -1602,68 +2143,201 @@
         </div>
       </div>
 
-  <!-- ===== PLANT CARD MODAL ===== -->
 
-    <div class="modal-background" id="plantModal">
-      <div class="modal-card">
-        <div class="zoom-view" id="zoomView"></div>
+<!-- ===== PLANT CARD MODAL ===== -->
 
-        <!-- Plant details text and buttons -->
+  <div class="modal-background" id="plantModal">
+    <div class="modal-card plant-card-redesign">
 
-        <div class="plant-details">
-          <h2 id="plantName"></h2>
-          <div id="plantStatus" class="status-pill"></div>
+      <div class="plant-card-header">
+        <h2 id="plantName"></h2>
 
-        <div class="detail-group size-group">
-          <div class="detail-line size-line">
-            <div class="size-left">
-              <strong class="size-label">Size:</strong>
+        <button
+          type="button"
+          id="plantCardEditButton"
+          class="plant-card-edit-button"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20h4l11-11-4-4L4 16v4zm12.5-16.5 4 4 1.2-1.2a1.4 1.4 0 0 0 0-2l-2-2a1.4 1.4 0 0 0-2 0l-1.2 1.2z"/>
+          </svg>
+          <span>Edit</span>
+        </button>
+      </div>
+
+      <div id="plantStatus" class="status-pill plant-card-status"></div>
+
+      <div class="plant-card-main">
+
+        <!-- Plant photo -->
+
+        <div class="plant-photo-panel">
+          <div class="zoom-view" id="zoomView"></div>
+
+          <div class="photo-info-row">
+
+            <div class="photo-info-box">
+              <strong>Pot size:</strong>
               <span id="plantSize"></span>
             </div>
 
-            <div class="repot-hover-area">
-              <button class="repotted-label-button" onclick="toggleRepotPopup(event)">
-                Repotted:
+            <div class="photo-info-box repot-info-box">
+              <button
+                type="button"
+                class="repotted-label-button"
+                onclick="toggleRepotPopup(event)"
+              >
+                Last repotted:
               </button>
+
               <span id="lastRepot"></span>
+
+              <div id="repotPopup" class="repot-popup">
+                <button
+                  id="repotPopupButton"
+                  class="repot-popup-button"
+                  onclick="toggleRepottedToday(event)"
+                >
+                  Repot?
+                </button>
+              </div>
             </div>
 
-            <div id="repotPopup" class="repot-popup">
-              <button id="repotPopupButton" class="repot-popup-button" onclick="toggleRepottedToday(event)">
-                Repot?
-              </button>
-            </div>
           </div>
         </div>
 
-        <div class="detail-group water-group">
-          <div class="detail-line"><strong class="water-label">Last watered:</strong> <span id="lastWatered"></span></div>
-          <div class="detail-line"><strong class="water-label">Watering interval:</strong> <span id="intervalDays"></span></div>
-          <div class="detail-line"><strong class="water-label">Next check:</strong> <span id="nextCheck"></span></div>
-        </div>
+        <!-- Watering and fertilizer -->
 
-        <div class="detail-group fertilizer-group" id="fertilizerGroup">
-          <div class="detail-line"><strong class="fertilizer-label">Last fertilized:</strong> <span id="lastFertilized"></span></div>
-          <div class="detail-line"><strong class="fertilizer-label">Fertilizer status:</strong> <span id="fertilizerStatus"></span></div>
-        </div>
+        <div class="plant-care-column">
 
-        <div class="detail-group notes-group">
-          <div class="detail-line notes-line"><strong class="notes-label">Notes:</strong> <span id="plantNotes"></span></div>
-        </div>
+          <section class="care-panel water-care-panel">
 
-          <div class="button-row">
-            <button class="close-button" onclick="closeModal()">Close</button>
-            <button class="fertilized-button" onclick="markFertilizedToday()">Fertilized!</button>
-            <button class="delay-button" type="button">
-              <span onclick="moveActivePlantBackOneDay(event)">-1</span>
-              /
-              <span onclick="delayActivePlantOneDay(event)">+1</span>
+            <button
+              type="button"
+              class="care-action-button watered-button"
+              onclick="markWateredToday()"
+            >
+              <svg class="care-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.5S5.5 10 5.5 15a6.5 6.5 0 0 0 13 0C18.5 10 12 2.5 12 2.5z"/>
+                <path class="icon-highlight" d="M9 15.2c0 1.7 1.3 3 3 3"/>
+              </svg>
+
+              <span class="care-action-label">Water</span>
             </button>
-            <button class="watered-button" onclick="markWateredToday()">Watered!</button>
-          </div>
+
+            <div class="care-details">
+              <h3>Watering</h3>
+
+              <div class="care-row care-date-row">
+                <strong>Last watered:</strong>
+
+                <button
+                  type="button"
+                  id="lastWateredSelectButton"
+                  class="date-edit-trigger"
+                  aria-label="Select last watered date"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2z"/>
+                    <path d="M7 2v4M17 2v4M3 9h18"/>
+                  </svg>
+                </button>
+
+                <span id="lastWatered"></span>
+              </div>
+
+              <div class="care-row">
+                <strong>Interval:</strong>
+                <span id="intervalDays"></span>
+              </div>
+
+              <div class="care-row">
+                <strong>Next check:</strong>
+                <span id="nextCheck"></span>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="care-panel fertilizer-care-panel" id="fertilizerGroup">
+
+            <button
+              type="button"
+              class="care-action-button fertilized-button"
+              onclick="markFertilizedToday()"
+            >
+              <svg class="care-action-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 21V10"/>
+                <path d="M12 14c-4 0-7-2.3-7-6 4 0 7 2.3 7 6z"/>
+                <path d="M12 11c4 0 7-2.3 7-6-4 0-7 2.3-7 6z"/>
+                <path d="M7 21h10"/>
+              </svg>
+
+              <span class="care-action-label">Fertilize</span>
+            </button>
+
+            <div class="care-details">
+              <h3>Fertilizer</h3>
+
+              <div class="care-row care-date-row">
+                <strong>Last fertilized:</strong>
+
+                <button
+                  type="button"
+                  id="lastFertilizedSelectButton"
+                  class="date-edit-trigger"
+                  aria-label="Select last fertilized date"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2z"/>
+                    <path d="M7 2v4M17 2v4M3 9h18"/>
+                  </svg>
+                </button>
+
+                <span id="lastFertilized"></span>
+              </div>
+
+              <div class="care-row">
+                <strong>Interval:</strong>
+                <span id="fertilizerStatus"></span>
+              </div>
+            </div>
+
+          </section>
+
         </div>
       </div>
+
+      <!-- Bottom controls -->
+
+      <div class="button-row plant-card-footer">
+
+        <button class="close-button" onclick="closeModal()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"/>
+          </svg>
+          <span>Close</span>
+        </button>
+
+        <button class="delay-button" type="button">
+          <span
+            class="delay-half delay-back-half"
+            onclick="moveActivePlantBackOneDay(event)"
+          >
+            <span>-1 Day</span>
+          </span>
+
+          <span
+            class="delay-half delay-forward-half"
+            onclick="delayActivePlantOneDay(event)"
+          >
+            <span>+1 Day</span>
+          </span>
+        </button>
+
+      </div>
+
     </div>
+  </div>
 
     <script>
     const firebaseConfig = {
@@ -3446,15 +4120,11 @@
     }
 
     function formatPotSize(size) {
-        if (!size || size === "null") {
-          return "N/A";
-        }
+      if (!size || size === "null") {
+        return "N/A";
+      }
 
-        return size
-          .replace(" inch pot", '"')
-          .replace(" inches pot", '"')
-          .replace(" inch", '"')
-          .replace(" inches", '"');
+      return size.replace(/\s+pot$/i, "");
     }
 
     function formatShortDate(dateString) {
@@ -3661,6 +4331,53 @@
 
 
   // ===== FERTILIZER STATUS LOGIC =====
+
+    function getFertilizerCountdownText(plant) {
+      const intervalDays =
+        plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays;
+
+      if (!plant.lastFertilized || !intervalDays) {
+        return "N/A";
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const lastFertilizedDate =
+        new Date(plant.lastFertilized + "T00:00:00");
+
+      lastFertilizedDate.setHours(0, 0, 0, 0);
+
+      const nextFertilizerDate = new Date(lastFertilizedDate);
+
+      nextFertilizerDate.setDate(
+        lastFertilizedDate.getDate() + intervalDays
+      );
+
+      nextFertilizerDate.setHours(0, 0, 0, 0);
+
+      const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+      const daysRemaining = Math.round(
+        (nextFertilizerDate - today) / millisecondsPerDay
+      );
+
+      if (daysRemaining > 1) {
+        return `${daysRemaining} days left`;
+      }
+
+      if (daysRemaining === 1) {
+        return "1 day left";
+      }
+
+      if (daysRemaining === 0) {
+        return "due today";
+      }
+
+      const daysOverdue = Math.abs(daysRemaining);
+
+      return `${daysOverdue} day${daysOverdue === 1 ? "" : "s"} overdue`;
+    }
 
     function hasFertilizerSchedule(plant) {
         return plant.lastFertilized;
@@ -4099,14 +4816,15 @@
 
       if (hasFertilizerSchedule(plant)) {
         document.getElementById("lastFertilized").textContent = formatShortDate(plant.lastFertilized);
-        document.getElementById("fertilizerStatus").textContent =
-          fertilizerStatus.readySoon || fertilizerStatus.due ? "Due" : fertilizerStatus.label;
-        fertilizerGroup.style.display = "block";
-      } else {
+      const fertilizerIntervalDays =
+        plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays;
+
+      document.getElementById("fertilizerStatus").textContent =
+        `${fertilizerIntervalDays} Days (${getFertilizerCountdownText(plant)})`;
+
+      fertilizerGroup.style.display = "grid";      } else {
         fertilizerGroup.style.display = "none";
       }
-
-      document.getElementById("plantNotes").textContent = plant.notes;
 
       const plantStatus = document.getElementById("plantStatus");
       plantStatus.textContent = status.label;
@@ -4125,12 +4843,14 @@
       }
 
       const wateredButton = document.querySelector(".watered-button");
+      const wateredButtonLabel =
+        wateredButton.querySelector(".care-action-label");
 
       if (plant.lastWatered === todayString) {
-        wateredButton.textContent = "Watered!";
+        wateredButtonLabel.textContent = "Watered!";
         wateredButton.classList.add("undo-watered");
       } else {
-        wateredButton.textContent = "Water";
+        wateredButtonLabel.textContent = "Water";
         wateredButton.classList.remove("undo-watered");
       }
       
@@ -4167,16 +4887,20 @@
         }
       }
 
-      const fertilizedButton = document.querySelector(".fertilized-button");
+      const fertilizedButton =
+        document.querySelector(".fertilized-button");
+
+      const fertilizedButtonLabel =
+        fertilizedButton.querySelector(".care-action-label");
 
       if (hasFertilizerSchedule(plant)) {
-        fertilizedButton.style.display = "inline-block";
+        fertilizedButton.style.display = "flex";
 
         if (plant.lastFertilized === todayString) {
-          fertilizedButton.textContent = "Fertilized!";
+          fertilizedButtonLabel.textContent = "Fertilized!";
           fertilizedButton.classList.add("undo-fertilized");
         } else {
-          fertilizedButton.textContent = "Fertilize";
+          fertilizedButtonLabel.textContent = "Fertilize";
           fertilizedButton.classList.remove("undo-fertilized");
         }
       } else {
