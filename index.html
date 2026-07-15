@@ -3444,17 +3444,6 @@
         return `${path}${path.includes("?") ? "&" : "?"}v=${plantPhotoVersion}`;
       }
 
-      function preloadPlantPhotos() {
-        plants.forEach(plant => {
-          if (!plant.image) {
-            return;
-          }
-
-          const preloadImage = new Image();
-          preloadImage.src = versionedPlantPhoto(plant.image);
-        });
-      }
-
       const defaultFertilizerIntervalDays = 21;
       const defaultFertilizerBufferDays = 1;
 
@@ -4537,7 +4526,6 @@
           }         
           ];
 
-          preloadPlantPhotos();
           checkAuthStatus();
 
 
@@ -6223,7 +6211,22 @@ function startPotSizeEdit(event) {
       plantStatus.textContent = status.label;
       plantStatus.className = `status-pill plant-card-status status-${status.color}`;
 
-      loadPlantCardPhoto(plant);
+      const zoomView = document.getElementById("zoomView");
+
+      if (plant.image && !isIOS) {
+        zoomView.style.backgroundImage =
+          `url("${versionedPlantPhoto(plant.image)}")`;
+
+        zoomView.style.backgroundSize = "cover";
+        zoomView.style.backgroundPosition = "center";
+      } else {
+        zoomView.style.backgroundImage =
+          `url("livingroom.jpg?v=room4")`;
+
+        zoomView.style.backgroundSize = "300%";
+        zoomView.style.backgroundPosition =
+          `${plant.x}% ${plant.y}%`;
+      }
 
       const wateredButton = document.querySelector(".watered-button");
       const wateredButtonLabel =
