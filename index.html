@@ -2213,6 +2213,79 @@
     padding: 4px;
   }
 
+  /* ===== COMPACT CARE SECTION SPACING ===== */
+
+  .modal-card.plant-card-redesign {
+    width: min(820px, calc(100vw - 70px));
+  }
+
+  .plant-card-main {
+    grid-template-columns: 390px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .plant-care-area {
+    gap: 15px;
+    align-self: start;
+  }
+
+  .plant-care-column {
+    gap: 16px;
+  }
+
+  .care-panel {
+    flex: 0 0 auto;
+    grid-template-columns: 72px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .care-action-button {
+    width: 72px;
+    height: 72px;
+    padding: 7px;
+    border-radius: 17px;
+  }
+
+  .care-action-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .care-details {
+    gap: 7px;
+  }
+
+  .care-row,
+  .care-date-row {
+    grid-template-columns: 27px auto minmax(0, 1fr);
+    gap: 5px;
+    min-height: 35px;
+    padding: 4px 6px;
+    font-size: 13px;
+  }
+
+  .care-row-icon,
+  .date-edit-trigger.care-row-icon {
+    width: 27px;
+    height: 27px;
+    padding: 4px;
+  }
+
+  .care-row strong {
+    grid-column: 2;
+    white-space: nowrap;
+  }
+
+  .care-row > span:last-child {
+    grid-column: 3;
+    white-space: nowrap;
+    justify-self: start;
+  }
+
   /* ===== LEGEND ===== */
 
     .legend-drawer {
@@ -2637,7 +2710,7 @@
         </svg>
       </button>
 
-      <strong>Last watered:</strong>
+      <strong>Watered:</strong>
       <span id="lastWatered"></span>
     </div>
 
@@ -2688,7 +2761,7 @@
             </svg>
           </button>
 
-          <strong>Last fertilized:</strong>
+          <strong>Fertilized:</strong>
           <span id="lastFertilized"></span>
         </div>
 
