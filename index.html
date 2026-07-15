@@ -3429,6 +3429,17 @@
         return `${path}${path.includes("?") ? "&" : "?"}v=${plantPhotoVersion}`;
       }
 
+      function preloadPlantPhotos() {
+        plants.forEach(plant => {
+          if (!plant.image) {
+            return;
+          }
+
+          const preloadImage = new Image();
+          preloadImage.src = versionedPlantPhoto(plant.image);
+        });
+      }
+
       const defaultFertilizerIntervalDays = 21;
       const defaultFertilizerBufferDays = 1;
 
@@ -4511,6 +4522,7 @@
           }         
           ];
 
+          preloadPlantPhotos();
           checkAuthStatus();
 
 
