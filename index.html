@@ -2562,6 +2562,24 @@
   box-shadow: 0 0 0 3px rgba(111, 128, 110, 0.25);
 }
 
+.plant-card-date-input {
+  width: 132px;
+  padding: 3px 5px;
+  border: 1px solid rgba(82, 74, 67, 0.38);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #4d4843;
+  font-family: 'Nunito', Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.plant-card-date-input:focus {
+  box-shadow: 0 0 0 3px rgba(111, 128, 110, 0.25);
+}
+
 /* ===== NARROWER PLANT CARD CONTROLS ===== */
 
 .plant-card-footer,
@@ -2941,27 +2959,15 @@
               ></span>
             </div>
 
-            <div class="photo-info-box repot-info-box">
-              <button
-                type="button"
-                class="repotted-label-button"
-                onclick="toggleRepotPopup(event)"
-              >
-                Last repotted:
-              </button>
+    <div class="photo-info-box repot-info-box">
+      <strong>Last repotted:</strong>
 
-              <span id="lastRepot"></span>
-
-              <div id="repotPopup" class="repot-popup">
-                <button
-                  id="repotPopupButton"
-                  class="repot-popup-button"
-                  onclick="toggleRepottedToday(event)"
-                >
-                  Repot?
-                </button>
-              </div>
-            </div>
+      <span
+        id="lastRepot"
+        class="plant-card-editable-value"
+        onclick="startLastRepotEdit(event)"
+      ></span>
+    </div>
 
           </div>
         </div>
@@ -4751,6 +4757,73 @@ function startWaterIntervalEdit(event) {
   });
 }
 
+function startLastRepotEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("lastRepot");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+  const originalDate = plant.lastRepot || null;
+
+  const input = document.createElement("input");
+  input.type = "date";
+  input.className = "plant-card-date-input";
+  input.value = originalDate || "";
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+
+  let finished = false;
+
+  function saveLastRepot() {
+    if (finished) {
+      return;
+    }
+
+    finished = true;
+
+    plant.lastRepot = input.value || null;
+    savePlantToFirebase(plant);
+
+    display.textContent = plant.lastRepot
+      ? formatSlashDate(plant.lastRepot)
+      : "N/A";
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("change", saveLastRepot);
+  input.addEventListener("blur", saveLastRepot);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      finished = true;
+      plant.lastRepot = originalDate;
+
+      display.textContent = originalDate
+        ? formatSlashDate(originalDate)
+        : "N/A";
+    }
+  });
+}
+
 function startPotSizeEdit(event) {
   event.stopPropagation();
 
@@ -6003,21 +6076,6 @@ function startPotSizeEdit(event) {
       document.getElementById("plantSize").textContent = formatPotSize(plant.size);
       document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
 
-      const repotButton = document.getElementById("repotPopupButton");
-
-      if (repotButton) {
-        const isRepottedToday = plant.lastRepot === todayString;
-
-        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
-        repotButton.classList.toggle("repot-done", isRepottedToday);
-      }
-
-      const repotPopup = document.getElementById("repotPopup");
-
-      if (repotPopup) {
-        repotPopup.classList.remove("show");
-      }
-
       document.getElementById("lastWatered").textContent = plant.lastWatered ? formatShortDate(plant.lastWatered) : "N/A";
       document.getElementById("intervalDays").textContent = plant.intervalDays ? `${plant.intervalDays} days` : "N/A";
 
@@ -6337,48 +6395,6 @@ function adjustSelectedPlantCardDate(numberOfDays) {
         renderCalendar();
         renderUpcomingChecks();
         openPlantDetails(activePlantIndex);
-    }
-
-    function toggleRepotPopup(event) {
-      event.stopPropagation();
-
-      const repotPopup = document.getElementById("repotPopup");
-
-      if (repotPopup) {
-        repotPopup.classList.toggle("show");
-      }
-    }
-
-    function toggleRepottedToday(event) {
-      event.stopPropagation();
-
-      if (activePlantIndex === null) {
-        return;
-      }
-
-      const plant = plants[activePlantIndex];
-      const todayString = getTodayString();
-
-      if (plant.lastRepot === todayString && plant.previousLastRepot !== undefined) {
-        plant.lastRepot = plant.previousLastRepot;
-        plant.previousLastRepot = null;
-      } else {
-        plant.previousLastRepot = plant.lastRepot || null;
-        plant.lastRepot = todayString;
-      }
-
-      savePlantToFirebase(plant);
-
-      document.getElementById("lastRepot").textContent = plant.lastRepot ? formatSlashDate(plant.lastRepot) : "N/A";
-
-      const repotButton = document.getElementById("repotPopupButton");
-
-      if (repotButton) {
-        const isRepottedToday = plant.lastRepot === todayString;
-
-        repotButton.textContent = isRepottedToday ? "Repotted!" : "Repot?";
-        repotButton.classList.toggle("repot-done", isRepottedToday);
-      }
     }
 
     function closeModal() {
