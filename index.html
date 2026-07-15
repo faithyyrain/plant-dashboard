@@ -2459,6 +2459,45 @@
   box-sizing: border-box;
 }
 
+/* ===== MATCH ALL FOUR CARD CONTROLS ===== */
+
+.plant-card-footer,
+.plant-card-footer.even-buttons,
+.plant-card-footer .delay-button {
+  gap: 9px;
+}
+
+.plant-card-footer .delay-half,
+.plant-card-footer .close-button,
+.plant-card-footer .plant-card-edit-button {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  min-height: 38px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 2px solid #6d6964;
+  border-radius: 13px;
+  background: #827e78;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.13),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
+.plant-card-footer .delay-half {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plant-card-footer .close-button,
+.plant-card-footer .plant-card-edit-button {
+  justify-self: stretch;
+}
+
   /* ===== LEGEND ===== */
 
     .legend-drawer {
