@@ -3038,7 +3038,11 @@
           </span>
 
           <strong>Interval:</strong>
-          <span id="fertilizerStatus"></span>
+          <span
+            id="fertilizerStatus"
+            class="plant-card-editable-value"
+            onclick="startFertilizerIntervalEdit(event)"
+          ></span>
         </div>
 
       </div>
@@ -3128,6 +3132,8 @@
         lastRepot: plant.lastRepot || null,
         size: plant.size || null,
         intervalDays: plant.intervalDays || null,
+        fertilizerIntervalDays: plant.fertilizerIntervalDays ?? null,
+        fertilizerBufferDays: plant.fertilizerBufferDays ?? null,
         intervalAdjustedToday: plant.intervalAdjustedToday || null,
         previousLastWatered: plant.previousLastWatered || null,
         previousLastFertilized: plant.previousLastFertilized || null,
@@ -3233,6 +3239,14 @@
 
               if (plant.intervalDays !== null && savedPlant.intervalDays !== undefined) {
                 plant.intervalDays = savedPlant.intervalDays;
+              }
+
+              if (savedPlant.fertilizerIntervalDays !== undefined) {
+                plant.fertilizerIntervalDays = savedPlant.fertilizerIntervalDays;
+              }
+
+              if (savedPlant.fertilizerBufferDays !== undefined) {
+                plant.fertilizerBufferDays = savedPlant.fertilizerBufferDays;
               }
 
               if (savedPlant.intervalAdjustedToday !== undefined) {
@@ -4446,6 +4460,83 @@
     openPlantDetails(activePlantIndex);
     updatePlantCardEditButton();
   }
+}
+
+function startFertilizerIntervalEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("fertilizerStatus");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+
+  if (!hasFertilizerSchedule(plant)) {
+    return;
+  }
+
+  const originalInterval =
+    plant.fertilizerIntervalDays ?? defaultFertilizerIntervalDays;
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "1";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.className = "plant-card-number-input";
+  input.value = originalInterval;
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+  input.select();
+
+  let finished = false;
+
+  function saveFertilizerInterval() {
+    if (finished) {
+      return;
+    }
+
+    finished = true;
+
+    const newInterval = parseInt(input.value, 10);
+
+    if (Number.isFinite(newInterval) && newInterval > 0) {
+      plant.fertilizerIntervalDays = newInterval;
+
+      savePlantToFirebase(plant);
+      refreshPlantCardDataViews();
+      return;
+    }
+
+    display.textContent = `${originalInterval} Days`;
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("blur", saveFertilizerInterval);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      finished = true;
+      display.textContent = `${originalInterval} Days`;
+    }
+  });
 }
 
 function startWaterIntervalEdit(event) {
