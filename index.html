@@ -2286,6 +2286,73 @@
     justify-self: start;
   }
 
+/* ===== RIGHT-COLUMN BUTTON LAYOUT ===== */
+
+.modal-card.plant-card-redesign {
+  width: min(800px, calc(100vw - 70px));
+}
+
+.plant-card-footer,
+.plant-card-footer.even-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "delay delay"
+    "close edit";
+  gap: 9px;
+  width: 100%;
+  margin: 0;
+}
+
+.plant-card-footer.even-buttons {
+  grid-template-areas:
+    "close edit";
+}
+
+.plant-card-footer .delay-button {
+  grid-area: delay;
+  width: 100%;
+}
+
+.plant-card-footer .close-button {
+  grid-area: close;
+  width: 100%;
+}
+
+.plant-card-footer .plant-card-edit-button {
+  grid-area: edit;
+  width: 100%;
+  justify-self: stretch;
+}
+
+.plant-card-footer .delay-half,
+.plant-card-footer .close-button,
+.plant-card-footer .plant-card-edit-button {
+  min-height: 42px;
+}
+
+/* ===== LARGER HEADER STATUS ===== */
+
+.plant-card-header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.plant-card-redesign .plant-card-status {
+  display: flex;
+  min-width: 145px;
+  min-height: 44px;
+  margin: 0 6px 0 0;
+  padding: 8px 18px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  align-self: center;
+  font-size: 16px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
   /* ===== LEGEND ===== */
 
     .legend-drawer {
@@ -2779,11 +2846,6 @@
 
       </div>
           </section>
-
-        </div>
-      </div>
-    </div>
-
       <!-- Bottom controls -->
 
       <div class="button-row plant-card-footer">
@@ -2800,16 +2862,17 @@
             class="delay-half delay-back-half"
             onclick="moveActivePlantBackOneDay(event)"
           >
-            <span>-1 Day</span>
+            <span>-1</span>
           </span>
 
           <span
             class="delay-half delay-forward-half"
             onclick="delayActivePlantOneDay(event)"
           >
-            <span>+1 Day</span>
+            <span>+1</span>
           </span>
         </button>
+
         <button
           type="button"
           id="plantCardEditButton"
@@ -2823,6 +2886,9 @@
         </button>
 
       </div>
+        </div>
+      </div>
+    </div>
 
     </div>
   </div>
@@ -5315,7 +5381,7 @@
 
       const plantStatus = document.getElementById("plantStatus");
       plantStatus.textContent = status.label;
-      plantStatus.className = `status-pill status-${status.color}`;
+      plantStatus.className = `status-pill plant-card-status status-${status.color}`;
 
       const zoomView = document.getElementById("zoomView");
 
