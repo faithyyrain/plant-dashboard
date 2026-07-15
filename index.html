@@ -2631,13 +2631,6 @@
   box-sizing: border-box;
 }
 
-/* ===== SMOOTH PLANT PHOTO LOADING ===== */
-
-.plant-card-redesign .zoom-view {
-  position: relative;
-  overflow: hidden;
-}
-
 .plant-card-redesign .zoom-view::after {
   content: "";
   position: absolute;
@@ -6180,105 +6173,6 @@ function startPotSizeEdit(event) {
         document.querySelector(".out-of-view-panel").style.display = "block";
 
     }
-
-function loadPlantCardPhoto(plant) {
-  const zoomView = document.getElementById("zoomView");
-
-  if (!plant.image || isIOS) {
-    zoomView.classList.remove("photo-loading");
-    zoomView.style.backgroundImage =
-      `url("livingroom.jpg?v=room4")`;
-    zoomView.style.backgroundSize = "300%";
-    zoomView.style.backgroundPosition =
-      `${plant.x}% ${plant.y}%`;
-    return;
-  }
-
-  const photoUrl = versionedPlantPhoto(plant.image);
-
-  zoomView.dataset.requestedPhoto = photoUrl;
-  zoomView.classList.remove("photo-loading");
-
-  const image = new Image();
-
-  let photoRevealed = false;
-  let decodeStarted = false;
-
-  const clearPreviousPhotoDelay = setTimeout(() => {
-    if (
-      zoomView.dataset.requestedPhoto === photoUrl &&
-      !photoRevealed
-    ) {
-      zoomView.style.backgroundImage = "none";
-      zoomView.style.backgroundColor = "#d6cbbb";
-    }
-  }, 40);
-
-  const coverDelay = setTimeout(() => {
-    if (
-      zoomView.dataset.requestedPhoto === photoUrl &&
-      !photoRevealed
-    ) {
-      zoomView.classList.add("photo-loading");
-    }
-  }, 120);
-
-  function revealPhoto() {
-    if (zoomView.dataset.requestedPhoto !== photoUrl) {
-      return;
-    }
-
-    photoRevealed = true;
-
-    clearTimeout(clearPreviousPhotoDelay);
-    clearTimeout(coverDelay);
-
-    zoomView.style.backgroundImage = `url("${photoUrl}")`;
-    zoomView.style.backgroundSize = "cover";
-    zoomView.style.backgroundPosition = "center";
-
-    requestAnimationFrame(() => {
-      zoomView.classList.remove("photo-loading");
-    });
-  }
-
-  function decodeAndReveal() {
-    if (decodeStarted) {
-      return;
-    }
-
-    decodeStarted = true;
-
-    if (typeof image.decode === "function") {
-      image.decode()
-        .catch(() => {})
-        .finally(revealPhoto);
-    } else {
-      revealPhoto();
-    }
-  }
-
-  image.addEventListener("load", decodeAndReveal, {
-    once: true
-  });
-
-  image.addEventListener("error", function() {
-    clearTimeout(clearPreviousPhotoDelay);
-    clearTimeout(coverDelay);
-
-    if (zoomView.dataset.requestedPhoto === photoUrl) {
-      zoomView.classList.remove("photo-loading");
-    }
-  }, {
-    once: true
-  });
-
-  image.src = photoUrl;
-
-  if (image.complete && image.naturalWidth > 0) {
-    decodeAndReveal();
-  }
-}
 
     function openPlantDetails(index) {
       const plantModal = document.getElementById("plantModal");
