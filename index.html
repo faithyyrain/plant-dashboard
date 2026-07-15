@@ -2463,16 +2463,17 @@
 
 /* ===== EVEN CARE PANEL CUSHION ===== */
 
-/* ===== EVEN SPACE AROUND CARE ACTION BUTTONS ===== */
+/* ===== CENTER CARE ACTION BUTTONS ===== */
 
 .care-panel {
-  column-gap: 16px;
-  padding-left: 16px;
-}
-
-.care-panel {
+  grid-template-columns: 88px minmax(0, 1fr);
+  column-gap: 0;
   padding: 12px 14px 12px 12px;
   align-items: center;
+}
+
+.care-action-button {
+  justify-self: center;
 }
 
 .care-details {
