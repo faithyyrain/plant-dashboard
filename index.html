@@ -2509,6 +2509,39 @@
     0 5px 10px rgba(56, 51, 47, 0.20);
 }
 
+.plant-card-editable-value {
+  border-radius: 7px;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.plant-card-redesign.card-edit-mode .plant-card-editable-value {
+  padding: 2px 5px;
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: inset 0 0 0 1px rgba(82, 74, 67, 0.22);
+  cursor: text;
+}
+
+.plant-card-number-input {
+  width: 58px;
+  padding: 3px 5px;
+  border: 1px solid rgba(82, 74, 67, 0.38);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #4d4843;
+  font-family: 'Nunito', Arial, sans-serif;
+  font-size: inherit;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.plant-card-number-input:focus {
+  box-shadow: 0 0 0 3px rgba(111, 128, 110, 0.25);
+}
+
   /* ===== LEGEND ===== */
 
     .legend-drawer {
@@ -2869,7 +2902,11 @@
 
             <div class="photo-info-box">
               <strong>Pot size:</strong>
-              <span id="plantSize"></span>
+              <span
+                id="plantSize"
+                class="plant-card-editable-value"
+                onclick="startPotSizeEdit(event)"
+              ></span>
             </div>
 
             <div class="photo-info-box repot-info-box">
@@ -3085,6 +3122,7 @@
         lastFertilized: plant.lastFertilized || null,
         delayUntil: plant.delayUntil || null,
         lastRepot: plant.lastRepot || null,
+        size: plant.size || null,
         intervalDays: plant.intervalDays || null,
         intervalAdjustedToday: plant.intervalAdjustedToday || null,
         previousLastWatered: plant.previousLastWatered || null,
@@ -3183,6 +3221,10 @@
 
               if (savedPlant.lastRepot !== undefined) {
                 plant.lastRepot = savedPlant.lastRepot;
+              }
+
+              if (savedPlant.size !== undefined) {
+                plant.size = savedPlant.size;
               }
 
               if (plant.intervalDays !== null && savedPlant.intervalDays !== undefined) {
@@ -4366,6 +4408,12 @@
       }
 
       button.classList.toggle("card-edit-active", plantCardEditMode);
+      const card = document.querySelector(".modal-card.plant-card-redesign");
+
+      if (card) {
+        card.classList.toggle("card-edit-mode", plantCardEditMode);
+      }
+
       button.setAttribute(
         "aria-pressed",
         plantCardEditMode ? "true" : "false"
@@ -4384,6 +4432,74 @@
       plantCardEditMode = false;
       updatePlantCardEditButton();
     }
+
+function startPotSizeEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("plantSize");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+  const currentNumber = parseInt(plant.size, 10) || "";
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "1";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.className = "plant-card-number-input";
+  input.value = currentNumber;
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+  input.select();
+
+  let saved = false;
+
+  function savePotSize() {
+    if (saved) {
+      return;
+    }
+
+    saved = true;
+
+    const newSize = parseInt(input.value, 10);
+
+    if (Number.isFinite(newSize) && newSize > 0) {
+      plant.size = `${newSize} inch pot`;
+      savePlantToFirebase(plant);
+    }
+
+    display.textContent = formatPotSize(plant.size);
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("blur", savePotSize);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      saved = true;
+      display.textContent = formatPotSize(plant.size);
+    }
+  });
+}
 
     function togglePlantCardEditMode(event) {
       event.stopPropagation();
