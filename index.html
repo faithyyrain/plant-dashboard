@@ -6197,25 +6197,41 @@ function loadPlantCardPhoto(plant) {
   const photoUrl = versionedPlantPhoto(plant.image);
 
   zoomView.dataset.requestedPhoto = photoUrl;
+  zoomView.classList.remove("photo-loading");
 
   const image = new Image();
-  image.src = photoUrl;
+
+  let photoRevealed = false;
+  let decodeStarted = false;
+
+  const clearPreviousPhotoDelay = setTimeout(() => {
+    if (
+      zoomView.dataset.requestedPhoto === photoUrl &&
+      !photoRevealed
+    ) {
+      zoomView.style.backgroundImage = "none";
+      zoomView.style.backgroundColor = "#d6cbbb";
+    }
+  }, 40);
 
   const coverDelay = setTimeout(() => {
     if (
       zoomView.dataset.requestedPhoto === photoUrl &&
-      !image.complete
+      !photoRevealed
     ) {
       zoomView.classList.add("photo-loading");
     }
   }, 120);
 
   function revealPhoto() {
-    clearTimeout(coverDelay);
-
     if (zoomView.dataset.requestedPhoto !== photoUrl) {
       return;
     }
+
+    photoRevealed = true;
+
+    clearTimeout(clearPreviousPhotoDelay);
+    clearTimeout(coverDelay);
 
     zoomView.style.backgroundImage = `url("${photoUrl}")`;
     zoomView.style.backgroundSize = "cover";
@@ -6227,6 +6243,12 @@ function loadPlantCardPhoto(plant) {
   }
 
   function decodeAndReveal() {
+    if (decodeStarted) {
+      return;
+    }
+
+    decodeStarted = true;
+
     if (typeof image.decode === "function") {
       image.decode()
         .catch(() => {})
@@ -6236,19 +6258,25 @@ function loadPlantCardPhoto(plant) {
     }
   }
 
-  if (image.complete) {
-    decodeAndReveal();
-  } else {
-    image.addEventListener("load", decodeAndReveal, {
-      once: true
-    });
+  image.addEventListener("load", decodeAndReveal, {
+    once: true
+  });
 
-    image.addEventListener("error", function() {
-      clearTimeout(coverDelay);
+  image.addEventListener("error", function() {
+    clearTimeout(clearPreviousPhotoDelay);
+    clearTimeout(coverDelay);
+
+    if (zoomView.dataset.requestedPhoto === photoUrl) {
       zoomView.classList.remove("photo-loading");
-    }, {
-      once: true
-    });
+    }
+  }, {
+    once: true
+  });
+
+  image.src = photoUrl;
+
+  if (image.complete && image.naturalWidth > 0) {
+    decodeAndReveal();
   }
 }
 
