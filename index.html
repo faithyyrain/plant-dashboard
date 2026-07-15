@@ -2983,7 +2983,11 @@
       </span>
 
       <strong>Interval:</strong>
-      <span id="intervalDays"></span>
+      <span
+        id="intervalDays"
+        class="plant-card-editable-value"
+        onclick="startWaterIntervalEdit(event)"
+      ></span>
     </div>
 
   </div>
@@ -4432,6 +4436,97 @@
       plantCardEditMode = false;
       updatePlantCardEditButton();
     }
+
+    function refreshPlantCardDataViews() {
+  updateMarkerColors();
+  renderCalendar();
+  renderUpcomingChecks();
+
+  if (activePlantIndex !== null) {
+    openPlantDetails(activePlantIndex);
+    updatePlantCardEditButton();
+  }
+}
+
+function startWaterIntervalEdit(event) {
+  event.stopPropagation();
+
+  if (!plantCardEditMode || activePlantIndex === null) {
+    return;
+  }
+
+  const display = document.getElementById("intervalDays");
+
+  if (!display || display.querySelector("input")) {
+    return;
+  }
+
+  const plant = plants[activePlantIndex];
+  const originalInterval = plant.intervalDays;
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "1";
+  input.step = "1";
+  input.inputMode = "numeric";
+  input.className = "plant-card-number-input";
+  input.value = plant.intervalDays || "";
+
+  display.textContent = "";
+  display.appendChild(input);
+
+  input.focus();
+  input.select();
+
+  let finished = false;
+
+  function saveWaterInterval() {
+    if (finished) {
+      return;
+    }
+
+    finished = true;
+
+    const newInterval = parseInt(input.value, 10);
+
+    if (Number.isFinite(newInterval) && newInterval > 0) {
+      plant.intervalDays = newInterval;
+      plant.delayUntil = null;
+      plant.intervalAdjustedToday = null;
+
+      savePlantToFirebase(plant);
+      refreshPlantCardDataViews();
+      return;
+    }
+
+    plant.intervalDays = originalInterval;
+    display.textContent = originalInterval
+      ? `${originalInterval} days`
+      : "N/A";
+  }
+
+  input.addEventListener("click", function(inputEvent) {
+    inputEvent.stopPropagation();
+  });
+
+  input.addEventListener("blur", saveWaterInterval);
+
+  input.addEventListener("keydown", function(keyEvent) {
+    if (keyEvent.key === "Enter") {
+      keyEvent.preventDefault();
+      input.blur();
+    }
+
+    if (keyEvent.key === "Escape") {
+      finished = true;
+      plant.intervalDays = originalInterval;
+
+      display.textContent = originalInterval
+        ? `${originalInterval} days`
+        : "N/A";
+    }
+  });
+}
 
 function startPotSizeEdit(event) {
   event.stopPropagation();
