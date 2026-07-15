@@ -6181,65 +6181,76 @@ function startPotSizeEdit(event) {
 
     }
 
-    function loadPlantCardPhoto(plant) {
-      const zoomView = document.getElementById("zoomView");
+function loadPlantCardPhoto(plant) {
+  const zoomView = document.getElementById("zoomView");
 
-      if (!plant.image || isIOS) {
-        zoomView.classList.remove("photo-loading");
-        zoomView.style.backgroundImage =
-          `url("livingroom.jpg?v=room4")`;
-        zoomView.style.backgroundSize = "300%";
-        zoomView.style.backgroundPosition =
-          `${plant.x}% ${plant.y}%`;
-        return;
-      }
+  if (!plant.image || isIOS) {
+    zoomView.classList.remove("photo-loading");
+    zoomView.style.backgroundImage =
+      `url("livingroom.jpg?v=room4")`;
+    zoomView.style.backgroundSize = "300%";
+    zoomView.style.backgroundPosition =
+      `${plant.x}% ${plant.y}%`;
+    return;
+  }
 
-      const photoUrl = versionedPlantPhoto(plant.image);
+  const photoUrl = versionedPlantPhoto(plant.image);
 
-      zoomView.dataset.requestedPhoto = photoUrl;
+  zoomView.dataset.requestedPhoto = photoUrl;
+
+  const image = new Image();
+  image.src = photoUrl;
+
+  const coverDelay = setTimeout(() => {
+    if (
+      zoomView.dataset.requestedPhoto === photoUrl &&
+      !image.complete
+    ) {
       zoomView.classList.add("photo-loading");
-
-      const image = new Image();
-      image.src = photoUrl;
-
-      function revealPhoto() {
-        if (zoomView.dataset.requestedPhoto !== photoUrl) {
-          return;
-        }
-
-        zoomView.style.backgroundImage = `url("${photoUrl}")`;
-        zoomView.style.backgroundSize = "cover";
-        zoomView.style.backgroundPosition = "center";
-
-        requestAnimationFrame(() => {
-          zoomView.classList.remove("photo-loading");
-        });
-      }
-
-      function decodeAndReveal() {
-        if (typeof image.decode === "function") {
-          image.decode()
-            .catch(() => {})
-            .finally(revealPhoto);
-        } else {
-          revealPhoto();
-        }
-      }
-
-      if (image.complete) {
-        decodeAndReveal();
-      } else {
-        image.addEventListener("load", decodeAndReveal, {
-          once: true
-        });
-
-        image.addEventListener("error", function() {
-          zoomView.classList.remove("photo-loading");
-        }, {
-          once: true
-        });
-      }
     }
+  }, 120);
+
+  function revealPhoto() {
+    clearTimeout(coverDelay);
+
+    if (zoomView.dataset.requestedPhoto !== photoUrl) {
+      return;
+    }
+
+    zoomView.style.backgroundImage = `url("${photoUrl}")`;
+    zoomView.style.backgroundSize = "cover";
+    zoomView.style.backgroundPosition = "center";
+
+    requestAnimationFrame(() => {
+      zoomView.classList.remove("photo-loading");
+    });
+  }
+
+  function decodeAndReveal() {
+    if (typeof image.decode === "function") {
+      image.decode()
+        .catch(() => {})
+        .finally(revealPhoto);
+    } else {
+      revealPhoto();
+    }
+  }
+
+  if (image.complete) {
+    decodeAndReveal();
+  } else {
+    image.addEventListener("load", decodeAndReveal, {
+      once: true
+    });
+
+    image.addEventListener("error", function() {
+      clearTimeout(coverDelay);
+      zoomView.classList.remove("photo-loading");
+    }, {
+      once: true
+    });
+  }
+}
 
     function openPlantDetails(index) {
       const plantModal = document.getElementById("plantModal");
