@@ -1690,7 +1690,7 @@
       inset 0 0 0 1px rgba(72, 92, 97, 0.26);
   }
 
-.care-date-row.date-row-selected {
+.care-row.date-row-selected {
   background: rgba(255, 255, 255, 0.82);
   box-shadow:
     0 0 0 3px rgba(91, 123, 129, 0.25),
@@ -3079,19 +3079,20 @@
     </div>
 
     <div class="care-row care-interval-row">
-      <span class="care-row-icon clock-row-icon">
+      <button
+        type="button"
+        id="waterIntervalSelectButton"
+        class="date-edit-trigger care-row-icon"
+        aria-label="Select watering interval"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="9"></circle>
           <path d="M12 7v5l3 2"></path>
         </svg>
-      </span>
+      </button>
 
       <strong>Interval:</strong>
-      <span
-        id="intervalDays"
-        class="plant-card-editable-value"
-        onclick="startWaterIntervalEdit(event)"
-      ></span>
+      <span id="intervalDays"></span>
     </div>
 
   </div>
@@ -3134,19 +3135,20 @@
         </div>
 
         <div class="care-row care-interval-row">
-          <span class="care-row-icon clock-row-icon">
+          <button
+            type="button"
+            id="fertilizerIntervalSelectButton"
+            class="date-edit-trigger care-row-icon"
+            aria-label="Select fertilizer interval"
+          >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="9"></circle>
               <path d="M12 7v5l3 2"></path>
             </svg>
-          </span>
+          </button>
 
           <strong>Interval:</strong>
-          <span
-            id="fertilizerStatus"
-            class="plant-card-editable-value"
-            onclick="startFertilizerIntervalEdit(event)"
-          ></span>
+          <span id="fertilizerStatus"></span>
         </div>
 
       </div>
@@ -4536,55 +4538,47 @@
       let activeSliderControl = null;
 
 function updatePlantCardDateSelection() {
-  const wateredButton =
-    document.getElementById("lastWateredSelectButton");
-
-  const fertilizedButton =
-    document.getElementById("lastFertilizedSelectButton");
-
-  const wateredSelected =
-    plantCardEditMode &&
-    selectedPlantCardDate === "watered";
-
-  const fertilizedSelected =
-    plantCardEditMode &&
-    selectedPlantCardDate === "fertilized";
-
-  if (wateredButton) {
-    wateredButton.classList.toggle(
-      "date-selected",
-      wateredSelected
-    );
-
-    const wateredRow =
-      wateredButton.closest(".care-date-row");
-
-    if (wateredRow) {
-      wateredRow.classList.toggle(
-        "date-row-selected",
-        wateredSelected
-      );
+  const selectableButtons = [
+    {
+      id: "lastWateredSelectButton",
+      type: "watered"
+    },
+    {
+      id: "lastFertilizedSelectButton",
+      type: "fertilized"
+    },
+    {
+      id: "waterIntervalSelectButton",
+      type: "waterInterval"
+    },
+    {
+      id: "fertilizerIntervalSelectButton",
+      type: "fertilizerInterval"
     }
-  }
+  ];
 
-  if (fertilizedButton) {
-    fertilizedButton.classList.toggle(
-      "date-selected",
-      fertilizedSelected
-    );
+  selectableButtons.forEach(selection => {
+    const button = document.getElementById(selection.id);
 
-    const fertilizedRow =
-      fertilizedButton.closest(".care-date-row");
-
-    if (fertilizedRow) {
-      fertilizedRow.classList.toggle(
-        "date-row-selected",
-        fertilizedSelected
-      );
+    if (!button) {
+      return;
     }
-  }
+
+    const isSelected =
+      plantCardEditMode &&
+      selectedPlantCardDate === selection.type;
+
+    button.classList.toggle("date-selected", isSelected);
+
+    const row = button.closest(".care-row");
+
+    if (row) {
+      row.classList.toggle("date-row-selected", isSelected);
+    }
+  });
+
   const delayButton =
-  document.querySelector(".plant-card-footer .delay-button");
+    document.querySelector(".plant-card-footer .delay-button");
 
   const buttonRow =
     document.querySelector(".button-row.plant-card-footer");
@@ -4617,10 +4611,13 @@ function togglePlantCardDateSelection(type, event) {
 
   const plant = plants[activePlantIndex];
 
-  if (
-    type === "fertilized" &&
-    !hasFertilizerSchedule(plant)
-  ) {
+    if (
+      (
+        type === "fertilized" ||
+        type === "fertilizerInterval"
+      ) &&
+      !hasFertilizerSchedule(plant)
+    ) {
     return;
   }
 
@@ -5002,6 +4999,18 @@ function startPotSizeEdit(event) {
       .getElementById("lastFertilizedSelectButton")
       .addEventListener("click", function(event) {
         togglePlantCardDateSelection("fertilized", event);
+      });
+
+    document
+      .getElementById("waterIntervalSelectButton")
+      .addEventListener("click", function(event) {
+        togglePlantCardDateSelection("waterInterval", event);
+      });
+
+    document
+      .getElementById("fertilizerIntervalSelectButton")
+      .addEventListener("click", function(event) {
+        togglePlantCardDateSelection("fertilizerInterval", event);
       });
     
     function toggleEditModeMenu() {
@@ -6280,6 +6289,43 @@ function adjustSelectedPlantCardDate(numberOfDays) {
   }
 
   const plant = plants[activePlantIndex];
+    if (selectedPlantCardDate === "waterInterval") {
+    const currentInterval = plant.intervalDays;
+
+    if (!currentInterval) {
+      return true;
+    }
+
+    const newInterval = Math.max(
+      1,
+      currentInterval + numberOfDays
+    );
+
+    plant.intervalDays = newInterval;
+    plant.delayUntil = null;
+    plant.intervalAdjustedToday = null;
+
+    savePlantToFirebase(plant);
+    refreshPlantCardDataViews();
+
+    return true;
+  }
+
+  if (selectedPlantCardDate === "fertilizerInterval") {
+    const currentInterval =
+      plant.fertilizerIntervalDays ??
+      defaultFertilizerIntervalDays;
+
+    plant.fertilizerIntervalDays = Math.max(
+      1,
+      currentInterval + numberOfDays
+    );
+
+    savePlantToFirebase(plant);
+    refreshPlantCardDataViews();
+
+    return true;
+  }
 
   const fieldName =
     selectedPlantCardDate === "watered"
