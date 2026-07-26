@@ -3359,7 +3359,11 @@
                 plant.size = savedPlant.size;
               }
 
-              if (plant.intervalDays !== null && savedPlant.intervalDays !== undefined) {
+              if (
+                plant.intervalDays !== null &&
+                savedPlant.intervalDays !== undefined &&
+                savedPlant.intervalDays !== null
+              ) {
                 plant.intervalDays = savedPlant.intervalDays;
               }
 
@@ -3899,8 +3903,8 @@
             image: "plant-photos/silver-sword2.jpeg",
             sticker: "plant-stickers/silver-sword2.png",
             stickerWidth: 60,
-            lastWatered: null,
-            intervalDays: null,
+            lastWatered: "2026-07-26",
+            intervalDays: 7,
             lastFertilized: null,
             lastRepot: null
           },
@@ -3977,8 +3981,8 @@
             image: "plant-photos/marble-queen-prop.jpeg",
             sticker: "plant-stickers/marble-queen-prop.png",
             stickerWidth: 60,
-            lastWatered: null,
-            intervalDays: null,
+            lastWatered: "2026-07-26",
+            intervalDays: 7,
             lastFertilized: null,
             lastRepot: null
           },
