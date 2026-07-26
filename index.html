@@ -5392,28 +5392,50 @@ function openStickerEditControls(event, plant) {
       return baseNextWaterDate;
     }
 
-    function getPlantsDueOnDate(dateString) {
-        const targetDate = new Date(dateString + "T00:00:00");
-        targetDate.setHours(0, 0, 0, 0);
+function getPlantsDueOnDate(dateString) {
+  const targetDate = new Date(dateString + "T00:00:00");
+  targetDate.setHours(0, 0, 0, 0);
 
-        return plants.filter(plant => {
-          if (!plant.lastWatered || !plant.intervalDays) {
-            return false;
-          }
+  const todayString = getTodayString();
 
-          let predictedDate = getEffectiveNextWaterDate(plant);
-
-          while (predictedDate <= targetDate) {
-            if (dateToString(predictedDate) === dateString) {
-              return true;
-            }
-
-            predictedDate.setDate(predictedDate.getDate() + plant.intervalDays);
-          }
-
-          return false;
-        });
+  return plants.filter(plant => {
+    if (
+      plant.decorative ||
+      !plant.lastWatered ||
+      !plant.intervalDays
+    ) {
+      return false;
     }
+
+    const nextWaterDate = getEffectiveNextWaterDate(plant);
+
+    if (!nextWaterDate) {
+      return false;
+    }
+
+    /*
+      Today should include anything due today
+      OR already overdue and still unwatered.
+    */
+    if (dateString === todayString) {
+      return nextWaterDate <= targetDate;
+    }
+
+    const predictedDate = new Date(nextWaterDate);
+
+    while (predictedDate <= targetDate) {
+      if (dateToString(predictedDate) === dateString) {
+        return true;
+      }
+
+      predictedDate.setDate(
+        predictedDate.getDate() + plant.intervalDays
+      );
+    }
+
+    return false;
+  });
+} 
 
     function getPlantsWateredOnDate(dateString) {
         return plants.filter(plant => plant.lastWatered === dateString);
