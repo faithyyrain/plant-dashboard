@@ -2861,9 +2861,10 @@
       flex-shrink: 0;
     }
 
-    .out-of-view-dot:hover {
-      transform: scale(1.12);
-    }
+.plant-marker.out-of-view-dot:hover,
+.plant-marker.out-of-view-dot.fertilizer-ring:hover {
+  transform: scale(1.04);
+}
 
   /* ===== IPHONE FAKE LANDSCAPE VIEW ===== */
 
@@ -5119,45 +5120,56 @@ function startPotSizeEdit(event) {
       popup.classList.add("open");
     }
 
-    function openStickerEditControls(event, plant) {
-      if (!editMode) {
-        return;
-      }
+function openStickerEditControls(event, plant) {
+  if (!editMode) {
+    return;
+  }
 
-      if (editMode === "decor" && !plant.decorative) {
-        return;
-      }
+  if (editMode === "decor" && !plant.decorative) {
+    return;
+  }
 
-      if (editMode === "plants" && plant.decorative) {
-        return;
-      }
+  if (editMode === "plants" && plant.decorative) {
+    return;
+  }
 
-      event.stopPropagation();
+  event.stopPropagation();
 
-      if (plant.decorative) {
-        plant.locked = false;
-      }
+  if (plant.decorative) {
+    plant.locked = false;
+  }
 
-      editingPlant = plant;
-      dotMoveReady = false;
-      movingPlant = false;
-      movingDot = false;
+  const moveDotButton = document.getElementById("moveDotButton");
 
-      stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+  dotMoveReady = false;
+  movingPlant = false;
+  movingDot = false;
 
-      const activeStickerItem = stickers.find(item => item.plant === plant);
-      if (activeStickerItem) {
-        activeStickerItem.sticker.classList.add("editing-sticker");
-      }
+  if (moveDotButton) {
+    moveDotButton.classList.remove("active-edit-button");
+  }
 
-      editControls.style.display = "flex";
+  editingPlant = plant;
 
-      const moveDotButton = document.getElementById("moveDotButton");
+  stickers.forEach(item =>
+    item.sticker.classList.remove("editing-sticker")
+  );
 
-      if (moveDotButton) {
-        moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
-      }
-    }
+  const activeStickerItem = stickers.find(
+    item => item.plant === plant
+  );
+
+  if (activeStickerItem) {
+    activeStickerItem.sticker.classList.add("editing-sticker");
+  }
+
+  editControls.style.display = "flex";
+
+  if (moveDotButton) {
+    moveDotButton.style.display =
+      editMode === "plants" ? "flex" : "none";
+  }
+}
 
     function startDotMoveMode(event) {
       event.stopPropagation();
