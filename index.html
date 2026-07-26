@@ -1206,7 +1206,7 @@
 
     .zoom-view {
       min-height: 420px;
-      background-image: url("livingroom.jpg?v=room4");
+      background-image: url("livingroom.jpg?v=room5");
       background-repeat: no-repeat;
       background-size: 300%;
       background-position: center;
@@ -2986,7 +2986,7 @@
   <!-- ===== ROOM IMAGE + LEGEND ===== -->
 
     <div class="room-container" id="roomContainer">
-      <img src="livingroom.jpg?v=room4" class="room-image">
+      <img src="livingroom.jpg?v=room5" class="room-image">
 
         <!-- Color legend -->
 
@@ -3445,7 +3445,7 @@
       const plantPhotoVersion = "20260713-1";
 
       function versionedPlantPhoto(path) {
-        if (!path) return "livingroom.jpg?v=room4";
+        if (!path) return "livingroom.jpg?v=room5";
         return `${path}${path.includes("?") ? "&" : "?"}v=${plantPhotoVersion}`;
       }
 
@@ -6061,7 +6061,7 @@ function getPlantsDueOnDate(dateString) {
         zoomView.style.backgroundPosition = "center";
       } else {
         zoomView.style.backgroundImage =
-          `url("livingroom.jpg?v=room4")`;
+          `url("livingroom.jpg?v=room5")`;
 
         zoomView.style.backgroundSize = "300%";
         zoomView.style.backgroundPosition =
