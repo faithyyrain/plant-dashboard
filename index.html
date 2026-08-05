@@ -1899,14 +1899,28 @@ h2, .status-pill, .close-button, .legend {
   position: static;
   width: 15px;
   height: 15px;
+  min-width: 15px;
+  min-height: 15px;
   margin-left: 8px;
+  border: 2px solid rgb(53, 53, 53);
+  box-shadow: none;
+  box-sizing: border-box;
   transform: none;
   z-index: auto;
   flex-shrink: 0;
 }
 
-.plant-marker.out-of-view-dot:hover, .plant-marker.out-of-view-dot.fertilizer-ring:hover {
+.plant-marker.out-of-view-dot:hover,
+.plant-marker.out-of-view-dot.fertilizer-ring:hover {
   transform: scale(1.04);
+  box-shadow: none;
+}
+
+.plant-marker.out-of-view-dot.fertilizer-ring {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #d8a91f;
+  box-shadow: none;
 }
 
 /* ===== EDIT MODE TRASH DRAWER ===== */
@@ -2442,7 +2456,7 @@ body.dashboard-card-open .edit-mode-control {
   padding: 0 5px;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255, 255, 255, 0.78);
+  border: 2px solid #a85f72;
   border-radius: 999px;
   background: #d88ea0;
   color: white;
