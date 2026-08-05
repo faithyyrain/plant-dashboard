@@ -2461,6 +2461,363 @@ body.dashboard-card-open .edit-mode-control {
   display: flex;
 }
  
+/* ===== UNIFIED LAYERED DASHBOARD THEME ===== */
+
+:root {
+  /* Main Edit-button colors */
+  --theme-button-bg: #827e78;
+  --theme-button-border: #6d6964;
+  --theme-button-text: #ffffff;
+
+  /* Layered neutral surfaces */
+  --theme-outer-bg: rgba(232, 228, 220, 0.88);
+  --theme-outer-border: rgba(166, 158, 148, 0.92);
+
+  --theme-section-bg: rgba(207, 202, 194, 0.72);
+  --theme-section-border: rgba(159, 151, 141, 0.78);
+
+  --theme-inner-bg: rgba(247, 244, 239, 0.72);
+  --theme-inner-border: rgba(190, 183, 174, 0.82);
+
+  --theme-text: #45413d;
+
+  --theme-green-bg: #6f806e;
+  --theme-green-border: #566653;
+
+  --theme-red-bg: #c69191;
+  --theme-red-border: #976565;
+
+  --theme-blue-bg: #77b5b8;
+  --theme-blue-border: #568f98;
+
+  --theme-brown-bg: #9b8574;
+  --theme-brown-border: #806f61;
+
+  --theme-gold-bg: #c39a5e;
+  --theme-gold-border: #987341;
+  }
+
+/* Bottom drawer tabs */
+
+.calendar-button,
+.legend-tab,
+.out-of-view-tab {
+  background: var(--theme-button-bg);
+  border-color: var(--theme-button-border);
+  color: var(--theme-button-text);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.13),
+    0 -2px 10px rgba(56, 51, 47, 0.28);
+}
+
+/* Outer drawer boxes */
+
+.legend,
+.out-of-view-panel {
+  background: var(--theme-outer-bg);
+  border-color: var(--theme-outer-border);
+  color: var(--theme-text);
+}
+
+/* Keep calendar transparent, but give it a matching border */
+
+.calendar-panel {
+  background: rgba(255, 252, 247, 0.671);
+  border: 3px solid var(--theme-outer-border);
+  border-radius: 18px 0 18px 18px;
+  box-sizing: border-box;
+}
+
+/* Calendar middle layer */
+
+.calendar-header {
+  background: var(--theme-section-bg);
+  border: 2px solid var(--theme-section-border);
+  box-sizing: border-box;
+}
+
+/* Calendar light inner squares */
+
+.calendar-day {
+  background: var(--theme-inner-bg);
+  border: 1px solid var(--theme-inner-border);
+  box-sizing: border-box;
+}
+
+.calendar-day.empty {
+  background: transparent;
+  border: none;
+}
+
+/* Selected calendar square */
+
+.calendar-day.selected-day {
+  background: rgba(175, 184, 164, 0.62);
+  border-color: rgba(113, 126, 103, 0.86);
+  box-shadow: none;
+}
+
+/* Today's calendar square */
+
+.calendar-day.today {
+  background: rgba(188, 201, 178, 0.55);
+  border-color: rgba(122, 140, 109, 0.82);
+  box-shadow: none;
+}
+
+/* Upcoming Checks stays the darkest calendar layer */
+
+.upcoming-panel {
+  background: rgba(130, 126, 120, 0.92);
+  border-top: 3px solid var(--theme-button-border);
+  color: white;
+  box-sizing: border-box;
+}
+
+/* Unified standard buttons */
+
+.login-card button,
+.sticker-select-popup button,
+.due-mini-button,
+.due-close-button,
+.edit-mode-button,
+.edit-mode-menu .edit-mode-option,
+.sticker-edit-controls button,
+.plant-card-footer .close-button,
+.plant-card-footer .delay-half,
+.plant-card-footer .plant-card-edit-button {
+  background: var(--theme-button-bg);
+  border: 2px solid var(--theme-button-border);
+  color: var(--theme-button-text);
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.13),
+    0 4px 8px rgba(56, 51, 47, 0.20);
+}
+
+/* Red open/close state */
+
+.edit-mode-control.menu-open .edit-mode-button {
+  background: var(--theme-red-bg);
+  border-color: var(--theme-red-border);
+  color: white;
+}
+
+/* Green selected/editing states */
+
+.edit-mode-menu .edit-mode-option.selected-mode,
+.sticker-edit-controls button.active-edit-button,
+.plant-card-footer .plant-card-edit-button.card-edit-active {
+  background: var(--theme-green-bg);
+  border-color: var(--theme-green-border);
+  color: white;
+}
+
+/* Calendar action states */
+
+.due-mini-button.watered-active {
+  background: var(--theme-blue-bg);
+  border-color: var(--theme-blue-border);
+}
+
+.due-mini-button.fertilized-active {
+  background: var(--theme-brown-bg);
+  border-color: var(--theme-brown-border);
+}
+
+.due-mini-button.delayed-active,
+.due-mini-button.earlier-active,
+.due-mini-button.delay-back-button.earlier-active,
+.plant-card-footer .delay-half.delay-half-active,
+.plant-card-footer .delay-button.date-adjust-mode .delay-half {
+  background: var(--theme-gold-bg);
+  border-color: var(--theme-gold-border);
+}
+
+/* Unified dashboard outer boxes */
+
+.login-card,
+.due-panel,
+.trash-panel,
+.edit-slider-panel,
+.sticker-select-popup,
+.edit-mode-control,
+.sticker-edit-controls {
+  background: var(--theme-outer-bg);
+  border: 3px solid var(--theme-outer-border);
+  color: var(--theme-text);
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    0 5px 14px rgba(56, 51, 47, 0.28);
+}
+
+/* Slightly darker header layer */
+
+.due-panel-header {
+  background: var(--theme-section-bg);
+  border: 2px solid var(--theme-section-border);
+  color: var(--theme-text);
+  box-sizing: border-box;
+}
+
+/* Light inner plant rows */
+
+.due-plant-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid var(--theme-inner-border);
+  border-radius: 14px;
+  background: var(--theme-inner-bg);
+  box-sizing: border-box;
+}
+
+.due-plant-item:last-child {
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--theme-inner-border);
+}
+
+/* Keep Watered panels subtly blue */
+
+.due-panel.watered-only {
+  background: rgba(226, 237, 237, 0.88);
+  border-color: rgba(112, 148, 152, 0.82);
+}
+
+/* Matching editable text inputs */
+
+.login-card input,
+.plant-card-number-input,
+.plant-card-date-input {
+  background: var(--theme-inner-bg);
+  border: 2px solid var(--theme-inner-border);
+  color: var(--theme-text);
+}
+
+/* Unified plant-card boxes */
+
+.care-details-banner,
+.photo-info-box,
+.care-row,
+.date-edit-trigger,
+.care-row-icon {
+  background: var(--theme-inner-bg);
+  border-color: var(--theme-inner-border);
+  color: var(--theme-text);
+  box-sizing: border-box;
+}
+
+/* Water section keeps its blue layer */
+
+.water-care-panel {
+  background-color: rgba(185, 209, 212, 0.90);
+  border-color: #8ea9ad;
+}
+
+/* Fertilizer section keeps its taupe layer */
+
+.fertilizer-care-panel {
+  background-color: rgba(197, 177, 155, 0.90);
+  border-color: #9f8e7c;
+}
+
+/* Water and fertilizer buttons use Edit-button styling */
+
+.water-care-panel .care-action-button,
+.fertilizer-care-panel .care-action-button {
+  color: white;
+  box-sizing: border-box;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.16),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
+.water-care-panel .care-action-button {
+  background: var(--theme-blue-bg);
+  border: 2px solid var(--theme-blue-border);
+}
+
+.fertilizer-care-panel .care-action-button {
+  background: var(--theme-brown-bg);
+  border: 2px solid var(--theme-brown-border);
+}
+
+/* Selected date or interval control */
+
+.date-edit-trigger.date-selected,
+.care-row.date-row-selected {
+  background: rgba(111, 128, 110, 0.28);
+  border-color: var(--theme-green-border);
+  box-shadow: none;
+}
+
+/* Unified trash button */
+
+.trash-button {
+  background: var(--theme-button-bg);
+  border: 2px solid var(--theme-button-border);
+  color: var(--theme-button-text);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.13),
+    0 5px 10px rgba(56, 51, 47, 0.20);
+}
+
+.trash-button::before,
+.trash-button::after {
+  display: none;
+}
+
+.trash-button:hover {
+  border-color: var(--theme-button-border);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.16),
+    0 7px 12px rgba(56, 51, 47, 0.24);
+}
+
+/* Trash drag-over state */
+
+.trash-drawer.drag-over .trash-button {
+  background: var(--theme-red-bg);
+  border-color: var(--theme-red-border);
+  color: white;
+}
+
+/* Matching notification borders */
+
+.trash-count {
+  border-color: #6f584d;
+}
+
+.out-of-view-alert-badge {
+  border-color: #a85f72;
+}
+
+/* Status boxes get borders matching their fills */
+
+.plant-card-redesign .plant-card-status.status-blue {
+  border-color: #568f98;
+}
+
+.plant-card-redesign .plant-card-status.status-green {
+  border-color: #566653;
+}
+
+.plant-card-redesign .plant-card-status.status-yellow {
+  border-color: #7d8e50;
+}
+
+.plant-card-redesign .plant-card-status.status-orange {
+  border-color: #987341;
+}
+
+.plant-card-redesign .plant-card-status.status-red {
+  border-color: #976565;
+}
+
+.plant-card-redesign .plant-card-status.status-darkred {
+  border-color: #704040;
+}
+
 /* ===== IPHONE ROTATED LANDSCAPE VIEW ===== */
 
 @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
