@@ -2203,8 +2203,6 @@ h2, .status-pill, .close-button, .legend {
   }
 }
 
-/* ===== IPHONE FAKE LANDSCAPE VIEW ===== */
-
 /* ===== IPHONE ROTATED LANDSCAPE VIEW ===== */
 
 @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
@@ -2214,6 +2212,7 @@ h2, .status-pill, .close-button, .legend {
     left: 50dvw;
     width: 100dvh;
     height: 100dvw;
+    overflow: hidden;
     transform: translate(-50%, -50%) rotate(90deg);
     transform-origin: center center;
   }
@@ -2221,11 +2220,31 @@ h2, .status-pill, .close-button, .legend {
   .room-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center;
   }
 
-  .legend {
+  .plant-sticker,
+  .calendar-button,
+  .calendar-wrapper,
+  .edit-mode-button,
+  .edit-mode-menu,
+  .edit-slider-panel,
+  .sticker-edit-controls,
+  .sticker-select-popup,
+  .legend-drawer,
+  .out-of-view-drawer,
+  .trash-drawer {
     display: none !important;
+  }
+
+  .plant-marker {
+    display: block !important;
+    width: 16px;
+    height: 16px;
+    pointer-events: none !important;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -5307,15 +5326,10 @@ function createMarkers() {
   const containerWidth = isIOS ? roomContainer.clientWidth : containerRect.width;
   const containerHeight = isIOS ? roomContainer.clientHeight : containerRect.height;
 
-  const scale = isIOS
-  ? Math.min(
-      containerWidth / imageWidth,
-      containerHeight / imageHeight
-    )
-  : Math.max(
-      containerWidth / imageWidth,
-      containerHeight / imageHeight
-    );
+  const scale = Math.max(
+    containerWidth / imageWidth,
+    containerHeight / imageHeight
+  );
 
   const displayedWidth = imageWidth * scale;
   const displayedHeight = imageHeight * scale;
