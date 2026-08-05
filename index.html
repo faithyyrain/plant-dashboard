@@ -2254,41 +2254,48 @@ h2, .status-pill, .close-button, .legend {
   left: 30px;
   z-index: 7000;
   display: flex;
-  width: 52px;
-  height: 52px;
-  padding: 4px;
   align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  padding: 7px;
   overflow: hidden;
   border: 3px solid rgba(158, 146, 122, 0.68);
   border-radius: 999px;
-  background: rgba(215, 211, 202, 0.78);
+  background: rgba(215, 211, 202, 0.8);
   box-sizing: border-box;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.48);
   backdrop-filter: blur(9px);
   -webkit-backdrop-filter: blur(9px);
-  transition: width 0.22s ease, filter 0.15s ease;
+  transition:
+    width 0.22s ease,
+    filter 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.edit-mode-control.menu-open,
-.edit-mode-control:has(.edit-mode-menu.open) {
-  width: 148px;
+.edit-mode-control.menu-open {
+  width: 162px;
+  justify-content: flex-start;
 }
 
-.edit-mode-button {
+.edit-mode-button,
+.edit-mode-menu .edit-mode-option {
   position: relative !important;
   top: auto !important;
   left: auto !important;
   display: flex;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px;
   padding: 0 !important;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(90, 107, 75, 0.48);
+  flex-shrink: 0;
+  border: 2px solid rgba(146, 134, 111, 0.5);
   border-radius: 50%;
-  background: rgba(121, 142, 99, 0.66);
-  color: #2f342b;
+  background: rgba(241, 237, 229, 0.92);
+  color: #5b564f;
   box-shadow: none;
   box-sizing: border-box;
   transform: none !important;
@@ -2296,8 +2303,8 @@ h2, .status-pill, .close-button, .legend {
 
 .edit-mode-button svg,
 .edit-mode-option svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.9;
@@ -2308,25 +2315,26 @@ h2, .status-pill, .close-button, .legend {
 
 .edit-mode-button:hover,
 .edit-mode-option:hover {
-  filter: brightness(1.1);
-  transform: scale(1.06) !important;
+  filter: brightness(1.08);
+  transform: scale(1.04) !important;
 }
 
 .edit-mode-button.edit-mode-active {
-  border-color: rgba(94, 111, 74, 0.88);
-  background: rgba(150, 164, 120, 0.94);
+  border-color: rgba(94, 111, 74, 0.9);
+  background: rgba(150, 164, 120, 0.95);
+  color: #33402d;
 }
 
 .edit-mode-menu {
   position: static !important;
   display: flex !important;
   width: 0;
-  height: 40px;
+  height: 36px;
   margin-left: 0;
   padding: 0;
   align-items: center;
   flex-direction: row !important;
-  gap: 6px;
+  gap: 8px;
   overflow: hidden;
   border: none;
   border-radius: 0;
@@ -2342,30 +2350,16 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .edit-mode-menu.open {
-  width: 86px;
-  margin-left: 6px;
+  width: 80px;
+  margin-left: 10px;
   opacity: 1;
   pointer-events: auto;
-}
-
-.edit-mode-menu .edit-mode-option {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  padding: 0;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(90, 107, 75, 0.42);
-  border-radius: 50%;
-  background: rgba(121, 142, 99, 0.54);
-  color: #2f342b;
-  box-sizing: border-box;
 }
 
 .edit-mode-menu .edit-mode-option.selected-mode {
   border-color: rgba(94, 111, 74, 0.92);
   background: rgba(150, 164, 120, 0.96);
+  color: #33402d;
   box-shadow: 0 0 0 3px rgba(150, 164, 120, 0.24);
 }
 
@@ -2374,10 +2368,12 @@ h2, .status-pill, .close-button, .legend {
 .calendar-drawer {
   position: fixed;
   right: 30px;
-  bottom: 30px;
+  bottom: 0;
   z-index: 5500;
   transform: translateY(calc(100% - 34px));
   transition: transform 0.22s ease;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .calendar-drawer.open {
@@ -2392,7 +2388,7 @@ h2, .status-pill, .close-button, .legend {
   display: block;
   width: 112px;
   height: 34px;
-  margin-left: auto;
+  margin: 0 0 0 auto;
   padding: 0;
   border: 3px solid rgba(175, 163, 141, 0.74);
   border-bottom: none;
@@ -2416,18 +2412,22 @@ h2, .status-pill, .close-button, .legend {
 
 .calendar-panel {
   border-radius: 18px 0 18px 18px;
+  overflow: hidden;
 }
 
-/* Keep all bottom tabs 30px above the screen edge */
+/* Bottom tabs */
+
+.legend-drawer,
+.out-of-view-drawer {
+  bottom: 0;
+}
 
 .legend-drawer {
   left: 30px;
-  bottom: 30px;
 }
 
 .out-of-view-drawer {
   left: 170px;
-  bottom: 30px;
 }
 
 /* Size Out of View to its longest plant name */
@@ -5544,23 +5544,6 @@ function shouldShowCalendarFertilizerRing(plant, dateString) {
   return targetDate >= bufferStartDate;
 }
 
-// ===== ROOM CLICK + COORDINATE FINDER =====
-
-  roomContainer.addEventListener("click", function(event) {
-
-  if (event.target.classList.contains("plant-marker")) {
-    return;
-  }
-
-  const calendarWrapper = document.getElementById("calendarWrapper");
-
-  if (calendarWrapper.classList.contains("open")) {
-    calendarWrapper.classList.remove("open");
-    closeDuePanel();
-    return;
-  }
-});
-
 // ===== PLANT DOT / MARKER FUNCTIONS =====
 
   const markers = [];
@@ -6941,6 +6924,13 @@ document.addEventListener("click", function(event) {
   const clickedLegend = event.target.closest(".legend");
   const clickedEditModeMenu = document.getElementById("editModeMenu").contains(event.target);
   const clickedEditModeButton = document.getElementById("editModeButton").contains(event.target);
+    if (
+    !editMode &&
+    !clickedEditModeMenu &&
+    !clickedEditModeButton
+  ) {
+    setEditModeMenuOpen(false);
+  }
 
   if (
     editMode &&
