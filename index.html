@@ -2300,11 +2300,15 @@ h2, .status-pill, .close-button, .legend {
 
   /* Small, non-clickable plant dots */
   .plant-marker {
-    width: 14px;
-    height: 14px;
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    min-height: 14px !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    border-radius: 50% !important;
+    appearance: none;
     pointer-events: none !important;
-    cursor: default;
-    -webkit-tap-highlight-color: transparent;
   }
 
   /* Hide all dashboard controls on iPhone */
