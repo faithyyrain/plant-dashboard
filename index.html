@@ -2244,6 +2244,222 @@ h2, .status-pill, .close-button, .legend {
   }
 }
 
+/* ===== NEW DASHBOARD CONTROL LAYOUT ===== */
+
+/* Edit-mode circle that expands into a pill */
+
+.edit-mode-control {
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  z-index: 7000;
+  display: flex;
+  width: 52px;
+  height: 52px;
+  padding: 4px;
+  align-items: center;
+  overflow: hidden;
+  border: 3px solid rgba(158, 146, 122, 0.68);
+  border-radius: 999px;
+  background: rgba(215, 211, 202, 0.78);
+  box-sizing: border-box;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+  transition: width 0.22s ease, filter 0.15s ease;
+}
+
+.edit-mode-control.menu-open,
+.edit-mode-control:has(.edit-mode-menu.open) {
+  width: 148px;
+}
+
+.edit-mode-button {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  display: flex;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  padding: 0 !important;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(90, 107, 75, 0.48);
+  border-radius: 50%;
+  background: rgba(121, 142, 99, 0.66);
+  color: #2f342b;
+  box-shadow: none;
+  box-sizing: border-box;
+  transform: none !important;
+}
+
+.edit-mode-button svg,
+.edit-mode-option svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.edit-mode-button:hover,
+.edit-mode-option:hover {
+  filter: brightness(1.1);
+  transform: scale(1.06) !important;
+}
+
+.edit-mode-button.edit-mode-active {
+  border-color: rgba(94, 111, 74, 0.88);
+  background: rgba(150, 164, 120, 0.94);
+}
+
+.edit-mode-menu {
+  position: static !important;
+  display: flex !important;
+  width: 0;
+  height: 40px;
+  margin-left: 0;
+  padding: 0;
+  align-items: center;
+  flex-direction: row !important;
+  gap: 6px;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  transition:
+    width 0.22s ease,
+    margin-left 0.22s ease,
+    opacity 0.15s ease;
+}
+
+.edit-mode-menu.open {
+  width: 86px;
+  margin-left: 6px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.edit-mode-menu .edit-mode-option {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(90, 107, 75, 0.42);
+  border-radius: 50%;
+  background: rgba(121, 142, 99, 0.54);
+  color: #2f342b;
+  box-sizing: border-box;
+}
+
+.edit-mode-menu .edit-mode-option.selected-mode {
+  border-color: rgba(94, 111, 74, 0.92);
+  background: rgba(150, 164, 120, 0.96);
+  box-shadow: 0 0 0 3px rgba(150, 164, 120, 0.24);
+}
+
+/* Calendar bottom-right tab drawer */
+
+.calendar-drawer {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 5500;
+  transform: translateY(calc(100% - 34px));
+  transition: transform 0.22s ease;
+}
+
+.calendar-drawer.open {
+  transform: translateY(0);
+}
+
+.calendar-button {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  display: block;
+  width: 112px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0;
+  border: 3px solid rgba(175, 163, 141, 0.74);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  background: rgba(214, 207, 191, 0.84);
+  color: #333;
+  font-size: 14px;
+  box-sizing: border-box;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.28);
+  transform: none !important;
+}
+
+.calendar-wrapper {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  display: block !important;
+  transform: none !important;
+}
+
+.calendar-panel {
+  border-radius: 18px 0 18px 18px;
+}
+
+/* Keep all bottom tabs 30px above the screen edge */
+
+.legend-drawer {
+  left: 30px;
+  bottom: 30px;
+}
+
+.out-of-view-drawer {
+  left: 170px;
+  bottom: 30px;
+}
+
+/* Size Out of View to its longest plant name */
+
+.out-of-view-panel {
+  width: max-content;
+  max-width: calc(100vw - 60px);
+}
+
+.out-of-view-row {
+  grid-template-columns: 54px max-content 24px;
+}
+
+.out-of-view-name {
+  white-space: nowrap;
+}
+
+/* Dashboard tabs disappear during edit mode or while a card is open */
+
+body.dashboard-edit-mode .calendar-drawer,
+body.dashboard-edit-mode .legend-drawer,
+body.dashboard-edit-mode .out-of-view-drawer,
+body.dashboard-card-open .calendar-drawer,
+body.dashboard-card-open .legend-drawer,
+body.dashboard-card-open .out-of-view-drawer {
+  display: none !important;
+}
+
+body.dashboard-card-open .edit-mode-control {
+  display: none !important;
+}
+
 /* ===== IPHONE ROTATED LANDSCAPE VIEW ===== */
 
 @media (hover: none) and (pointer: coarse) and (orientation: portrait) {
@@ -2331,20 +2547,72 @@ h2, .status-pill, .close-button, .legend {
 
 <!-- ===== CALENDAR BUTTON ===== -->
 
-<button class="edit-mode-button" id="editModeButton" onclick="toggleEditModeMenu()">Edit Mode</button>
-<button class="calendar-button" onclick="toggleCalendar()">Calendar</button>
-<div id="editModeMenu" class="edit-mode-menu">
-  <button onclick="startEditMode('plants')">Plants</button>
-  <button onclick="startEditMode('decor')">Decor</button>
+<!-- Edit-mode pill control -->
+
+<div class="edit-mode-control" id="editModeControl">
+  <button
+    type="button"
+    class="edit-mode-button"
+    id="editModeButton"
+    aria-label="Edit dashboard"
+    aria-expanded="false"
+    onclick="toggleEditModeMenu(event)"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 20h4L19 9l-4-4L4 16v4z"></path>
+      <path d="M13.5 6.5l4 4"></path>
+    </svg>
+  </button>
+
+  <div id="editModeMenu" class="edit-mode-menu">
+    <button
+      type="button"
+      id="editPlantsButton"
+      class="edit-mode-option"
+      aria-label="Edit plants"
+      onclick="startEditMode('plants', event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21V10"></path>
+        <path d="M12 14c-4 0-7-2.3-7-6 4 0 7 2.3 7 6z"></path>
+        <path d="M12 11c4 0 7-2.3 7-6-4 0-7 2.3-7 6z"></path>
+        <path d="M7 21h10"></path>
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      id="editDecorButton"
+      class="edit-mode-option"
+      aria-label="Edit furniture"
+      onclick="startEditMode('decor', event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 11V7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v4"></path>
+        <path d="M5 10a2 2 0 0 0-2 2v5h18v-5a2 2 0 0 0-2-2"></path>
+        <path d="M6 17v3M18 17v3"></path>
+      </svg>
+    </button>
+  </div>
 </div>
+
 <div id="editSliderPanel" class="edit-slider-panel">
   <span id="editSliderLabel">Size</span>
   <input id="editSlider" type="range" min="20" max="300" value="120">
 </div>
 
-<!-- ===== CALENDAR + PANELS ===== -->
+<!-- ===== CALENDAR DRAWER + PANELS ===== -->
 
-<div class="calendar-wrapper" id="calendarWrapper">
+<div class="calendar-drawer" id="calendarDrawer">
+  <button
+    type="button"
+    class="calendar-button"
+    onclick="toggleCalendar(event)"
+  >
+    Calendar
+  </button>
+
+  <div class="calendar-wrapper" id="calendarWrapper">
 
 <!-- Plants due/watered side panel -->
 
@@ -2385,6 +2653,7 @@ h2, .status-pill, .close-button, .legend {
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- ===== ROOM IMAGE + LEGEND ===== -->
@@ -4361,33 +4630,84 @@ document
   togglePlantCardDateSelection("fertilizerInterval", event);
 });
 
-function toggleEditModeMenu() {
-  const editModeButton = document.getElementById("editModeButton");
-  const editModeMenu = document.getElementById("editModeMenu");
+function setEditModeMenuOpen(isOpen) {
+  const editModeButton =
+    document.getElementById("editModeButton");
+
+  const editModeMenu =
+    document.getElementById("editModeMenu");
+
+  const editModeControl =
+    document.getElementById("editModeControl");
+
+  editModeMenu.classList.toggle("open", isOpen);
+  editModeControl.classList.toggle("menu-open", isOpen);
+
+  editModeButton.setAttribute(
+    "aria-expanded",
+    isOpen ? "true" : "false"
+  );
+}
+
+function toggleEditModeMenu(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
   if (editMode) {
     exitEditMode();
     return;
   }
 
-  editModeMenu.classList.toggle("open");
+  const editModeMenu =
+    document.getElementById("editModeMenu");
+
+  setEditModeMenuOpen(
+    !editModeMenu.classList.contains("open")
+  );
 }
 
-function startEditMode(mode) {
+function startEditMode(mode, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
   editMode = mode;
 
-  const editModeButton = document.getElementById("editModeButton");
-  const editModeMenu = document.getElementById("editModeMenu");
+  const editModeButton =
+    document.getElementById("editModeButton");
 
-  editModeMenu.classList.remove("open");
-  editModeButton.textContent = "Done";
+  const editPlantsButton =
+    document.getElementById("editPlantsButton");
+
+  const editDecorButton =
+    document.getElementById("editDecorButton");
+
+  setEditModeMenuOpen(true);
+
   editModeButton.classList.add("edit-mode-active");
+  editModeButton.setAttribute("aria-pressed", "true");
+
+  editPlantsButton.classList.toggle(
+    "selected-mode",
+    mode === "plants"
+  );
+
+  editDecorButton.classList.toggle(
+    "selected-mode",
+    mode === "decor"
+  );
+
+  document.body.classList.add("dashboard-edit-mode");
 
   if (editControls) {
     editControls.style.display = "flex";
   }
 
-  const sliderPanel = document.getElementById("editSliderPanel");
+  const sliderPanel =
+    document.getElementById("editSliderPanel");
 
   if (sliderPanel) {
     sliderPanel.classList.remove("open");
@@ -4395,10 +4715,12 @@ function startEditMode(mode) {
 
   activeSliderControl = null;
 
-  const moveDotButton = document.getElementById("moveDotButton");
+  const moveDotButton =
+    document.getElementById("moveDotButton");
 
   if (moveDotButton) {
-    moveDotButton.style.display = editMode === "plants" ? "flex" : "none";
+    moveDotButton.style.display =
+      editMode === "plants" ? "flex" : "none";
   }
 
   applyEditModeView();
@@ -4407,6 +4729,9 @@ function startEditMode(mode) {
 
 function exitEditMode() {
   editMode = null;
+
+  document.body.classList.remove("dashboard-edit-mode");
+
   if (trashRestoreGhost) {
     trashRestoreGhost.remove();
   }
@@ -4417,13 +4742,22 @@ function exitEditMode() {
   trashRestoreStartY = 0;
 
   setTrashDragHighlight(false);
+  setEditModeMenuOpen(false);
 
-  const editModeButton = document.getElementById("editModeButton");
-  const editModeMenu = document.getElementById("editModeMenu");
+  const editModeButton =
+    document.getElementById("editModeButton");
 
-  editModeMenu.classList.remove("open");
-  editModeButton.textContent = "Edit Mode";
+  const editPlantsButton =
+    document.getElementById("editPlantsButton");
+
+  const editDecorButton =
+    document.getElementById("editDecorButton");
+
   editModeButton.classList.remove("edit-mode-active");
+  editModeButton.setAttribute("aria-pressed", "false");
+
+  editPlantsButton.classList.remove("selected-mode");
+  editDecorButton.classList.remove("selected-mode");
 
   lockStickerEdits(new Event("click"));
 
@@ -4431,7 +4765,9 @@ function exitEditMode() {
     editControls.style.display = "none";
   }
 
-  stickers.forEach(item => item.sticker.classList.remove("editing-sticker"));
+  stickers.forEach(item =>
+    item.sticker.classList.remove("editing-sticker")
+  );
 
   applyEditModeView();
   updateTrashDrawerVisibility();
@@ -5450,27 +5786,19 @@ function positionMarkers() {
 }
 
 function positionCalendar() {
-  const calendarButton = document.querySelector(".calendar-button");
-  const calendarWrapper = document.getElementById("calendarWrapper");
-  const metrics = getImageMetrics();
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
 
-  const scale = Math.max(0.65, Math.min(1, metrics.displayedWidth / 1400));
-  if (isIOS) {
-    calendarButton.style.display = "none";
-    calendarWrapper.classList.remove("open");
+  if (!calendarDrawer) {
     return;
   }
 
-  calendarButton.style.left = "auto";
-  calendarButton.style.right = "30px";
-  calendarButton.style.top = "30px";
-  calendarButton.style.setProperty("--calendar-scale", 1);
-  calendarButton.style.transform = "";
-
-  calendarWrapper.style.left = "auto";
-  calendarWrapper.style.right = "30px";
-  calendarWrapper.style.top = "90px";
-  calendarWrapper.style.transform = `scale(${scale})`;
+  if (isIOS) {
+    calendarDrawer.style.display = "none";
+    calendarDrawer.classList.remove("open");
+  } else {
+    calendarDrawer.style.display = "";
+  }
 }
 
 function updateMarkerColors() {
@@ -5490,19 +5818,12 @@ function updateMarkerColors() {
 
 // ===== PLANT CARD FUNCTIONS =====
 
-  function hideDashboardOverlays() {
-  document.querySelector(".calendar-button").style.display = "none";
-  document.querySelector(".legend").style.display = "none";
-  document.querySelector(".out-of-view-panel").style.display = "none";
-  document.getElementById("calendarWrapper").classList.remove("open");
-  closeDuePanel();
+function hideDashboardOverlays() {
+  document.body.classList.add("dashboard-card-open");
 }
 
 function showDashboardOverlays() {
-  document.querySelector(".calendar-button").style.display = isIOS ? "none" : "block";
-  document.querySelector(".legend").style.display = "block";
-  document.querySelector(".out-of-view-panel").style.display = "block";
-
+  document.body.classList.remove("dashboard-card-open");
 }
 
 function openPlantDetails(index) {
@@ -5893,11 +6214,16 @@ function markFertilizedToday() {
 
 function closeModal() {
   exitPlantCardEditMode(true);
+
   document.getElementById("plantModal").style.display = "none";
   showDashboardOverlays();
 
   if (reopenCalendarDate) {
-    document.getElementById("calendarWrapper").classList.add("open");
+    const calendarDrawer =
+      document.getElementById("calendarDrawer");
+
+    calendarDrawer.classList.add("open");
+
     renderCalendar();
     renderUpcomingChecks();
     openDuePanel(reopenCalendarDate);
@@ -6295,6 +6621,31 @@ function closeModal() {
 
 // ===== CALENDAR OPEN / CLOSE FUNCTIONS =====
 
+function closeAllDashboardDrawers() {
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
+
+  const legendDrawer =
+    document.getElementById("legendDrawer");
+
+  const outOfViewDrawer =
+    document.getElementById("outOfViewDrawer");
+
+  if (calendarDrawer) {
+    calendarDrawer.classList.remove("open");
+  }
+
+  if (legendDrawer) {
+    legendDrawer.classList.remove("open");
+  }
+
+  if (outOfViewDrawer) {
+    outOfViewDrawer.classList.remove("open");
+  }
+
+  closeDuePanel();
+}
+
   function toggleLegend() {
   const legendDrawer = document.getElementById("legendDrawer");
 
@@ -6370,12 +6721,18 @@ function renderOutOfViewPlants() {
   });
 }
 
-function toggleCalendar() {
-  const calendarWrapper = document.getElementById("calendarWrapper");
+function toggleCalendar(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
 
-  calendarWrapper.classList.toggle("open");
+  const calendarDrawer =
+    document.getElementById("calendarDrawer");
 
-  if (calendarWrapper.classList.contains("open")) {
+  calendarDrawer.classList.toggle("open");
+
+  if (calendarDrawer.classList.contains("open")) {
     renderCalendar();
     renderUpcomingChecks();
   } else {
@@ -6623,15 +6980,21 @@ document.addEventListener("click", function(event) {
     }
   }
 
-  if (
-    calendarWrapper.classList.contains("open") &&
-    !clickedInsideCalendar &&
-    !clickedCalendarButton &&
-    !clickedInsideModal
-  ) {
-    calendarWrapper.classList.remove("open");
-    closeDuePanel();
-  }
+    const clickedInsideDashboardDrawer =
+      event.target.closest(
+        ".calendar-drawer, .legend-drawer, .out-of-view-drawer"
+      );
+
+    const plantCardIsOpen =
+      plantModal.style.display === "flex";
+
+    if (
+      !clickedInsideDashboardDrawer &&
+      !clickedInsideModal &&
+      !plantCardIsOpen
+    ) {
+      closeAllDashboardDrawers();
+    }
 });
 
 const editSliderPanel = document.getElementById("editSliderPanel");
