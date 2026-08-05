@@ -2204,7 +2204,28 @@ h2, .status-pill, .close-button, .legend {
   transform: none !important;
 }
 
-.edit-mode-button.edit-mode-active,
+.edit-close-icon {
+  display: none;
+}
+
+.edit-mode-control.menu-open .edit-pencil-icon {
+  display: none;
+}
+
+.edit-mode-control.menu-open .edit-close-icon {
+  display: block;
+}
+
+/* Muted red X while open */
+
+.edit-mode-control.menu-open .edit-mode-button {
+  border-color: rgba(151, 101, 101, 0.88);
+  background: rgba(198, 145, 145, 0.94);
+  color: #573c3c;
+}
+
+/* Muted green selected Plant or Furniture button */
+
 .edit-mode-menu .edit-mode-option.selected-mode {
   border-color: rgba(94, 111, 74, 0.9);
   background: rgba(150, 164, 120, 0.95);
@@ -2438,9 +2459,14 @@ body.dashboard-card-open .edit-mode-control {
     aria-expanded="false"
     onclick="toggleEditModeMenu(event)"
   >
-    <svg viewBox="0 0 24 24" aria-hidden="true">
+    <svg class="edit-pencil-icon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4 20h4L19 9l-4-4L4 16v4z"></path>
       <path d="M13.5 6.5l4 4"></path>
+    </svg>
+
+    <svg class="edit-close-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6L18 18"></path>
+      <path d="M18 6L6 18"></path>
     </svg>
   </button>
 
@@ -2452,15 +2478,12 @@ body.dashboard-card-open .edit-mode-control {
       aria-label="Edit plants"
       onclick="startEditMode('plants', event)"
     >
-    <svg class="edit-pencil-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 20h4L19 9l-4-4L4 16v4z"></path>
-      <path d="M13.5 6.5l4 4"></path>
-    </svg>
-
-    <svg class="edit-close-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 6L18 18"></path>
-      <path d="M18 6L6 18"></path>
-    </svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21V10"></path>
+        <path d="M12 14c-4 0-7-2.3-7-6 4 0 7 2.3 7 6z"></path>
+        <path d="M12 11c4 0 7-2.3 7-6-4 0-7 2.3-7 6z"></path>
+        <path d="M7 21h10"></path>
+      </svg>
     </button>
 
     <button
