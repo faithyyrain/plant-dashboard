@@ -350,8 +350,8 @@ h2, .status-pill, .close-button, .legend {
 
 .calendar-button {
   position: fixed;
-  width: 119px;
-  height: 37px;
+  width: 118px;
+  height: 36px;
   top: 90px;
   right: 70px;
   left: auto;
@@ -2023,9 +2023,9 @@ h2, .status-pill, .close-button, .legend {
   padding: 10px;
   align-items: center;
   justify-content: center;
-  border: 3px solid rgba(175, 163, 141, 0.508);
+  border: 3px solid rgba(175, 163, 141, 0.474);
   border-radius: 20px;
-  background: rgba(214, 207, 191, 0.376);
+  background: rgba(236, 233, 225, 0.511);
   color: #333;
   cursor: pointer;
   box-sizing: border-box;
@@ -2224,7 +2224,21 @@ h2, .status-pill, .close-button, .legend {
     object-position: center;
   }
 
-  .plant-sticker,
+  /* Keep all plant and furniture stickers visible but non-clickable */
+  .plant-sticker {
+    pointer-events: none !important;
+  }
+
+  /* Small, non-clickable plant dots */
+  .plant-marker {
+    width: 16px;
+    height: 16px;
+    pointer-events: none !important;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Hide all dashboard controls on iPhone */
   .calendar-button,
   .calendar-wrapper,
   .edit-mode-button,
@@ -2236,15 +2250,6 @@ h2, .status-pill, .close-button, .legend {
   .out-of-view-drawer,
   .trash-drawer {
     display: none !important;
-  }
-
-  .plant-marker {
-    display: block !important;
-    width: 16px;
-    height: 16px;
-    pointer-events: none !important;
-    cursor: default;
-    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -5412,13 +5417,13 @@ function positionCalendar() {
   }
 
   calendarButton.style.left = "auto";
-  calendarButton.style.right = "70px";
+  calendarButton.style.right = "30px";
   calendarButton.style.top = "30px";
-  calendarButton.style.setProperty("--calendar-scale", scale);
+  calendarButton.style.setProperty("--calendar-scale", 1);
   calendarButton.style.transform = "";
 
   calendarWrapper.style.left = "auto";
-  calendarWrapper.style.right = "70px";
+  calendarWrapper.style.right = "30px";
   calendarWrapper.style.top = "90px";
   calendarWrapper.style.transform = `scale(${scale})`;
 }
