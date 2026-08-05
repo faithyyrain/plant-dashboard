@@ -6548,7 +6548,18 @@ document.addEventListener("click", function(event) {
   const clickedInsideCalendar = calendarWrapper.contains(event.target);
   const clickedCalendarButton = calendarButton.contains(event.target);
   const clickedInsideModal = plantModal.contains(event.target);
+  const trashDrawer = document.getElementById("trashDrawer");
+  const trashPanel = document.getElementById("trashPanel");
+  const clickedInsideTrash = trashDrawer && trashDrawer.contains(event.target);
 
+  if (
+    trashPanel &&
+    trashPanel.classList.contains("open") &&
+    !clickedInsideTrash
+  ) {
+    trashPanel.classList.remove("open");
+  }
+  
   if ((movingPlant || movingDot) && editingPlant) {
     event.stopPropagation();
 
