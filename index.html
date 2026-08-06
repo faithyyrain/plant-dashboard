@@ -204,6 +204,7 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .edit-slider-panel span {
+  display: none;
   width: 48px;
   color: #333;
   font-size: 14px;
@@ -383,7 +384,7 @@ h2, .status-pill, .close-button, .legend {
 /* ===== UPCOMING CHECKS PANEL ===== */
 
 .upcoming-panel {
-  padding: 14px 18px 8px;
+  padding: 14px 18px 14px;
   background: rgba(50, 50, 50, 0.72);
   color: white;
 }
@@ -760,7 +761,8 @@ h2, .status-pill, .close-button, .legend {
 }
 
 .sticker-edit-controls button.active-edit-button {
-  background: #a1b575;
+  background: rgb(190, 207, 167);
+  border-color: rgb(137, 157, 113);
   scale: 1.08;
 }
 
@@ -1886,6 +1888,8 @@ h2, .status-pill, .close-button, .legend {
   border-radius: 50%;
   object-fit: cover;
   justify-self: start;
+  border: 2px solid rgba(180, 160, 136);
+  box-sizing: border-box;  
 }
 
 .out-of-view-name {
@@ -5056,9 +5060,21 @@ function openStickerEditControls(event, plant) {
   movingPlant = false;
   movingDot = false;
 
-  if (moveDotButton) {
-    moveDotButton.classList.remove("active-edit-button");
+  document
+    .querySelectorAll(".sticker-edit-controls button")
+    .forEach(button => {
+      button.classList.remove("active-edit-button");
+    });
+
+  const sliderPanel =
+    document.getElementById("editSliderPanel");
+
+  if (sliderPanel) {
+    sliderPanel.classList.remove("open");
+    sliderPanel.style.display = "none";
   }
+
+  activeSliderControl = null;
 
   editingPlant = plant;
 
@@ -5082,6 +5098,38 @@ function openStickerEditControls(event, plant) {
   }
 }
 
+function selectStickerEditButton(buttonId, keepSliderOpen = false) {
+  document
+    .querySelectorAll(".sticker-edit-controls button")
+    .forEach(button => {
+      button.classList.remove("active-edit-button");
+    });
+
+  const selectedButton = document.getElementById(buttonId);
+
+  if (selectedButton) {
+    selectedButton.classList.add("active-edit-button");
+  }
+
+  dotMoveReady = buttonId === "moveDotButton";
+
+  if (!dotMoveReady) {
+    movingDot = false;
+  }
+
+  if (!keepSliderOpen) {
+    const sliderPanel =
+      document.getElementById("editSliderPanel");
+
+    if (sliderPanel) {
+      sliderPanel.classList.remove("open");
+      sliderPanel.style.display = "none";
+    }
+
+    activeSliderControl = null;
+  }
+}
+
 function startDotMoveMode(event) {
   event.stopPropagation();
 
@@ -5089,17 +5137,26 @@ function startDotMoveMode(event) {
     return;
   }
 
+  selectStickerEditButton("moveDotButton");
+
   dotMoveReady = true;
   movingPlant = false;
   movingDot = false;
-
-  document.getElementById("moveDotButton").classList.add("active-edit-button");
 }
 
 function openStickerSlider(event, controlType) {
   event.stopPropagation();
 
   if (!editingPlant) return;
+
+  const buttonIds = {
+    size: "sizeStickerButton",
+    rotate: "rotateSliderButton",
+    width: "widthSliderButton",
+    height: "heightSliderButton"
+  };
+
+  selectStickerEditButton(buttonIds[controlType], true);
 
   activeSliderControl = controlType;
 
@@ -5167,6 +5224,8 @@ function sendStickerBackward(event) {
 
   if (!editingPlant) return;
 
+  selectStickerEditButton("sendBackwardStickerButton");
+
   editingPlant.zOffset = (editingPlant.zOffset || 0) - 20;
   savePlantToFirebase(editingPlant);
   positionMarkers();
@@ -5176,6 +5235,8 @@ function bringStickerForward(event) {
   event.stopPropagation();
 
   if (!editingPlant) return;
+
+  selectStickerEditButton("bringForwardStickerButton");
 
   editingPlant.zOffset = (editingPlant.zOffset || 0) + 20;
   savePlantToFirebase(editingPlant);
