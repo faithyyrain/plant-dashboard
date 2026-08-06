@@ -2464,38 +2464,48 @@ body.dashboard-card-open .edit-mode-control {
 /* ===== UNIFIED LAYERED DASHBOARD THEME ===== */
 
 :root {
-  /* Main Edit-button colors */
-  --theme-button-bg: #827e78;
-  --theme-button-border: #6d6964;
-  --theme-button-text: #ffffff;
+  /* Medium tan outer panels and control containers */
+  --theme-outer-bg: rgba(214, 203, 187, 0.92);
+  --theme-outer-border: rgba(190, 177, 159, 0.94);
 
-  /* Layered neutral surfaces */
-  --theme-outer-bg: rgba(232, 228, 220, 0.88);
-  --theme-outer-border: rgba(166, 158, 148, 0.92);
+  /* Lighter sections inside panels */
+  --theme-section-bg: rgba(226, 216, 201, 0.92);
+  --theme-section-border: rgba(204, 192, 175, 0.94);
 
-  --theme-section-bg: rgba(207, 202, 194, 0.72);
-  --theme-section-border: rgba(159, 151, 141, 0.78);
+  /* Lightest small boxes and calendar squares */
+  --theme-inner-bg: rgba(244, 238, 229, 0.94);
+  --theme-inner-border: rgba(220, 209, 193, 0.96);
 
-  --theme-inner-bg: rgba(247, 244, 239, 0.72);
-  --theme-inner-border: rgba(190, 183, 174, 0.82);
+  /* Buttons remain lighter than their containers */
+  --theme-button-bg: #e8e0d4;
+  --theme-button-border: #cfc3b4;
+  --theme-button-text: #4d4843;
 
-  --theme-text: #45413d;
+  /* Dark taupe accent */
+  --theme-text: #4d4843;
+  --theme-accent-bg: #827e78;
+  --theme-accent-border: #716d67;
 
-  --theme-green-bg: #6f806e;
-  --theme-green-border: #566653;
+  /* Soft colored pressed states */
+  --theme-green-bg: #b7c0a6;
+  --theme-green-border: #9faa90;
 
-  --theme-red-bg: #c69191;
-  --theme-red-border: #976565;
+  --theme-red-bg: #d8b7b3;
+  --theme-red-border: #bd9b97;
 
-  --theme-blue-bg: #77b5b8;
-  --theme-blue-border: #568f98;
+  --theme-blue-bg: #bfd3d5;
+  --theme-blue-border: #a1babc;
 
-  --theme-brown-bg: #9b8574;
-  --theme-brown-border: #806f61;
+  --theme-brown-bg: #d0bca8;
+  --theme-brown-border: #b69f89;
 
-  --theme-gold-bg: #c39a5e;
-  --theme-gold-border: #987341;
-  }
+  --theme-gold-bg: #dbc59f;
+  --theme-gold-border: #c1aa7f;
+
+  /* Stitching */
+  --theme-stitch-light: rgba(255, 255, 255, 0.68);
+  --theme-stitch-taupe: rgba(117, 101, 83, 0.48);
+}
 
 /* Bottom drawer tabs */
 
@@ -2816,6 +2826,243 @@ body.dashboard-card-open .edit-mode-control {
 
 .plant-card-redesign .plant-card-status.status-darkred {
   border-color: #704040;
+}
+
+/* ===== LIGHT BUTTONS + STITCHING ===== */
+
+/* Tan containers surrounding lighter buttons */
+
+.edit-mode-control,
+.sticker-edit-controls,
+.edit-slider-panel,
+.sticker-select-popup {
+  background: var(--theme-outer-bg);
+  border-color: var(--theme-outer-border);
+  outline: 1px dashed var(--theme-stitch-light);
+  outline-offset: -6px;
+}
+
+/* Light beige standard buttons */
+
+.edit-mode-button,
+.edit-mode-menu .edit-mode-option,
+.sticker-edit-controls button,
+.sticker-select-popup button,
+.due-mini-button,
+.due-close-button,
+.login-card button,
+.trash-button,
+.plant-card-footer .close-button,
+.plant-card-footer .delay-half,
+.plant-card-footer .plant-card-edit-button {
+  background: var(--theme-button-bg);
+  border: 2px solid var(--theme-button-border);
+  color: var(--theme-button-text);
+  outline: 1px dashed var(--theme-stitch-taupe);
+  outline-offset: -5px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 4px 8px rgba(72, 62, 53, 0.16);
+}
+
+/* Light beige drawer tabs */
+
+.calendar-button,
+.legend-tab,
+.out-of-view-tab {
+  background: var(--theme-button-bg);
+  border-color: var(--theme-button-border);
+  color: var(--theme-button-text);
+  outline: 1px dashed var(--theme-stitch-taupe);
+  outline-offset: -5px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 -2px 9px rgba(72, 62, 53, 0.18);
+}
+
+/* Stitching on the large care buttons */
+
+.water-care-panel .care-action-button,
+.fertilizer-care-panel .care-action-button {
+  outline: 1px dashed rgba(255, 255, 255, 0.68);
+  outline-offset: -6px;
+}
+
+/* ===== LAYERED PANELS + STITCHING ===== */
+
+/* Main outer boxes */
+
+.calendar-panel,
+.legend,
+.out-of-view-panel,
+.due-panel,
+.trash-panel,
+.login-card {
+  background: var(--theme-outer-bg);
+  border-color: var(--theme-outer-border);
+  outline: 1px dashed var(--theme-stitch-light);
+  outline-offset: -7px;
+  color: var(--theme-text);
+}
+
+/* Keep the calendar outer surface transparent */
+
+.calendar-panel {
+  background: rgba(232, 224, 212, 0.68);
+}
+
+/* Medium-tan sections inside larger boxes */
+
+.calendar-header,
+.due-panel-header,
+.upcoming-panel {
+  background: var(--theme-section-bg);
+  border: 2px solid var(--theme-section-border);
+  color: var(--theme-text);
+  outline: 1px dashed var(--theme-stitch-light);
+  outline-offset: -5px;
+  box-sizing: border-box;
+}
+
+/* Light inner boxes */
+
+.due-plant-item,
+.clickable-upcoming {
+  background: var(--theme-inner-bg);
+  border: 1px solid var(--theme-inner-border);
+  color: var(--theme-text);
+  box-sizing: border-box;
+}
+
+/* Keep calendar dates simple and uncrowded */
+
+.calendar-day {
+  background: var(--theme-inner-bg);
+  border-color: var(--theme-inner-border);
+  color: var(--theme-text);
+  outline: none;
+}
+
+/* Watered-only panel keeps a faint cool accent */
+
+.due-panel.watered-only {
+  background: rgba(225, 230, 225, 0.90);
+  border-color: rgba(196, 204, 195, 0.94);
+}
+
+/* ===== SOFT PRESSED + SELECTED STATES ===== */
+
+/* Muted pink close button in the dashboard edit menu */
+
+.edit-mode-control.menu-open .edit-mode-button {
+  background: var(--theme-red-bg);
+  border-color: var(--theme-red-border);
+  color: #5c4542;
+}
+
+/* Muted sage selected/editing buttons */
+
+.edit-mode-menu .edit-mode-option.selected-mode,
+.sticker-edit-controls button.active-edit-button,
+.plant-card-footer .plant-card-edit-button.card-edit-active {
+  background: var(--theme-green-bg);
+  border-color: var(--theme-green-border);
+  color: #46503f;
+}
+
+/* Watered state */
+
+.due-mini-button.watered-active {
+  background: var(--theme-blue-bg);
+  border-color: var(--theme-blue-border);
+  color: #425457;
+}
+
+/* Fertilized state */
+
+.due-mini-button.fertilized-active {
+  background: var(--theme-brown-bg);
+  border-color: var(--theme-brown-border);
+  color: #55483e;
+}
+
+/* Earlier, delayed, and date-adjust states */
+
+.due-mini-button.delayed-active,
+.due-mini-button.earlier-active,
+.due-mini-button.delay-back-button.earlier-active,
+.plant-card-footer .delay-half.delay-half-active,
+.plant-card-footer .delay-button.date-adjust-mode .delay-half {
+  background: var(--theme-gold-bg);
+  border-color: var(--theme-gold-border);
+  color: #594b37;
+}
+
+/* Selected plant-card date or interval row */
+
+.date-edit-trigger.date-selected,
+.care-row.date-row-selected {
+  background: rgba(213, 220, 199, 0.90);
+  border-color: rgba(174, 185, 158, 0.94);
+  box-shadow: none;
+}
+
+/* Calendar selected date */
+
+.calendar-day.selected-day {
+  background: var(--theme-section-bg);
+  border-color: var(--theme-section-border);
+  box-shadow: none;
+}
+
+/* Calendar today */
+
+.calendar-day.today {
+  background: rgba(221, 228, 211, 0.92);
+  border-color: rgba(190, 201, 178, 0.95);
+  box-shadow: none;
+}
+
+/* ===== BEIGE CARE-PANEL HIERARCHY ===== */
+
+/* Warm tan care-panel containers */
+
+.water-care-panel {
+  background-color: var(--theme-section-bg);
+  border-color: var(--theme-section-border);
+}
+
+.fertilizer-care-panel {
+  background-color: var(--theme-outer-bg);
+  border-color: var(--theme-outer-border);
+}
+
+/* Buttons stay lighter than the panels containing them */
+
+.water-care-panel .care-action-button,
+.fertilizer-care-panel .care-action-button {
+  background: var(--theme-button-bg);
+  border: 2px solid var(--theme-button-border);
+  color: var(--theme-button-text);
+  outline: 1px dashed var(--theme-stitch-taupe);
+  outline-offset: -6px;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 5px 10px rgba(72, 62, 53, 0.16);
+}
+
+/* Keep completed Water/Fertilizer states softly colored */
+
+.water-care-panel .care-action-button.undo-watered {
+  background: var(--theme-blue-bg);
+  border-color: var(--theme-blue-border);
+  color: #425457;
+}
+
+.fertilizer-care-panel .care-action-button.undo-fertilized {
+  background: var(--theme-brown-bg);
+  border-color: var(--theme-brown-border);
+  color: #55483e;
 }
 
 /* ===== IPHONE ROTATED LANDSCAPE VIEW ===== */
