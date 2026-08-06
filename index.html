@@ -2389,6 +2389,19 @@ h2, .status-pill, .close-button, .legend {
   white-space: nowrap;
 }
 
+/* Temporarily hide dashboard controls while dragging a sticker */
+
+body.sticker-dragging .edit-mode-control,
+body.sticker-dragging .sticker-edit-controls,
+body.sticker-dragging .edit-slider-panel,
+body.sticker-dragging .sticker-select-popup,
+body.sticker-dragging .calendar-drawer,
+body.sticker-dragging .legend-drawer,
+body.sticker-dragging .out-of-view-drawer,
+body.sticker-dragging .trash-panel {
+  display: none !important;
+}
+
 /* Dashboard tabs disappear during edit mode or while a card is open */
 
 body.dashboard-edit-mode .calendar-drawer,
@@ -4144,6 +4157,7 @@ function renderTrashDrawer() {
       }
 
       trashRestorePlant = plant;
+      document.body.classList.add("sticker-dragging");
       trashRestoreStartX = event.clientX;
       trashRestoreStartY = event.clientY;
 
@@ -5695,6 +5709,7 @@ function createMarkers() {
         moveOffsetY = event.clientY - plantPixelY;
 
         movingPlant = true;
+        document.body.classList.add("sticker-dragging");
       });
 
       roomContainer.appendChild(sticker);
@@ -6870,7 +6885,7 @@ document.addEventListener("mousemove", function(event) {
 });
 
 document.addEventListener("mouseup", function(event) {
-
+document.body.classList.remove("sticker-dragging");
   if (trashRestorePlant) {
     const restoredPlant = trashRestorePlant;
 
