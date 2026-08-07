@@ -2389,6 +2389,16 @@ h2, .status-pill, .close-button, .legend {
   white-space: nowrap;
 }
 
+/* Hold Shift to temporarily reveal stickers behind edit controls */
+
+body.reveal-stickers .edit-mode-control,
+body.reveal-stickers .sticker-edit-controls,
+body.reveal-stickers .edit-slider-panel,
+body.reveal-stickers .sticker-select-popup,
+body.reveal-stickers .trash-drawer {
+  display: none !important;
+}
+
 /* Temporarily hide dashboard controls while dragging a sticker */
 
 body.sticker-dragging .edit-mode-control,
@@ -6877,6 +6887,25 @@ function closeDuePanel() {
 }
 
 // ===== MODAL + OUTSIDE CLICK LISTENERS =====
+
+document.addEventListener("keydown", function(event) {
+  if (
+    event.key === "Shift" &&
+    editMode
+  ) {
+    document.body.classList.add("reveal-stickers");
+  }
+});
+
+document.addEventListener("keyup", function(event) {
+  if (event.key === "Shift") {
+    document.body.classList.remove("reveal-stickers");
+  }
+});
+
+window.addEventListener("blur", function() {
+  document.body.classList.remove("reveal-stickers");
+});
 
   document.getElementById("plantModal").addEventListener("click", function(event) {
   if (event.target.id === "plantModal") {
